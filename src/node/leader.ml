@@ -30,12 +30,8 @@ module Leader = struct
     
     (* Broadcast the decision to all participating replicas *)
     Core.List.iter (leader.replica_uris) ~f:(fun uri ->
-        Lwt.ignore_result (
-          (Message.send_request (Message.DecisionMessage p) uri) >>= 
-          function Message.DecisionMessageResponse -> Lwt.return_unit
-                 | _ -> raise Message.Invalid_response
-        )
-      );;
+      Message.send_request (Message.DecisionMessage p) uri
+      |> Lwt.ignore_result);;
 
 (*---------------------------------------------------------------------------*)
   

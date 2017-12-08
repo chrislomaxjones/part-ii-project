@@ -34,8 +34,9 @@ module Replica = struct
     (* Set of commands upon which a slot has been decided *)
     mutable decisions : Types.proposal list;
     
-    (* Set of leader ids that the client has in its current configuration *)
+    (* Set of leader ids that the replica has in its current configuration *)
     mutable leaders : Uri.t list;
+
   };;
 
   (* Function new_replica returns a new replica given a list of leader ids *)
@@ -89,35 +90,10 @@ module Replica = struct
      for sequence slots etc.
      But for now this is just to simulate message passing capability
   *)
-  let receive_request (replica : t) (cmd : command)  : (command_id * Types.result) =
+  let receive_request (replica : t) (cmd : command) =
     (* Add the command to the end of set of requests.
        This is an expensive append operation for now - perhaps change? *)
-    replica.requests <- (List.append (replica.requests) [cmd]); 
-
-    (* Do this silly stuff that doesn't need to happen at the moment *)
-    (* In reality this needs to block here until a decision has been committed
-       we can return 
-    
-       OR ALTERNATIVELY split client request/response into two separate
-       message schemas *)
-    let (client_id, command_id, operation) = cmd in
-    let result = match operation with
-      | Nop      -> Success
-      | Create _ -> Success
-      | Read x   -> ReadSuccess("test in replica.ml line 22") (* Test ... *)
-      | Update _ -> Success
-      | Remove _ -> Success
-    in (command_id, result);;
-
-
-
-
-
-
-
-
-
-
+    replica.requests <- (List.append (replica.requests) [cmd]);;
 
   (* TODO: Implement configurations *)
   (* We won't yet worry about reconfigurations *)
@@ -126,7 +102,7 @@ module Replica = struct
   (* Perform the command c on the application state of replica *)
   let perform replica c =
     let slot_out = replica.slot_out in
-    let (_,_,op) = c in
+    let (client_id,cid,op) = c in
     let decisions_inv = List.Assoc.inverse replica.decisions in
 
     let is_lower_slot =
@@ -140,10 +116,20 @@ module Replica = struct
       (* Update application state *)
       let next_state, results = Types.apply replica.app_state op in
       replica.app_state <- next_state;
-      replica.slot_out <- replica.slot_out + 1
+      replica.slot_out <- replica.slot_out + 1;
       (* END ATOMIC *)
-  
-      (* Send a response message to client *);;
+
+      (* Send a response message to client *)
+      (* Currently commented out because we don't support this *)
+      (*
+      let client_uri = List.Assoc.find_exn 
+          replica.clients 
+          client_id 
+          ~equal:(fun id1 -> fun id2 -> Core.Uuid.equal id1 id2) in
+      
+      Message.send_request (Message.ClientResponseMessage (cid,results)) client_uri 
+      |> Lwt.ignore_result;;
+      *);;
       
   let rec try_execute (replica : t) (p : proposal) =
     (* Find a decision corresponding to <slot_out, _>
@@ -216,10 +202,11 @@ module Replica = struct
   let start_server (replica : t) (host : string) (port : int) =
     let listen_address = `TCP (host, port) in
     let config = Capnp_rpc_unix.Vat_config.create ~serve_tls:false ~secret_key:`Ephemeral listen_address  in
-    let service_id = Capnp_rpc_unix.Vat_config.derived_id config "main" in
+    (* let service_id = Capnp_rpc_unix.Vat_config.derived_id config "main" in *)
+    let service_id = Capnp_rpc_lwt.Restorer.Id.derived "" (host ^ (string_of_int port)) in
     let restore = Capnp_rpc_lwt.Restorer.single service_id 
         (Message.local (Some (receive_request replica)) (Some (receive_decision replica))) in
-    Capnp_rpc_unix.serve config ~restore >|= fun vat ->
+    Capnp_rpc_unix.serve config ~restore >|= fun vat ->      
     Capnp_rpc_unix.Vat.sturdy_uri vat service_id;;
 
   (* Function attempts to take one request and propose it.
@@ -257,10 +244,7 @@ module Replica = struct
         (* Finally broadcast a message to all of the leaders notifying them of proposal *)
         List.iter replica.leaders ~f:(fun uri ->
           let msg = Message.ProposalMessage (slot_in, c) in  
-          (Message.send_request msg uri >>=
-            function Message.ProposalMessageResponse -> Lwt.return_unit
-                   | _ -> raise Message.Invalid_response)
-          |> Lwt.ignore_result);
+          Message.send_request msg uri |> Lwt.ignore_result);
       | Some _ ->
         (* If there is a command already committed to this slot do nothing *)
         () );

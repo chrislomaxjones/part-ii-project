@@ -10,7 +10,7 @@ module type CLIENT = sig
   type t;;
   val new_client : unit -> t;;
   val add_replica_uri : Uri.t -> t -> unit;;
-  val send_request_message : t -> operation -> (command_id * Types.result) Lwt.t list;;
+  val send_request_message : t -> operation -> unit;;
 end
 
 module Client : CLIENT = struct
@@ -45,9 +45,8 @@ module Client : CLIENT = struct
        For each uri in list, send the request message to that URI and
        bind the response, returning a (command_id, Types.result).
     *)
-    List.map client.replica_uri_list (fun uri -> 
-        Message.send_request (ClientRequestMessage(client_id,command_id,operation)) uri >>=
-        function
-        | Message.ClientRequestResponse (cid, result) -> Lwt.return (cid,result)
-        | _ -> raise Message.Invalid_response);;
+    List.iter client.replica_uri_list (fun uri -> 
+      Message.send_request (ClientRequestMessage(client_id,command_id,operation)) uri
+      |> Lwt.ignore_result);;
+
 end

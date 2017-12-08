@@ -35,14 +35,9 @@ let run_client replica_uri =
         | 3 -> Update (Random.int 10, string_of_int (Random.int 10))
         | _ -> Remove (Random.int 10)) in
 
-        (List.hd_exn (Client.send_request_message client rand_cmd)) >>= fun (cid, result) ->
+        Client.send_request_message client rand_cmd;
 
-        (match result with
-        | Success -> Lwt_io.printl "Success"
-        | Failure -> Lwt_io.printl "Failure"
-        | ReadSuccess x -> Lwt_io.printl ("Read a value " ^ x)) >>= fun () ->
-
-        Lwt_unix.sleep (float_of_int (Random.int 10)) >>= fun () -> (commands (n-1))
+        Lwt_unix.sleep (float_of_int (Random.int 4)) >>= fun () -> (commands (n-1))
     in
       commands 10
 );;
@@ -57,7 +52,12 @@ let run_leader host port =
       (* Form a sort-of REPL loop for adding new Capnp URIs of replicas to leaders *)
       (let rec new_uri b = match b with _ ->
         (Lwt_io.read_line Lwt_io.stdin >>= fun line ->
-         leader.replica_uris <- (Uri.of_string line)::(leader.replica_uris);
+        
+         let [host;port] = String.split line ~on:(Char.of_string ",") in
+
+         let uri = Message.hostport_to_uri host (int_of_string port) in
+
+         leader.replica_uris <- (uri)::(leader.replica_uris);
          new_uri true
         )
        in new_uri true);

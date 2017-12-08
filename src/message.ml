@@ -7,17 +7,34 @@ open Lwt.Infix;;
 (* Exceptions resulting in undefined values being sent in Capnp unions *)
 exception Undefined_oper;;
 exception Undefined_result;;
+
 (* Exception arising from the wrong kind of response being received *)
 exception Invalid_response;;
 
 (* Expose the API service for the RPC system *)
 module Api = Message_api.MakeRPC(Capnp_rpc_lwt);;
 
-let local (some_f : (command -> (command_id * result)) option) (some_g : (proposal -> unit) option) =
+let local (some_f : (command -> unit) option) (some_g : (proposal -> unit) option) =
   let module Message = Api.Service.Message in
   Message.local @@ object
     inherit Message.service
-    
+
+    method client_response_impl params release_param_caps =
+      let open Message.ClientResponse in
+      let module Params = Message.ClientResponse.Params in
+
+      (* Pull out all the information from the parameters *)
+
+      (Lwt_io.printl "Look we made it!") |> Lwt.ignore_result;
+      
+      (* Do some callback *)
+
+      (* Release capabilities, doesn't matter for us *)
+      release_param_caps ();
+
+      (* Return an empty response *)
+      Service.return_empty ();
+
     method send_proposal_impl params release_param_caps =
       let open Message.SendProposal in
       let module Params = Message.SendProposal.Params in
@@ -167,32 +184,14 @@ let local (some_f : (command -> (command_id * result)) option) (some_g : (propos
            if one is not passed in this case
         *)
         match some_f with | Some f ->
-        let (command_id', result) = f (Core.Uuid.of_string client_id, command_id, operation) in
+          f (Core.Uuid.of_string client_id, command_id, operation);
       
         (* Releases capabilities, doesn't matter for us *)
         release_param_caps ();
         
-        (* Construct a response struct for the reply *)
-        let open Api.Builder.Message in
-        let response_rpc = Response.init_root () in
-          Response.command_id_set_exn response_rpc command_id';
-            
-          let result_rpc = Response.Result.init_root () in
-          
-          (match result with
-          | Success -> Response.Result.success_set result_rpc
-          | Failure -> Response.Result.failure_set result_rpc
-          | ReadSuccess v -> Response.Result.read_set result_rpc v);
-          
-          (* Need to somehow add the result to the response struct *)
-          (* ... *)
-          (* ... *)
-          (Response.result_set_builder response_rpc result_rpc |> ignore);
-
-          (* Reply with the response *)
-          let response, results = Service.Response.create Results.init_pointer in
-          (Results.response_set_builder results response_rpc |> ignore);
-          Service.return response;
+        (* Return an empty response *)
+        Service.return_empty ();
+        
   end;;
 
 (*---------------------------------------------------------------------------*)
@@ -236,8 +235,34 @@ let client_request_rpc t (cmd : Types.command) =
       (* Constructs the command struct and associates with params *)
       (Params.command_set_reader params (Command.to_reader cmd_rpc) |> ignore);
 
-      (* Send the message and pull out the result *)
-      Capability.call_for_value_exn t method_id request >|= Results.response_get;;
+      (* Send the message and ignore the response *)
+      Capability.call_for_unit_exn t method_id request;;
+
+let client_response_rpc t (command_id : Types.command_id) (result : Types.result) =
+  let open Api.Client.Message.ClientResponse in
+  let request, params = Capability.Request.create Params.init_pointer in
+  let open Api.Builder.Message in
+
+    (* Create an empty result as recognised by Capnp *)
+    let result_rpc = Result.init_root () in
+
+    (* Construct the result from the result argument given *)
+    (match result with
+    | Failure ->
+      Result.failure_set result_rpc
+    | Success ->
+      Result.success_set result_rpc
+    | ReadSuccess v ->
+      Result.read_set result_rpc v);
+
+    (* Construct the result and associate with params *)
+    (Params.result_set_reader params (Result.to_reader result_rpc) |> ignore);
+
+    (* Set the command id in parameters equal to argument *)
+    Params.command_id_set_exn params command_id;
+
+    (* Send the message and ignore the response *)
+    Capability.call_for_unit_exn t method_id request;;  
 
 let decision_rpc t (p : Types.proposal) =
   let open Api.Client.Message.Decision in
@@ -337,16 +362,10 @@ let proposal_rpc t (p : Types.proposal) =
       - This represents the application-level representation of a message.
       - These can be passed to the RPC api to be prepared for transport etc. *)
 type message = ClientRequestMessage of command
+             | ClientResponseMessage of command_id * result
              | ProposalMessage of proposal
              | DecisionMessage of proposal;;
           (* | ... further messages will be added *) 
-
-(* Types of responses returned to a sending node
-   These do not necessarily carry any useful data 
-   (essentially just ACKs) *)
-type response = ClientRequestResponse of command_id * result
-              | ProposalMessageResponse
-              | DecisionMessageResponse;;
 
 (* Takes a Capnp URI for a service and returns the lwt capability of that
    service *)
@@ -362,6 +381,20 @@ let service_from_uri uri =
   Sturdy_ref.connect_exn sr >>= fun proxy_to_service ->
   Lwt.return proxy_to_service;;
 
+let hostport_to_uri host port =
+  let loc = Capnp_rpc_unix.Network.Location.tcp host port in
+  let dig = Capnp_rpc_lwt.Auth.Digest.insecure in
+  let id = Capnp_rpc_lwt.Restorer.Id.derived "" (host ^ (string_of_int port)) in
+  Capnp_rpc_unix.Network.Address.to_uri ((loc,dig), Capnp_rpc_lwt.Restorer.Id.to_string id);;
+
+
+let service_from_hostport host port =
+  let loc = Capnp_rpc_unix.Network.Location.tcp host port in
+  let dig = Capnp_rpc_lwt.Auth.Digest.insecure in
+  let id = Capnp_rpc_lwt.Restorer.Id.derived "" (host ^ (string_of_int port)) in
+  let uri = Capnp_rpc_unix.Network.Address.to_uri ((loc,dig), Capnp_rpc_lwt.Restorer.Id.to_string id) in
+  service_from_uri uri;;
+
 (* Accepts as input a message and prepares it for RPC transport,
    given the URI of the service to which it will be sent*)
 let send_request message uri =
@@ -369,25 +402,10 @@ let send_request message uri =
   service_from_uri uri >>= fun service ->
   match message with
   | ClientRequestMessage cmd ->
-    (* Perform the RPC with the given command *)
-    client_request_rpc service cmd >>= fun response ->
-      (* Pull the (command_id, result) from the Capnp struct response *)
-      let command_id : command_id = Api.Reader.Message.Response.command_id_get response in
-      
-      (* Convert the value stored in the Result struct into a Types.Result *)
-      let open Api.Reader.Message in
-      let result_reader = Response.result_get response in 
-      let result = match Response.Result.get result_reader with
-      | Response.Result.Failure -> Types.Failure
-      | Response.Result.Success -> Types.Success
-      | Response.Result.Read x -> Types.ReadSuccess x
-      | Response.Result.Undefined _ -> raise Undefined_result in
-
-      (* Return the response to the calling client *)
-      Lwt.return (ClientRequestResponse(command_id, result))
+    client_request_rpc service cmd;
+  | ClientResponseMessage (cid, result) ->
+    client_response_rpc service cid result;
   | DecisionMessage p ->
-    decision_rpc service p >>= fun () -> 
-    Lwt.return DecisionMessageResponse; 
+    decision_rpc service p;
   | ProposalMessage p ->
-    proposal_rpc service p >>= fun () ->
-    Lwt.return ProposalMessageResponse;;
+    proposal_rpc service p;

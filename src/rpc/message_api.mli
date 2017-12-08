@@ -75,25 +75,15 @@ module type S = sig
         val of_message : 'cap message_t -> t
         val of_builder : struct_t builder_t -> t
       end
-      module Response : sig
-        type struct_t = [`Response_b9cca94fab9dd111]
+      module Result : sig
+        type struct_t = [`Result_c244cbcbd9683223]
         type t = struct_t reader_t
-        module Result : sig
-          type struct_t = [`Result_f2420edc87e976c6]
-          type t = struct_t reader_t
-          type unnamed_union_t =
-            | Success
-            | Failure
-            | Read of string
-            | Undefined of int
-          val get : t -> unnamed_union_t
-          val of_message : 'cap message_t -> t
-          val of_builder : struct_t builder_t -> t
-        end
-        val command_id_get : t -> int
-        val has_result : t -> bool
-        val result_get : t -> [`Result_f2420edc87e976c6] reader_t
-        val result_get_pipelined : struct_t MessageWrapper.StructRef.t -> [`Result_f2420edc87e976c6] MessageWrapper.StructRef.t
+        type unnamed_union_t =
+          | Success
+          | Failure
+          | Read of string
+          | Undefined of int
+        val get : t -> unnamed_union_t
         val of_message : 'cap message_t -> t
         val of_builder : struct_t builder_t -> t
       end
@@ -110,9 +100,6 @@ module type S = sig
         module Results : sig
           type struct_t = [`ClientRequest_e984715ac5697f94]
           type t = struct_t reader_t
-          val has_response : t -> bool
-          val response_get : t -> [`Response_b9cca94fab9dd111] reader_t
-          val response_get_pipelined : struct_t MessageWrapper.StructRef.t -> [`Response_b9cca94fab9dd111] MessageWrapper.StructRef.t
           val of_message : 'cap message_t -> t
           val of_builder : struct_t builder_t -> t
         end
@@ -148,6 +135,24 @@ module type S = sig
         end
         module Results : sig
           type struct_t = [`SendProposal_9ade74485d8b7a26]
+          type t = struct_t reader_t
+          val of_message : 'cap message_t -> t
+          val of_builder : struct_t builder_t -> t
+        end
+      end
+      module ClientResponse : sig
+        module Params : sig
+          type struct_t = [`ClientResponse_e8b642569b486ee6]
+          type t = struct_t reader_t
+          val command_id_get : t -> int
+          val has_result : t -> bool
+          val result_get : t -> [`Result_c244cbcbd9683223] reader_t
+          val result_get_pipelined : struct_t MessageWrapper.StructRef.t -> [`Result_c244cbcbd9683223] MessageWrapper.StructRef.t
+          val of_message : 'cap message_t -> t
+          val of_builder : struct_t builder_t -> t
+        end
+        module Results : sig
+          type struct_t = [`ClientResponse_89294cbeddcde953]
           type t = struct_t reader_t
           val of_message : 'cap message_t -> t
           val of_builder : struct_t builder_t -> t
@@ -253,34 +258,18 @@ module type S = sig
         val init_root : ?message_size:int -> unit -> t
         val init_pointer : pointer_t -> t
       end
-      module Response : sig
-        type struct_t = [`Response_b9cca94fab9dd111]
+      module Result : sig
+        type struct_t = [`Result_c244cbcbd9683223]
         type t = struct_t builder_t
-        module Result : sig
-          type struct_t = [`Result_f2420edc87e976c6]
-          type t = struct_t builder_t
-          type unnamed_union_t =
-            | Success
-            | Failure
-            | Read of string
-            | Undefined of int
-          val get : t -> unnamed_union_t
-          val success_set : t -> unit
-          val failure_set : t -> unit
-          val read_set : t -> string -> unit
-          val of_message : rw message_t -> t
-          val to_message : t -> rw message_t
-          val to_reader : t -> struct_t reader_t
-          val init_root : ?message_size:int -> unit -> t
-          val init_pointer : pointer_t -> t
-        end
-        val command_id_get : t -> int
-        val command_id_set_exn : t -> int -> unit
-        val has_result : t -> bool
-        val result_get : t -> [`Result_f2420edc87e976c6] builder_t
-        val result_set_reader : t -> [`Result_f2420edc87e976c6] reader_t -> [`Result_f2420edc87e976c6] builder_t
-        val result_set_builder : t -> [`Result_f2420edc87e976c6] builder_t -> [`Result_f2420edc87e976c6] builder_t
-        val result_init : t -> [`Result_f2420edc87e976c6] builder_t
+        type unnamed_union_t =
+          | Success
+          | Failure
+          | Read of string
+          | Undefined of int
+        val get : t -> unnamed_union_t
+        val success_set : t -> unit
+        val failure_set : t -> unit
+        val read_set : t -> string -> unit
         val of_message : rw message_t -> t
         val to_message : t -> rw message_t
         val to_reader : t -> struct_t reader_t
@@ -305,11 +294,6 @@ module type S = sig
         module Results : sig
           type struct_t = [`ClientRequest_e984715ac5697f94]
           type t = struct_t builder_t
-          val has_response : t -> bool
-          val response_get : t -> [`Response_b9cca94fab9dd111] builder_t
-          val response_set_reader : t -> [`Response_b9cca94fab9dd111] reader_t -> [`Response_b9cca94fab9dd111] builder_t
-          val response_set_builder : t -> [`Response_b9cca94fab9dd111] builder_t -> [`Response_b9cca94fab9dd111] builder_t
-          val response_init : t -> [`Response_b9cca94fab9dd111] builder_t
           val of_message : rw message_t -> t
           val to_message : t -> rw message_t
           val to_reader : t -> struct_t reader_t
@@ -371,6 +355,33 @@ module type S = sig
           val init_pointer : pointer_t -> t
         end
       end
+      module ClientResponse : sig
+        module Params : sig
+          type struct_t = [`ClientResponse_e8b642569b486ee6]
+          type t = struct_t builder_t
+          val command_id_get : t -> int
+          val command_id_set_exn : t -> int -> unit
+          val has_result : t -> bool
+          val result_get : t -> [`Result_c244cbcbd9683223] builder_t
+          val result_set_reader : t -> [`Result_c244cbcbd9683223] reader_t -> [`Result_c244cbcbd9683223] builder_t
+          val result_set_builder : t -> [`Result_c244cbcbd9683223] builder_t -> [`Result_c244cbcbd9683223] builder_t
+          val result_init : t -> [`Result_c244cbcbd9683223] builder_t
+          val of_message : rw message_t -> t
+          val to_message : t -> rw message_t
+          val to_reader : t -> struct_t reader_t
+          val init_root : ?message_size:int -> unit -> t
+          val init_pointer : pointer_t -> t
+        end
+        module Results : sig
+          type struct_t = [`ClientResponse_89294cbeddcde953]
+          type t = struct_t builder_t
+          val of_message : rw message_t -> t
+          val to_message : t -> rw message_t
+          val to_reader : t -> struct_t reader_t
+          val init_root : ?message_size:int -> unit -> t
+          val init_pointer : pointer_t -> t
+        end
+      end
     end
   end
 end
@@ -397,6 +408,11 @@ module MakeRPC(MessageWrapper : Capnp.RPC.S) : sig
         module Results = Reader.Message.SendProposal.Results
         val method_id : (t, Params.t, Results.t) Capnp.RPC.MethodID.t
       end
+      module ClientResponse : sig
+        module Params = Builder.Message.ClientResponse.Params
+        module Results = Reader.Message.ClientResponse.Results
+        val method_id : (t, Params.t, Results.t) Capnp.RPC.MethodID.t
+      end
     end
   end
 
@@ -416,11 +432,16 @@ module MakeRPC(MessageWrapper : Capnp.RPC.S) : sig
         module Params = Reader.Message.SendProposal.Params
         module Results = Builder.Message.SendProposal.Results
       end
+      module ClientResponse : sig
+        module Params = Reader.Message.ClientResponse.Params
+        module Results = Builder.Message.ClientResponse.Results
+      end
       class virtual service : object
         inherit MessageWrapper.Untyped.generic_service
         method virtual client_request_impl : (ClientRequest.Params.t, ClientRequest.Results.t) MessageWrapper.Service.method_t
         method virtual decision_impl : (Decision.Params.t, Decision.Results.t) MessageWrapper.Service.method_t
         method virtual send_proposal_impl : (SendProposal.Params.t, SendProposal.Results.t) MessageWrapper.Service.method_t
+        method virtual client_response_impl : (ClientResponse.Params.t, ClientResponse.Results.t) MessageWrapper.Service.method_t
       end
       val local : #service -> t MessageWrapper.Capability.t
     end
