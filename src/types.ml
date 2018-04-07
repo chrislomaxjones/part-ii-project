@@ -107,15 +107,9 @@ let apply (state : app_state) (op : operation) : (app_state * result) =
     else
       (state, Failure)
 
-(* Pretty-printable string of application state *)
-let string_of_state (state : app_state) : string =
-  "[" ^ (String.concat (List.map state ~f:(fun (k,v) ->
-      "(" ^ (string_of_int k) ^ ", " ^ v ^ ")"
-    ))) ^ "]"
-
 (* Function returns string representation of application state *)
 let string_of_state (state : app_state) : string =
-  let pairs = List.map state ~f:(fun (k,v) -> "(" ^ (string_of_int k) ^ ", " ^ v ^ ")")
+  let pairs = List.map state ~f:(fun (k,v) -> "(" ^ (string_of_int k) ^ ", " ^ v ^ ") ")
   in 
     "[" ^ (String.concat pairs) ^ "]"
 
@@ -161,8 +155,7 @@ let string_of_operation oper =
   | Remove k -> "Remove (" ^ (string_of_int k) ^ ")"
 
 (* Function serializes operation into JSON *)
-let serialize_operation op = 
-  match op with
+let serialize_operation = function
   | Nop -> `Assoc [("type", `String "nop")]
   | Read(k) -> `Assoc [("type", `String "read"); ("key", `Int k)]
   | Create(k,v) -> `Assoc [("type", `String "create"); ("key", `Int k); ("value", `String v)]
@@ -173,14 +166,30 @@ let serialize_operation op =
 
 exception OperationDeserializationError
 
-let deserialize_operation op_json = 
-  match op_json with
+let deserialize_operation = function
   | `Assoc [("type", `String "nop")] -> Nop
   | `Assoc [("type", `String "read"); ("key", `Int k)] -> Read(k)
   | `Assoc [("type", `String "create"); ("key", `Int k); ("value", `String v)] -> Create(k,v)
   | `Assoc [("type", `String "update"); ("key", `Int k); ("value", `String v)] -> Update(k,v)
   | `Assoc [("type", `String "remove"); ("key", `Int k)] -> Remove(k)
   | _ -> raise OperationDeserializationError
+
+let serialize_result = function
+  | Failure -> `Assoc [("type", `String "failure")]
+  | Success -> `Assoc [("type", `String "success")]
+  | ReadSuccess v -> `Assoc [("type", `String "read-success"); ("value", `String v)]
+
+exception ResultDeserializationError
+
+let deserialize_result = function
+  | `Assoc [("type", `String "failure")] -> Failure
+  | `Assoc [("type", `String "success")] -> Success
+  | `Assoc [("type", `String "read-success"); ("value", `String v)] -> ReadSuccess v
+  | _ -> raise ResultDeserializationError
+           
+
+
+
 
 (* Pretty-printable string for a given command *)
 let string_of_command (cmd : command) = 

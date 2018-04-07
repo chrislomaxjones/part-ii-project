@@ -109,16 +109,21 @@ let local ?(request_callback : (command -> unit) option)
       let module Params = Message.ClientResponse.Params in
     
       let open Api.Reader.Message in
-      
+
+      (* 
       let result_reader = Params.result_get params in
-      
+
       (* Pull out all the necessary data from the params *)
+      
       let result = (match Result.get result_reader with
       | Result.Failure -> Types.Failure
       | Result.Success -> Types.Success
       | Result.Read v  -> Types.ReadSuccess v
       | Result.Undefined _ -> raise Undefined_result) in
-      
+      *)
+
+      let result = (params |> Params.result_get |> Yojson.Basic.from_string |> deserialize_result) in
+
       let command_id = Params.command_id_get params in
 
       (* Call a callback to notify client *)
@@ -147,10 +152,13 @@ let local ?(request_callback : (command -> unit) option)
       let id = Command.client_id_get cmd_reader in
       let uri = Command.client_uri_get cmd_reader in 
       let command_id = Command.command_id_get cmd_reader in
-        
+      
+      let operation = cmd_reader |> Command.operation_get |> Yojson.Basic.from_string |> deserialize_operation in
+      
+      (*      
       (* Operation is more difficult as it is a nested struct *)
       let op_reader = Command.operation_get cmd_reader in
-      
+
       (* Operations are a union type in Capnp so match over the variant *)
       let operation = (match Command.Operation.get op_reader with
       | Command.Operation.Nop -> Types.Nop
@@ -169,6 +177,7 @@ let local ?(request_callback : (command -> unit) option)
         let k = Command.Operation.Remove.key_get r_struct in
         Types.Remove(k)
       | Command.Operation.Undefined(_) -> raise Undefined_oper) in
+      *)
       
       (* Form the proposal from the message parameters *)
       let proposal = (slot_number, ((Core.Uuid.of_string id,Uri.of_string uri), command_id, operation)) in
@@ -202,7 +211,10 @@ let local ?(request_callback : (command -> unit) option)
       let id = Command.client_id_get cmd_reader in
       let uri = Command.client_uri_get cmd_reader in
       let command_id = Command.command_id_get cmd_reader in
-        
+
+      let operation = cmd_reader |> Command.operation_get |> Yojson.Basic.from_string |> deserialize_operation in
+
+      (*
       (* Operation is more difficult as it is a nested struct *)
       let op_reader = Command.operation_get cmd_reader in
       
@@ -224,6 +236,7 @@ let local ?(request_callback : (command -> unit) option)
         let k = Command.Operation.Remove.key_get r_struct in
         Types.Remove(k)
       | Command.Operation.Undefined(_) -> raise Undefined_oper) in
+      *)
       
       (* Form the proposal from the message parameters *)
       let proposal = (slot_number, ((Core.Uuid.of_string id,Uri.of_string uri), command_id, operation)) in
@@ -250,7 +263,10 @@ let local ?(request_callback : (command -> unit) option)
         let id = Command.client_id_get cmd_reader in
         let uri = Command.client_uri_get cmd_reader in
         let command_id = Command.command_id_get cmd_reader in
-        
+  
+        let operation = cmd_reader |> Command.operation_get |> Yojson.Basic.from_string |> deserialize_operation in
+
+        (*
         (* Operation is more difficult as it is a nested struct *)
         let op_reader = Command.operation_get cmd_reader in
         (* Operations are a union type in Capnp so match over the variant *)
@@ -271,7 +287,8 @@ let local ?(request_callback : (command -> unit) option)
               let k = Command.Operation.Remove.key_get r_struct in
               Types.Remove(k)
           | Command.Operation.Undefined(_) -> raise Undefined_oper) in
-
+        *)
+      
         (* Get back response for request *)
         (* Note here there is a temporay Nop passed *)
         (* This pattern matching is not exhaustive but
@@ -304,7 +321,9 @@ let client_request_rpc t (cmd : Types.command) =
       Command.client_id_set cmd_rpc (Core.Uuid.to_string id);
       Command.client_uri_set cmd_rpc (Uri.to_string uri);
       Command.command_id_set_exn cmd_rpc command_id;
-      
+
+
+      (*
       (* Construct an operation struct here *)
       let oper_rpc = (Command.Operation.init_root ()) in
       
@@ -328,6 +347,9 @@ let client_request_rpc t (cmd : Types.command) =
         Command.Operation.Remove.key_set_exn remove k);
 
       (Command.operation_set_builder cmd_rpc oper_rpc |> ignore);
+      *)
+
+      operation |> serialize_operation |> Yojson.Basic.to_string |> Command.operation_set cmd_rpc;
 
       (* Constructs the command struct and associates with params *)
       (Params.command_set_reader params (Command.to_reader cmd_rpc) |> ignore);
@@ -356,7 +378,12 @@ let client_response_rpc t (cid : Types.command_id) (result : Types.result) =
     Result.read_set result_rpc v);
 
   (* Set the reader for the results union of the parameters *)
+  (*
   Params.result_set_reader params (Result.to_reader result_rpc) |> ignore;
+  *)
+  
+  (* Serialize the result into a string and set in parameters *)
+  result |> serialize_result |> Yojson.Basic.to_string |> Params.result_set params;
 
   (* Set the command id in the parameters to argument given *)
   Params.command_id_set_exn params cid;
@@ -381,6 +408,8 @@ let decision_rpc t (p : Types.proposal) =
       Command.client_id_set cmd_rpc (Core.Uuid.to_string id);
       Command.client_uri_set cmd_rpc (Uri.to_string uri);
       Command.command_id_set_exn cmd_rpc command_id;
+
+      (*
       (* Construct an operation struct here *)
       let oper_rpc = (Command.Operation.init_root ()) in
       
@@ -404,6 +433,8 @@ let decision_rpc t (p : Types.proposal) =
         Command.Operation.Remove.key_set_exn remove k);
 
       (Command.operation_set_builder cmd_rpc oper_rpc |> ignore);
+      *)
+      operation |> serialize_operation |> Yojson.Basic.to_string |> Command.operation_set cmd_rpc;  
 
       (* Constructs the command struct and associates with params *)
       (Params.command_set_reader params (Command.to_reader cmd_rpc) |> ignore);
@@ -430,8 +461,8 @@ let proposal_rpc t (p : Types.proposal) =
       Command.client_uri_set cmd_rpc (Uri.to_string uri);
       Command.command_id_set_exn cmd_rpc command_id;
       (* Construct an operation struct here *)
+      (*
       let oper_rpc = (Command.Operation.init_root ()) in
-      
       (* Populate the operation struct with the correct values *)
       (match operation with
       | Nop         -> 
@@ -452,6 +483,9 @@ let proposal_rpc t (p : Types.proposal) =
         Command.Operation.Remove.key_set_exn remove k);
 
       (Command.operation_set_builder cmd_rpc oper_rpc |> ignore);
+      *)
+      
+      operation |> serialize_operation |> Yojson.Basic.to_string |> Command.operation_set cmd_rpc;      
 
       (* Constructs the command struct and associates with params *)
       (Params.command_set_reader params (Command.to_reader cmd_rpc) |> ignore);
