@@ -26,10 +26,12 @@ let bottom () = Bottom
 (* Generate an initial ballot number for a given leader id *)
 let init id = Number(0,id)
 
+exception SuccessorException
+
 (* Generates the successor of a given ballot. This can result in an exception if the ballot is
    Bottom, as the bottom ballot has no successor *)
 let succ_exn = function
-  | Bottom -> failwith "Error: Bottom ballot has no successor"
+  | Bottom -> raise SuccessorException
   | Number(n,l) -> Number(n+1,l)
 
 (* To ensure the total ordering on ballot, two functions are provided to test

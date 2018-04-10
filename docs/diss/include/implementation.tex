@@ -1,10 +1,163 @@
 \chapter{Implementation}
 
+\section{High level structure of program}
+
+
+
+\begin{figure}
+\centering
+\scalebox{.7}{
+\setlength{\unitlength}{3947sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(5277,3927)(3289,-9301)
+\thinlines
+{\color[rgb]{0,0,0}\put(4051,-8836){\framebox(3750,3450){}}
+}%
+{\color[rgb]{0,0,0}\put(5101,-7486){\vector(-1, 0){0}}
+\put(5101,-7267){\oval(312,438)[br]}
+\put(5026,-7267){\oval(462,462)[tr]}
+\put(5026,-7267){\oval(462,462)[tl]}
+\put(4951,-7267){\oval(312,438)[bl]}
+}%
+{\color[rgb]{0,0,0}\put(3301,-9211){\line( 1, 0){5100}}
+}%
+{\color[rgb]{0,0,0}\put(4201,-7861){\framebox(3300,1950){}}
+}%
+{\color[rgb]{0,0,0}\put(4501,-7561){\framebox(1200,1200){}}
+}%
+{\color[rgb]{0,0,0}\put(6001,-7561){\framebox(1200,1200){}}
+}%
+{\color[rgb]{0,0,0}\put(4201,-8611){\framebox(3300,450){}}
+}%
+{\color[rgb]{0,0,0}\put(6601,-7561){\vector( 0,-1){600}}
+}%
+{\color[rgb]{0,0,0}\put(4951,-7561){\vector( 0,-1){600}}
+}%
+{\color[rgb]{0,0,0}\put(5251,-8161){\vector( 0, 1){600}}
+}%
+{\color[rgb]{0,0,0}\put(6001,-9211){\vector( 0, 1){600}}
+}%
+{\color[rgb]{0,0,0}\put(5401,-8611){\vector( 0,-1){600}}
+}%
+\put(4651,-8461){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Messaging subsystem}%
+}}}}
+\put(4501,-6211){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Role module}%
+}}}}
+\put(4651,-6916){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}server}%
+}}}}
+\put(4651,-6661){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Response}%
+}}}}
+\put(6151,-6661){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Role}%
+}}}}
+\put(6151,-6886){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}specific}%
+}}}}
+\put(6151,-7111){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}systems}%
+}}}}
+\put(8551,-9286){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Network}%
+}}}}
+{\color[rgb]{0,0,0}\put(6676,-7486){\vector(-1, 0){0}}
+\put(6676,-7336){\oval(186,300)[br]}
+\put(6601,-7336){\oval(336,336)[tr]}
+\put(6601,-7336){\oval(336,336)[tl]}
+\put(6526,-7336){\oval(186,300)[bl]}
+}%
+\put(4201,-5686){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Process}%
+}}}}
+\end{picture}%
+
+}
+       \caption{High level subsystems of a process}
+  \centering
+\end{figure}
+
+
+
+
+
+In this section the high level structure of the program is discussed. See figure {\color{red}blah blah} for an overview of the structure of a typical process. \\
+
+Each of the processes takes the \emph{role} of either a client, replica, leader or acceptor. These roles each have a different function in the system within their \emph{role module}, which contains all the functionality associated specifically with a given role. \\
+
+Each of the roles shares a number of common middlewares in the program, the main being the messaging subsystem. The purpose of this subsystem is to provide indirection between the way that messages are treated by the role modules and the method by which they are actually sent over the network. The desire is to have messages behave as an atomic primitive with semantics as described in {\color{red}Assumptions section}, obscuring all of the protocol-level functionality in sending the messages over an IP network. \\
+
+The role module is divided up into two separate \texttt{Lwt} threads. The response server handles the receipt of messages from other processes and performs any required processing accordingly (this is still role specific), which can result in sending further messages. Any concurrent processing required of the role is performed concurrently in the role specific systems. \\
+
+Each of the processes requires additional information at start-up, such as 
+
+\begin{enumerate}
+  \item The role it should take.
+  \item The address at which it should start a server to receive messages.
+  \item The set of addresses of all the participating processes of all roles.
+\end{enumerate}
+
+Items (1) and (2) are consumed via comand line arguments when the program is run. (3) requires the use of a configuration file, the relative path to which is provided as a command line argument. The configuration file is formatted in JSON and provides, for each role, a list of all of the addresses of each process. An example configuration file is included in {\color{red}Reference the appendix}. {\color{red}Figure blah blah shows a flow diagram describing how initialisation proceeds} \\
+
+{\color{red}(Addresses are provided as an IP address (V4 or V6) and a port number)} \\
+
+{\color{blue}Flow diagram of init}.
+
+
 \section{Data structures}
+
+Before proceeding the implementation of the systems described above, it is necessary to examine the data structures that will be used.
+
+\subsection{Identifiers}
+
+Unique identifiers are required to identify each process in the system. To avoid having a central authority distribute these identifiers at start-up a method where any process can generate their own unique identifer is used. Universally Unique Identifers\footnote{https://tools.ietf.org/html/rfc4122} (UUIDs) are used in this case as they are a well established standard and have support in the OCaml Core library. UUIDs are also totally ordered and so satisy the condition that we have such an ordering on the identifers of leaders. \\
+
+Hence replicas, leaders and acceptor identifiers have the type \texttt{Core.Uuid.t}. As we wish to expose clients to a request / response protocol it is necessary to store a map of client identifiers to addresses by each replica. Rather, by modifying client identifiers to be of the form \texttt{Core.Uuid.t * Uri.t}, the address actually forms part of the identifier.
+
+\subsection{Key value store}
+
+\begin{figure}
+  \begin{lstlisting}
+module type APPLICATION = sig
+  type state = (int, string) List.Assoc.t
+  type operation = Nop                  
+                 | Create of int * string  
+                   ...          
+  type result = Success 
+              | Failure
+                ...          
+  val initial_state : state
+  val apply : state -> operation -> state * result
+   ...
+end
+  \end{lstlisting}
+    \caption{Signature of the key value store module}
+  \centering
+\end{figure}
+
+
+\begin{table}
+  \centering
+  \begin{tabular}{l | l | l}
+    Command & Arguments & Semantics \\ \hline \hline
+    Nop & & No operation, No change to state \\ [.5\normalbaselineskip] \hline
+  
+    Create & \texttt{(K,V)} & Add new \texttt{(K,V)} pair to the state \\
+                 &        & If key already present, then return Failure \\ [.5\normalbaselineskip] \hline
+
+  \end{tabular}
+  \caption{Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates.}
+\label{table:operation-summary}
+\end{table}
+
+The key value store is the application that is to be replicated. Hence each replica process will maintain its own independent copy of the application state. The application itself needs not maintain any synchronisation logic, it need only behave as a state machine. The state is represented by an association list (commonly called a dictionary) that maps integer keys to string values. Operations each have their own semantics described in Table \ref{table:operation-summary}. The application follows a state machine pattern given that if each replica starts in the initial state and each applies the same sequence of operations in the same order, the resulting state is the same. \\
+
+When a command has been committed to a slot by the consensus algorithm, the command's operation is applied to the state. This returns a new state and a result, which represents the updated state held by the replica and the resulting information returned to the replica (the client does not receive a whole copy of the new state in its reply). {\color{red}The signature of this key value store is shown in figure blah blah}.
 
 \subsection{Ballots}
 
-\begin{figure}[h]
+The definition of ballot numbers from {\color{red} the Preparation chapter} lends itself to the types of ballot numbers being represented by an algebraic datatype. Ballots are hence the tagged union of Bottom (representing the least ballot $\bot$) or a pair consiting of an integer and a leader identifer (representing pairs $\left(n,\lambda\right)$). The type definition is included in {\color{red} Figure blah blah}. \\
+
+\begin{figure}
   \begin{lstlisting}
 type t = Bottom
        | Number of int * leader_id
@@ -13,97 +166,82 @@ type t = Bottom
   \centering
 \end{figure}
 
-\begin{figure}[h]
+Figure blah blah shows the interface exposed by the Ballot module. Note that the concrete type of ballot numbers isn't exposed, only the abstract type \texttt{t}. Therefore outside of this module the representation of ballot numbers is hidden. This prevents a large number of errors, such as decrementing a round number when they should strictly increase, from arising by rejecting them at compile-time. However, this requires a number of functions be supplied so that ballot numbers can be manipulated outside this module. \\
+
+Hence a given leader can generate an initial ballot number with their identifer. Subsequent ballot numbers can be generated by calling a successor function, which increments the round number each time. By exposing such an interface we prevent errors such as using negative round numbers from being able to compile. \\
+
+The module provides functions to test equality and the ordering of ballots. These work over the structure of ballots, comparing them first for correct types and then checking round number and leader id equality. Also in the Ballot module are functions for serialisation and deserialisation to and from JSON, required by the messaging system for sending ballots.
+
+\begin{figure}
   \begin{lstlisting}
 type t
 val bottom : unit -> t
 val init : leader_id -> t
 val succ_exn : t -> t
   \end{lstlisting}
-    \caption{Excerpt of the type definitions in the Ballot module. These are the types of functions that can be used to generate ballot numbers.}
+    \caption{The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt{succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt{bottom}.}
   \centering
 \end{figure}
 
-Talk about the correspondence between the definition and the types of ballots. Talk about how, with the interface
-we've given for ballots, the concrete type is obscured so the compiler will reject a whole host of errors to do with
-generating invalid ballots.
+\section{Messages}
 
+\begin{itemize}
+  \item Talk about the Cap'n Proto schema format. Include snippets of the schema file and how it relates to messages we are required to send (could easily fit the schema into a two page appendix as well).
+  \item Include mention of serialization of certain parts of the application as JSON. Design decisions of how to divide up serialization code between data structures, etc. Where to do draw the line between JSON serialization and Cap'n Proto schema etc.
+  \item Now talk about implementation of the Cap'n Proto server. How functions-as-values were used to allow callbacks to be performed by the server.
+  \item Recall / reference the message semantics required from the preparation chapter. Explain how we carefully handle exceptions to ensure we get the desired semantics of messaging from Cap'n Proto.
+ \end{itemize}
 
+\section{Clients and replicas - better title?}
 
+\subsection{Clients}
+\begin{itemize}
+  \item Talk about how clients operate outside the system
+  \item How they send messages to replicas.
+  \item Include .mli interface for replicas, the record (with mutable fields) for storing replicas.
+\end{itemize}
 
-%\section{High level structure of program}
-%
-%\section{Data structures}
-%
-%Include a description of the data structures used in the implementation. Talk about them first so we can discuss them in the messaging section and the protocol implementation sections.
-%
-%\subsection{Key value store}
-%...
-%
-%\subsection{Proposals}
-%...
-%\subsection{Ballots}
-%...
-%
-%\section{Messages}
-%
-%\begin{itemize}
-%  \item Talk about the Cap'n Proto schema format. Include snippets of the schema file and how it relates to messages we are required to send (could easily fit the schema into a two page appendix as well).
-%  \item Include mention of serialization of certain parts of the application as JSON.
-%  \item Now talk about implementation of the Cap'n Proto server. How functions-as-values were used to allow callbacks to be performed by the server.
-%  \item Recall / reference the message semantics required from the preparation chapter. Explain how we carefully handle exceptions to ensure we get the desired semantics of messaging from Cap'n Proto.
-% \end{itemize}
-%
-%\section{Clients and replicas - better title?}
-%
-%\subsection{Clients}
-%\begin{itemize}
-%  \item Talk about how clients operate outside the system
-%  \item How they send messages to replicas.
-%  \item Include .mli interface for replicas, the record (with mutable fields) for storing replicas.
-%\end{itemize}
-%
-%\subsection{Replicas}
-%\begin{itemize}
-%  \item Leading on from clients, explain how messages can be re-ordered / lost / delayed from clients and how broadcasts from replicas allow progress in the event of replica failure.
-%  \item Describe the two-fold operation of replicas. They receive and perform de-duplication of broadcast client messages. They then go on to propose to commit commands to given slots. They also handle when leaders reject their proposals so they can be re-proposed later. They also maintain the application state (in this case the replicated key-value store.)
-%  \item Interesting points to discuss include looking at a snippet of the de-duplication function and discussing it. Also looking at how mutexes are used to hold locks on the sets of commands, proposals, decisions etc.
-%  \item Include a diagram of the three different sets of commands, proposals and decisions and how each moves from one set to another in different sets of circumstances.
-%\end{itemize}
-%
-%\section{Synod protocol}
-%
-%\subsection{Quorums}
-%\begin{itemize}
-%  \item Describe how the quorum system was implemented. Show the .mli interface as a snippet and describe how this can be used to achieve majority quorums.
-%  \item Show briefly how the majority checking function was implemented.
-%\end{itemize}
-%
-%\subsection{Acceptors}
-%\begin{itemize}
-%  \item Discuss the operation of acceptors - how they form the fault tolerant memory of Paxos.
-%  \item Discuss the functions (along with snippets) by which acceptors adopt and accept ballots.
-%\end{itemize}
-%
-%\subsection{Leaders}
-%\begin{itemize}
-%  \item Describe how the operation of leaders is split into two sub-processes - scouts and commanders.
-%  \item Operational description of how scouts and commanders communicate concurrently. Diagram displaying how there is a message queue that these sub-processes use to send ``virtual'' messages.
-%  \item Snippets of the signatures and structs used to construct these sub-processes. 
-%\end{itemize}
-%
-%\subsubsection{Scouts}
-%\begin{itemize}
-%  \item Describe how scouts secure ballots with acceptors. Relate this to operation of acceptors above.
-%  \item State how scouts enqueue virtual adopted messages after securing adoption from quorum of acceptors.
-%  \item Describe how pre-emption can occur when a commander is waiting for adoption.
-%\end{itemize}
-%
-%\subsubsection{Commanders}
-%\begin{itemize}
-%  \item Explain how commanders attempt to commit their set of proposals.
-%  \item Give detail on the pmax and ``arrow'' function as used in the paper.
-%  \item Describe how pre-emption can occur when a commander is waiting for acceptance.
-%\end{itemize}
-%
-%\section{Summary}
+\subsection{Replicas}
+\begin{itemize}
+  \item Leading on from clients, explain how messages can be re-ordered / lost / delayed from clients and how broadcasts from replicas allow progress in the event of replica failure.
+  \item Describe the two-fold operation of replicas. They receive and perform de-duplication of broadcast client messages. They then go on to propose to commit commands to given slots. They also handle when leaders reject their proposals so they can be re-proposed later. They also maintain the application state (in this case the replicated key-value store.)
+  \item Interesting points to discuss include looking at a snippet of the de-duplication function and discussing it. Also looking at how mutexes are used to hold locks on the sets of commands, proposals, decisions etc.
+  \item Include a diagram of the three different sets of commands, proposals and decisions and how each moves from one set to another in different sets of circumstances.
+\end{itemize}
+
+\section{Synod protocol}
+
+\subsection{Quorums}
+\begin{itemize}
+  \item Describe how the quorum system was implemented. Show the .mli interface as a snippet and describe how this can be used to achieve majority quorums.
+  \item Show briefly how the majority checking function was implemented.
+\end{itemize}
+
+\subsection{Acceptors}
+\begin{itemize}
+  \item Discuss the operation of acceptors - how they form the fault tolerant memory of Paxos.
+  \item Discuss the functions (along with snippets) by which acceptors adopt and accept ballots.
+\end{itemize}
+
+\subsection{Leaders}
+\begin{itemize}
+  \item Describe how the operation of leaders is split into two sub-processes - scouts and commanders.
+  \item Operational description of how scouts and commanders communicate concurrently. Diagram displaying how there is a message queue that these sub-processes use to send ``virtual'' messages.
+  \item Snippets of the signatures and structs used to construct these sub-processes. 
+\end{itemize}
+
+\subsubsection{Scouts}
+\begin{itemize}
+  \item Describe how scouts secure ballots with acceptors. Relate this to operation of acceptors above.
+  \item State how scouts enqueue virtual adopted messages after securing adoption from quorum of acceptors.
+  \item Describe how pre-emption can occur when a commander is waiting for adoption.
+\end{itemize}
+
+\subsubsection{Commanders}
+\begin{itemize}
+  \item Explain how commanders attempt to commit their set of proposals.
+  \item Give detail on the pmax and ``arrow'' function as used in the paper.
+  \item Describe how pre-emption can occur when a commander is waiting for acceptance.
+\end{itemize}
+
+\section{Summary}

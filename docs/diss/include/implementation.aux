@@ -2,30 +2,47 @@
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Implementation}{11}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}Data structures}{11}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.1}Ballots}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Types of ballot numbers.}}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Excerpt of the type definitions in the Ballot module. These are the types of functions that can be used to generate ballot numbers.}}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}High level structure of program}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces High level subsystems of a process}}{12}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Data structures}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Identifiers}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Signature of the key value store module}}{13}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates.}}{13}}
+\newlabel{table:operation-summary}{{3.1}{13}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Key value store}{13}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Types of ballot numbers.}}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}Ballots}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt  {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt  {bottom}.}}{15}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Messages}{15}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Clients and replicas - better title?}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Clients}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Replicas}{16}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}Synod protocol}{16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Quorums}{16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Acceptors}{16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.3}Leaders}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{Scouts}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{Commanders}{17}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Summary}{17}}
 \@setckpt{include/implementation}{
-\setcounter{page}{12}
+\setcounter{page}{18}
 \setcounter{equation}{0}
-\setcounter{enumi}{0}
+\setcounter{enumi}{3}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
 \setcounter{enumiv}{0}
-\setcounter{footnote}{0}
+\setcounter{footnote}{1}
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
 \setcounter{chapter}{3}
-\setcounter{section}{1}
-\setcounter{subsection}{1}
+\setcounter{section}{6}
+\setcounter{subsection}{0}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{2}
-\setcounter{table}{0}
+\setcounter{figure}{4}
+\setcounter{table}{1}
 \setcounter{lstnumber}{5}
-\setcounter{float@type}{8}
 \setcounter{nlinenum}{0}
 \setcounter{parentequation}{0}
 \setcounter{lstlisting}{0}

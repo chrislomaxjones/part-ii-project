@@ -365,7 +365,7 @@ let client_response_rpc t (cid : Types.command_id) (result : Types.result) =
   let open Api.Builder.Message in
 
   (* Create an empty result type as recognised by Capnp *)
-  let result_rpc = Result.init_root () in
+  (* let result_rpc = Result.init_root () in
   
   (* As result is a Capnp union, match over the variant result argument
      and set the appropriate Capnp value of result_rpc *)
@@ -375,7 +375,7 @@ let client_response_rpc t (cid : Types.command_id) (result : Types.result) =
   | Success ->
     Result.success_set result_rpc
   | ReadSuccess v ->
-    Result.read_set result_rpc v);
+    Result.read_set result_rpc v); *)
 
   (* Set the reader for the results union of the parameters *)
   (*
