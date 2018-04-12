@@ -91,17 +91,30 @@ module Scout = struct
   let run_scout (scout : t') (leader : t) (b : Ballot.t) send =
     (* Iterate through list of uris, sending a phase1 request to each in parallel 
        and call a function to operate over the response *)
+    (*
     Lwt_list.iter_p (fun uri -> Message.send_phase1_message b uri >>= fun response ->
       receive_phase1b scout b response send) leader.acceptor_uris
+    *)
+    (*
+    Lwt_list.iter_p (fun uri -> Message.send_phase1_message b uri >>= function
+      | Error _ -> Lwt.return_unit
+      | Ok response -> receive_phase1b scout b response send ) leader.acceptor_uris
+    *)
+    Message.broadcast_phase1_message b leader.acceptor_uris >|= 
+    Lwt_list.iter_p (function 
+                     | Error _ -> Lwt.return_unit
+                     | Ok response -> receive_phase1b scout b response send)
 
   (* Spawn a new scout sub-process *)
   let spawn (leader : t) (ballot_num : Ballot.t) send =
     Lwt.ignore_result (write_with_timestamp INFO ("Spawning new scout for ballot " ^ (Ballot.to_string ballot_num)));
     (* Run this process in the background and don't wait for any sort of result *)
-    Lwt.async (fun () -> 
-        run_scout { pvalues = []; receive_lock = Lwt_mutex.create ();
-                    quorum = Quorum.from_list leader.acceptor_uris }
-                  leader ballot_num send)
+    Lwt.async (fun () ->
+        let scout = { 
+          pvalues = []; 
+          receive_lock = Lwt_mutex.create ();
+          quorum = Quorum.from_list leader.acceptor_uris } in
+        run_scout scout leader ballot_num send)
 end
 
 
@@ -139,8 +152,18 @@ module Commander = struct
   let run_commander (commander : t') (leader : t) (pval : Pval.t) send =
     (* Iterate through list of uris, sending a phase1 request to each in parallel 
        and call a function to operate over the response *)
+    (*
     Lwt_list.iter_p (fun uri -> Message.send_phase2_message pval uri >>= fun response ->
       receive_phase2b commander pval response leader.replica_uris send) leader.acceptor_uris    
+    *)
+    (*
+    Lwt_list.iter_p (fun uri -> Message.send_phase2_message pval uri >>= function
+      | Error _ -> Lwt.return_unit
+      | Ok response -> receive_phase2b commander pval response leader.replica_uris send) leader.acceptor_uris *)
+    Message.broadcast_phase2_message pval leader.acceptor_uris >|= 
+    Lwt_list.iter_p (function 
+                     | Error _ -> Lwt.return_unit
+                     | Ok response -> receive_phase2b commander pval response leader.replica_uris send)
 
   (* Spawn a new commander sub-process *)
   let spawn (leader : t) (pval : Pval.t) send =

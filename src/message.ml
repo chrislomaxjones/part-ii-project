@@ -307,7 +307,8 @@ let local ?(request_callback : (command -> unit) option)
         Service.return_empty ()
   end;;
 
-(*---------------------------------------------------------------------------*)
+(*----------------------------------------------------------------------------------------------*)
+
 
 let client_request_rpc t (cmd : Types.command) =
   let open Api.Client.Message.ClientRequest in
@@ -498,100 +499,6 @@ let proposal_rpc t (p : Types.proposal) =
       | Ok () -> ()
       | Error e -> Hashtbl.clear sturdy_refs
 
-
-
-(*---------------------------------------------------------------------------*)
-
-(* Types of message that can be passed between nodes:
-      - This represents the application-level representation of a message.
-      - These can be passed to the RPC api to be prepared for transport etc. *)
-type message = ClientRequestMessage of command
-             | ProposalMessage of proposal
-             | DecisionMessage of proposal
-             | ClientResponseMessage of command_id * result
-          (* | ... further messages will be added *) 
-
-(* Start a new server advertised at address (host,port)
-   This server does not serve with TLS and the service ID for the
-   server is derived from its address *)
-let start_new_server ?request_callback ?proposal_callback ?response_callback ?phase1_callback ?phase2_callback host port =
-    let listen_address = `TCP (host, port) in
-    let config = Capnp_rpc_unix.Vat_config.create ~serve_tls:false ~secret_key:`Ephemeral listen_address in
-    (* let service_id = Capnp_rpc_unix.Vat_config.derived_id config "main" in *)
-    let service_id = Capnp_rpc_lwt.Restorer.Id.derived ~secret:"" (host ^ (string_of_int port)) in
-    let restore = Capnp_rpc_lwt.Restorer.single service_id (local ?request_callback ?proposal_callback ?response_callback ?phase1_callback ?phase2_callback () ) in
-    Capnp_rpc_unix.serve config ~restore >|= fun vat ->
-    Capnp_rpc_unix.Vat.sturdy_uri vat service_id;;
-
-(* Resolve the URI for a given service from the host,port address pair *)
-let uri_from_address host port =
-  let service_id = Capnp_rpc_lwt.Restorer.Id.derived ~secret:"" (host ^ (string_of_int port)) in
-  let service_id_str = Capnp_rpc_lwt.Restorer.Id.to_string service_id in
-  let location = Capnp_rpc_unix.Network.Location.tcp host port in
-  let digest = Capnp_rpc_lwt.Auth.Digest.insecure in
-  Capnp_rpc_unix.Network.Address.to_uri ((location,digest),service_id_str)
-
-(* Takes a Capnp URI for a service and returns the lwt capability of that
-   service *)
-let rec service_from_uri uri =
-  (try Lwt.return (Some (Hashtbl.find sturdy_refs uri))
-   with Not_found ->
-    (try (  
-    let client_vat = Capnp_rpc_unix.client_only_vat () in
-    let sr = Capnp_rpc_unix.Vat.import_exn client_vat uri in
-    Sturdy_ref.connect sr >>= function
-    | Ok capability ->
-      (Hashtbl.add sturdy_refs uri capability;
-       Lwt.return_some capability)
-    | Error e -> Lwt.return_none)
-    with _ -> failwith "hello"))
-
-(* Derive the service from an address by indirectly computing the URI.
-
-   This is mostly for legacy reasons - all of the local node code sends
-   messages based on URIs.
-
-   TODO: Modify the code so that we don't need this extra indirection *)
-let service_from_addr host port = 
-  uri_from_address host port |> service_from_uri
-
-(* Accepts as input a message and prepares it for RPC transport,
-   given the URI of the service to which it will be sent*)
-let send_request message uri =
-  (* Get the service for the given URI *)
-  service_from_uri uri >>= function
-  | None -> Lwt.return_unit
-  | Some service -> (
-  match message with
-  | ClientRequestMessage cmd ->
-    client_request_rpc service cmd;
-  | DecisionMessage p ->
-    decision_rpc service p;
-  | ProposalMessage p ->
-    proposal_rpc service p;
-  | ClientResponseMessage (cid, result) ->
-    client_response_rpc service cid result)
-
-(*---------------------------------------------------------------------------*)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 let phase1_rpc t (b : Ballot.t) =
   let open Api.Client.Message.Phase1 in
   let request, params = Capability.Request.create Params.init_pointer in
@@ -601,12 +508,6 @@ let phase1_rpc t (b : Ballot.t) =
   Results.result_get >|=
   Yojson.Basic.from_string >|=
   deserialize_phase1_response
-
-(* TODO: Pattern matching here exhaustive *)
-let send_phase1_message (b : Ballot.t) uri = 
-  service_from_uri uri >>= function 
-  | Some service -> 
-  phase1_rpc service b;;
 
 let phase2_rpc t (pval : Pval.t) =
   let open Api.Client.Message.Phase2 in
@@ -618,8 +519,108 @@ let phase2_rpc t (pval : Pval.t) =
   Yojson.Basic.from_string >|=
   deserialize_phase2_response
 
-(* TODO: Pattern matching here is not exhaustive *)
+
+(*----------------------------------------------------------------------------------------------*)
+
+
+(* Start a new server advertised at address (host,port)
+   This server does not serve with TLS and the service ID for the
+   server is derived from its address *)
+let start_new_server ?request_callback ?proposal_callback 
+                     ?response_callback ?phase1_callback 
+                     ?phase2_callback host port =
+  let listen_address = `TCP (host, port) in
+  let curried_local = local ?request_callback ?proposal_callback ?response_callback
+                            ?phase1_callback ?phase2_callback () in
+  let config = Capnp_rpc_unix.Vat_config.create ~serve_tls:false ~secret_key:`Ephemeral listen_address in
+  let service_id = Capnp_rpc_lwt.Restorer.Id.derived ~secret:"" (host ^ (string_of_int port)) in
+  let restore = Capnp_rpc_lwt.Restorer.single service_id curried_local in
+    Capnp_rpc_unix.serve config ~restore >|= fun vat ->
+    Capnp_rpc_unix.Vat.sturdy_uri vat service_id
+
+(* Resolve the URI for a given service from the host,port address pair *)
+let uri_from_address host port =
+  let service_id = Capnp_rpc_lwt.Restorer.Id.derived ~secret:"" (host ^ (string_of_int port)) in
+  let service_id_str = Capnp_rpc_lwt.Restorer.Id.to_string service_id in
+  let location = Capnp_rpc_unix.Network.Location.tcp host port in
+  let digest = Capnp_rpc_lwt.Auth.Digest.insecure in
+  Capnp_rpc_unix.Network.Address.to_uri ((location,digest),service_id_str)
+
+(* Takes a Capnp URI for a service and returns the lwt capability of that
+   service *)
+let service_from_uri uri =
+  try Lwt.return_some (Hashtbl.find sturdy_refs uri)
+  with Not_found ->
+    let client_vat = Capnp_rpc_unix.client_only_vat () in
+    let sr = Capnp_rpc_unix.Vat.import_exn client_vat uri in
+      Sturdy_ref.connect sr >>= function
+        | Ok capability ->
+            Hashtbl.add sturdy_refs uri capability;
+            Lwt.return_some capability
+        | Error _ -> 
+            Lwt.return_none
+
+(* Types of message that can be passed between nodes:
+      - This represents the application-level representation of a message.
+      - These can be passed to the RPC api to be prepared for transport etc. *)
+type non_blocking_message = ClientRequestMessage of command
+                          | ProposalMessage of proposal
+                          | DecisionMessage of proposal
+                          | ClientResponseMessage of command_id * result
+
+(* Accepts as input a message and prepares it for RPC transport,
+   given the URI of the service to which it will be sent*)
+let send_request message uri =
+  (* Get the service for the given URI *)
+  service_from_uri uri >>= function
+  | None -> Lwt.return_unit
+  | Some service ->
+    match message with
+    | ClientRequestMessage cmd ->
+      client_request_rpc service cmd;
+    | DecisionMessage p ->
+      decision_rpc service p;
+    | ProposalMessage p ->
+      proposal_rpc service p;
+    | ClientResponseMessage (cid, result) ->
+      client_response_rpc service cid result
+
+(* TODO: Change error message types *)
+let send_phase1_message (b : Ballot.t) uri = 
+  service_from_uri uri >>= function 
+  | None ->
+    Lwt.return_error "Error sending phase 1 message"  
+  | Some service -> 
+    phase1_rpc service b >>= fun response ->
+    Lwt.return_ok response
+
+(* TODO: Change error message types *)
 let send_phase2_message (pval : Pval.t) uri =
   service_from_uri uri >>= function
+  | None ->
+    Lwt.return_error "Error sending phase 2 message"
   | Some service ->
-    phase2_rpc service pval
+    phase2_rpc service pval >>= fun response ->
+    Lwt.return_ok response
+
+let broadcast_message message = Lwt_list.iter_p (send_request message)
+let broadcast_phase1_message b = Lwt_list.map_p (send_phase1_message b)
+let broadcast_phase2_message pval = Lwt_list.map_p (send_phase2_message pval)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
