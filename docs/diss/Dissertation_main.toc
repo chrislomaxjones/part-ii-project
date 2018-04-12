@@ -13,23 +13,32 @@
 \contentsline {subsubsection}{Ballots and pvalues}{8}
 \contentsline {subsubsection}{Quorums}{9}
 \contentsline {subsubsection}{The Synod Protocol}{9}
-\contentsline {chapter}{\numberline {3}Implementation}{11}
-\contentsline {section}{\numberline {3.1}High level structure of program}{11}
-\contentsline {section}{\numberline {3.2}Data structures}{12}
-\contentsline {subsection}{\numberline {3.2.1}Identifiers}{12}
-\contentsline {subsection}{\numberline {3.2.2}Key value store}{13}
-\contentsline {subsection}{\numberline {3.2.3}Ballots}{14}
-\contentsline {section}{\numberline {3.3}Messages}{15}
-\contentsline {section}{\numberline {3.4}Clients and replicas - better title?}{15}
-\contentsline {subsection}{\numberline {3.4.1}Clients}{15}
-\contentsline {subsection}{\numberline {3.4.2}Replicas}{16}
-\contentsline {section}{\numberline {3.5}Synod protocol}{16}
-\contentsline {subsection}{\numberline {3.5.1}Quorums}{16}
-\contentsline {subsection}{\numberline {3.5.2}Acceptors}{16}
-\contentsline {subsection}{\numberline {3.5.3}Leaders}{17}
-\contentsline {subsubsection}{Scouts}{17}
-\contentsline {subsubsection}{Commanders}{17}
-\contentsline {section}{\numberline {3.6}Summary}{17}
-\contentsline {chapter}{Bibliography}{19}
-\contentsline {chapter}{\numberline {A}Cap'n Proto schema file}{20}
-\contentsline {chapter}{\numberline {B}Projct Proposal}{22}
+\contentsline {section}{\numberline {2.2}Requirements}{10}
+\contentsline {subsection}{\numberline {2.2.1}System requirements}{10}
+\contentsline {subsection}{\numberline {2.2.2}Testing and evaluation requirements}{12}
+\contentsline {subsection}{\numberline {2.2.3}Extension elements}{12}
+\contentsline {section}{\numberline {2.3}Software engineering}{12}
+\contentsline {subsection}{\numberline {2.3.1}Methodology}{12}
+\contentsline {subsection}{\numberline {2.3.2}Libraries}{12}
+\contentsline {subsection}{\numberline {2.3.3}Compiler}{13}
+\contentsline {subsection}{\numberline {2.3.4}Tools}{13}
+\contentsline {chapter}{\numberline {3}Implementation}{14}
+\contentsline {section}{\numberline {3.1}High level structure of program}{14}
+\contentsline {section}{\numberline {3.2}Data structures}{15}
+\contentsline {subsection}{\numberline {3.2.1}Identifiers}{15}
+\contentsline {subsection}{\numberline {3.2.2}Key value store}{16}
+\contentsline {subsection}{\numberline {3.2.3}Ballots}{17}
+\contentsline {section}{\numberline {3.3}Messages}{18}
+\contentsline {section}{\numberline {3.4}Clients and replicas - better title?}{21}
+\contentsline {subsection}{\numberline {3.4.1}Clients}{21}
+\contentsline {subsection}{\numberline {3.4.2}Replicas}{21}
+\contentsline {section}{\numberline {3.5}Synod protocol}{23}
+\contentsline {subsection}{\numberline {3.5.1}Quorums}{23}
+\contentsline {subsection}{\numberline {3.5.2}Acceptors}{23}
+\contentsline {subsection}{\numberline {3.5.3}Leaders}{23}
+\contentsline {subsubsection}{Scouts}{24}
+\contentsline {subsubsection}{Commanders}{24}
+\contentsline {section}{\numberline {3.6}Summary}{24}
+\contentsline {chapter}{Bibliography}{25}
+\contentsline {chapter}{\numberline {A}Cap'n Proto schema file}{27}
+\contentsline {chapter}{\numberline {B}Projct Proposal}{29}

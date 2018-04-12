@@ -204,7 +204,7 @@ In the absence of receiving any \texttt{propose($s$,$c$)} messages from replicas
 
 \textbf{Phase 1a} Leaders attempt to secure an initial ballot by broadcasting \texttt{phase1a($\left( n, \lambda \right)$)} message.\\
 
-\textbf{Phase 1b} Acceptors receiving a \texttt{phase1a($\left( n, \lambda \right)$)} compare $\left( n, \lambda \right)$ to the highest ballot number they have adopted thus far. This is initially $\bot$ so acceptors will adopt the first ballot number they receive automatically. If $b \leq \left( n, \lambda \right)$, then the acceptor will adopt this new ballot number. In either case, the acceptor will reply with a \texttt{phase1b($b'$, pvals) message.
+\textbf{Phase 1b} Acceptors receiving a \texttt{phase1a($\left( n, \lambda \right)$)} compare $\left( n, \lambda \right)$ to the highest ballot number they have adopted thus far. This is initially $\bot$ so acceptors will adopt the first ballot number they receive automatically. If $b \leq \left( n, \lambda \right)$, then the acceptor will adopt this new ballot number. In either case, the acceptor will reply with a \texttt{phase1b($b'$, pvals)} message. \\
 
 \textbf{Phase 2a} ... \\
 

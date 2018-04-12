@@ -185,23 +185,165 @@ val succ_exn : t -> t
 
 \section{Messages}
 
-\begin{itemize}
-  \item Talk about the Cap'n Proto schema format. Include snippets of the schema file and how it relates to messages we are required to send (could easily fit the schema into a two page appendix as well).
-  \item Include mention of serialization of certain parts of the application as JSON. Design decisions of how to divide up serialization code between data structures, etc. Where to do draw the line between JSON serialization and Cap'n Proto schema etc.
-  \item Now talk about implementation of the Cap'n Proto server. How functions-as-values were used to allow callbacks to be performed by the server.
-  \item Recall / reference the message semantics required from the preparation chapter. Explain how we carefully handle exceptions to ensure we get the desired semantics of messaging from Cap'n Proto.
- \end{itemize}
+Start with a high level overview and goals of the messaging system. \\
+
+Now talk about the different messages we can send. In this case show the datatypes. Draw distinctions between the blocking and non-blocking nature of the phase1/2 and other messages. Perhaps at this point show the interface we wish to expose to the above subsystem. This would include send\_non\_blocking, send\_blocking messages. This essentially should provide the semantics we desire. \\
+
+\begin{figure}
+  \begin{lstlisting}
+type non_blocking_message = ClientRequestMessage of command
+                          | ProposalMessage of proposal
+                          | DecisionMessage of proposal
+                          | ClientResponseMessage of command_id * result
+                          
+val send_request : non_blocking_message -> Uri.t -> unit Lwt.t
+
+val send_phase1_message : Ballot.t -> Uri.t -> 
+  (Core.Uuid.t * Ballot.t * Pval.t list, string) Result.result Lwt.t
+    
+val send_phase2_message : Pval.t -> Uri.t -> 
+  (Core.Uuid.t * Ballot.t, string) Result.result Lwt.t
+  \end{lstlisting}
+  \centering
+  \caption{Types of non-blocking messages}
+\end{figure}
+
+Talk about the interface exposed on behalf of the server
+
+\begin{figure}
+  \begin{lstlisting}
+val start_new_server : ?request_callback:(Types.command -> unit) ->
+    ?proposal_callback:(Types.proposal -> unit) ->
+    ?response_callback:(Types.command_id * Types.result -> unit) ->
+    ?phase1_callback:(Ballot.t -> Types.unique_id * Ballot.t * Pval.t list) ->
+    ?phase2_callback:(Pval.t -> Types.unique_id * Ballot.t) ->
+    string -> int -> Uri.t Lwt.t  
+  \end{lstlisting}
+  \centering
+  \caption{Types of non-blocking messages}
+\end{figure}
+
+Now discuss Cap'n Proto. A quick overview of how it works. Discuss the schema file and how it corresponds to the messages we want to send. Talk about how compiling this produces ML interfaces and signatures we can use. Probably skim over the boilerplate code, just describe at a high-level how serialization works. \\
+
+On the topic of serialization, talk about how things are serialized by their own respective methods. This can probably be quite a quick overview. \\
+
+\begin{figure}
+  \begin{lstlisting}
+let send_request message uri =
+  (* Get the service for the given URI *)
+  service_from_uri uri >>= function
+  | None -> Lwt.return_unit
+  | Some service ->
+    match message with
+    | ClientRequestMessage cmd ->
+      client_request_rpc service cmd;
+    | DecisionMessage p ->
+      decision_rpc service p;
+    | ProposalMessage p ->
+      proposal_rpc service p;
+    | ClientResponseMessage (cid, result) ->
+      client_response_rpc service cid result
+  \end{lstlisting}
+  \centering
+  \caption{Types of non-blocking messages}
+\end{figure}
+
+Talk about addressing and the conversion we need. Then talk about a hash table that is used to cache the mapping from addresses to services. \\
+
+\begin{figure}
+  \begin{lstlisting}
+let send_phase1_message (b : Ballot.t) uri = 
+  service_from_uri uri >>= function 
+  | None ->
+    Lwt.return_error "Error sending phase 1 message"  
+  | Some service -> 
+    phase1_rpc service b >>= fun response ->
+    Lwt.return_ok response
+  \end{lstlisting}
+  \centering
+  \caption{Types of non-blocking messages}
+\end{figure}
+
+\begin{figure}
+  \begin{lstlisting}
+let service_from_uri uri =
+  try Lwt.return_some (Hashtbl.find sturdy_refs uri)
+  with Not_found ->
+    let client_vat = Capnp_rpc_unix.client_only_vat () in
+    let sr = Capnp_rpc_unix.Vat.import_exn client_vat uri in
+      Sturdy_ref.connect sr >>= function
+        | Ok capability ->
+            Hashtbl.add sturdy_refs uri capability;
+            Lwt.return_some capability
+        | Error _ -> 
+            Lwt.return_none
+  \end{lstlisting}
+  \centering
+  \caption{Types of non-blocking messages}
+\end{figure}
+
+Next go on to talk about how we use Error types in the rpc responses to catch killed nodes and simply. Talk about how we need to refresh the cache in this case. Talk a bit more about the types used in phase1/phase2 messages as these may return Errors to the above subsystem. \\
+
+{\color{red}Put a snippet here...?}
 
 \section{Clients and replicas - better title?}
 
+{\color{green}
 \subsection{Clients}
 \begin{itemize}
   \item Talk about how clients operate outside the system
   \item How they send messages to replicas.
   \item Include .mli interface for replicas, the record (with mutable fields) for storing replicas.
 \end{itemize}
+}
 
 \subsection{Replicas}
+
+Having discussed the functionality of clients it is necessary now to talk about the implementation of replicas. More introduction. \\
+
+Replicas are required to implicitly take the role of learners in order to learn the decisions made on how to serialize the sequence of client requests. Rather than have the replicas explicity request the result of the synod protocol from the leaders or acceptors, acceptors forward the requests made by clients onto them and receive a response, implicitly learning the result.
+
+Replicas maintain three queues: 
+\begin{itemize}
+  \item A queue of commands received in request messages from clients.
+  \item A queue of proposals. These are commands that have been tagged with a provisional slot number. This queue forms the replica's own attempt at serializing the commands. However, these are not committed in this order until the configuration of leaders and acceptors has decided each command for that slot.
+  \item A queue of decisions. This represents the serialization of commands that has been decided on by the synod protocol. The sequence of decided commands should be the same for each replicas.
+\end{itemize}
+
+The formulation of these data structures introduces the requirement for some program invariants, such as ... \\
+
+\begin{figure}
+  \begin{lstlisting}
+let new_replica host port leader_uris =  
+  let replica = initialize leader_uris in
+    start_server replica host port >>=
+    fun uri -> print_uri uri >>=
+    fun () -> propose_lwt replica
+  \end{lstlisting}
+  \centering
+  \caption{Snippet of startup of replica}
+\end{figure}
+
+\begin{figure}
+\begin{lstlisting}
+type t = {
+  id : replica_id;
+  mutable app_state : app_state;
+  mutable slot_in : slot_number;
+  mutable slot_out : slot_number;
+  mutable requests : command list;
+  mutable proposals : proposal list;
+  mutable decisions : proposal list;
+  mutable leaders : Uri.t list;
+}
+\end{lstlisting}
+\centering
+\caption{Types of records representing replica state. Note use of mutable keywords allowing for the records to be implicity modified withouth having to store and deal with record types.}
+\end{figure}
+
+
+
+
 \begin{itemize}
   \item Leading on from clients, explain how messages can be re-ordered / lost / delayed from clients and how broadcasts from replicas allow progress in the event of replica failure.
   \item Describe the two-fold operation of replicas. They receive and perform de-duplication of broadcast client messages. They then go on to propose to commit commands to given slots. They also handle when leaders reject their proposals so they can be re-proposed later. They also maintain the application state (in this case the replicated key-value store.)
