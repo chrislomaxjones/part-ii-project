@@ -1,0 +1,10 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Summary of the roles in single-decree Paxos. In this description the system can tolerate the failure of up to $f$ of each given role.}}{5}
+\contentsline {table}{\numberline {2.2}{\ignorespaces Summary of the roles in Multi Paxos. In this description the system can tolerate the failure of up to $f$ of each given role. Note that clients do not explicitly participate in the protocol and so there is no requirement on any number being live at any given time.}}{7}
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates.}}{16}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }

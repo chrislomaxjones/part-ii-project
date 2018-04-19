@@ -185,9 +185,9 @@ val succ_exn : t -> t
 
 \section{Messages}
 
-Start with a high level overview and goals of the messaging system. \\
+\subsection{Interface exposed}
 
-Now talk about the different messages we can send. In this case show the datatypes. Draw distinctions between the blocking and non-blocking nature of the phase1/2 and other messages. Perhaps at this point show the interface we wish to expose to the above subsystem. This would include send\_non\_blocking, send\_blocking messages. This essentially should provide the semantics we desire. \\
+The messaging subsystem is concerned with the sending and receipt of messages between processes. It transforms messages from simple OCaml types into a form suitable for transport over an IP network, handling the packetisation, rentramssions and other semantics. It also handles the initialisation of servers and the addressing in the system. \\
 
 \begin{figure}
   \begin{lstlisting}
@@ -196,7 +196,7 @@ type non_blocking_message = ClientRequestMessage of command
                           | DecisionMessage of proposal
                           | ClientResponseMessage of command_id * result
                           
-val send_request : non_blocking_message -> Uri.t -> unit Lwt.t
+val send_non_blocking : non_blocking_message -> Uri.t -> unit Lwt.t
 
 val send_phase1_message : Ballot.t -> Uri.t -> 
   (Core.Uuid.t * Ballot.t * Pval.t list, string) Result.result Lwt.t
@@ -206,26 +206,53 @@ val send_phase2_message : Pval.t -> Uri.t ->
   \end{lstlisting}
   \centering
   \caption{Types of non-blocking messages}
+  \label{message-types}
 \end{figure}
 
-Talk about the interface exposed on behalf of the server
+There are a number of different messages that are necessary to send in Multi-Paxos and have been touched on in the Preparation chapter. In this chapter we focus on the capability of sending these messages rather than their role in the algorithm itself, which is discussed in depth over the rest of this chapter. \\
+
+Messages are broadly divided into two cateogries: \emph{blocking} and \emph{non-blocking}. Blocking messages are those which expect a direct response to a given message, whereas when sending a non-blocking message the process does not expect an immediate reply. The interface for sending messages is presented in Figure \ref{message-types}. The types of non-blocking messages represent the arguments that are associated with such a message and do not include any information about source and destination addressing, as this is handled transparently by the messaging system. \\
+
+The function \texttt{send\_non\_blocking} takes a non-blocking message represented by the type described above and a URI that addresses the destination process. As these messages do not explicity require a reply they return a \texttt{unit Lwt.t}, {\color{red} explain lwt unit}. As we can regard a message that is never delivered to a recipient (perhaps due to a broken link in the network or a crashed process) as indefinitely delayed in the network, we return this type regardless of any errors encountered by the underlying subsystem. It is important to note here that any errors that arise from messages failing to deliver are handled by the Multi-Paxos algorithm itself, not the messaging system. \\
+
+Blocking messages on the other hand return a type immediately. Hence they are separated into their own specific functions, \texttt{send\_phase1\_message} and \texttt{send\_phase2\_message}, each with a return type that represents the arguments in the response. Note that here the arguments represent the phase1a / phase2a messages and the responses represents the phase2a and phase2b messages. We do this because acceptors only respond in response to a message from a leader, so it reduces the functionality required to represent these replies as return types. The error handling here returns a type wrapped in a \texttt{Result.result} type which allows for an error to be possibly returned. ... \\
+
+%Now talk about the different messages we can send. In this case show the datatypes. Draw distinctions between the blocking and non-blocking nature of the phase1/2 and other messages. Perhaps at this point show the interface we wish to expose to the above subsystem. This would include send\_non\_blocking, send\_blocking messages. This essentially should provide the semantics we desire. \\
+
+\subsection{Cap'n Proto}
+
+Cap'n Proto is used as the underlying system for sending messages. Cap'n Proto support is provided in OCaml in two separate libraries; \texttt{capnp-ocaml} is used to compile OCaml bindings for Cap'n Proto schema files and \texttt{capnp-rpc} provides OCaml bindings to Cap'n Proto RPC mechanisms. \\
+
+Cap'n Protos requires that one writes a schema file that describes a service; this contains data structures and messages that need to be serialized for transport. This schema file, listed in full in Appendix \ref{appendix:schema}, contains an interface that describes the service that we wish to make available to the messaging system. It contains a definitions for a structure that represents commands as their representation is fixed for the Multi Paxos protocol. {\color{red}Explain why we serialize some stuff with JSON}. The schema crucially contains a method for every message that can be sent and its associated arguments and return type, with each mapping naturally to the associated message type described in Figure \ref{message-types}. \\
+
+A compiler tool is then used to generate OCaml code that contains signatures and structures for the interface described in the schema. This is automated in the build process by including a \emph{rule} in the JBuild file that runs the Cap'n Proto code generator on the schema when compiling the project. {\color{red}Describe how serialisation and deserialisation are performed}. \\
+
+So far we have only use the serialization functionality provided by Cap'n Proto, providing a means of marshalling our messages into a suitable data exchange format. This serialization will be used by the RPC protocol implemented by Cap'n Proto. This is achieved by \emph{functorising} the generated API with a suitable RPC library (in this case \texttt{canp\_rpc\_lwt}). {\color{red}Explain what then needs to be implemented and how to implement it.} \\
+
+{\color{red}Talk about Vats and Capabilities. Talk about how Cap'n Proto works under the hood.}\\
+
+Diversion into Cap'n Proto URIs. Talk about how we cache them so to the above system there is no caching involved. Talk about addressing and the conversion we need. Then talk about a hash table that is used to cache the mapping from addresses to services. \\
 
 \begin{figure}
   \begin{lstlisting}
-val start_new_server : ?request_callback:(Types.command -> unit) ->
-    ?proposal_callback:(Types.proposal -> unit) ->
-    ?response_callback:(Types.command_id * Types.result -> unit) ->
-    ?phase1_callback:(Ballot.t -> Types.unique_id * Ballot.t * Pval.t list) ->
-    ?phase2_callback:(Pval.t -> Types.unique_id * Ballot.t) ->
-    string -> int -> Uri.t Lwt.t  
+let service_from_uri uri =
+  try Lwt.return_some (Hashtbl.find sturdy_refs uri)
+  with Not_found ->
+    let client_vat = Capnp_rpc_unix.client_only_vat () in
+    let sr = Capnp_rpc_unix.Vat.import_exn client_vat uri in
+      Sturdy_ref.connect sr >>= function
+        | Ok capability ->
+            Hashtbl.add sturdy_refs uri capability;
+            Lwt.return_some capability
+        | Error _ -> 
+            Lwt.return_none
   \end{lstlisting}
   \centering
-  \caption{Types of non-blocking messages}
+  \caption{Function that returns a Cap'n Proto capability for the message service of a given URI}
+  \label{fig:service-from-uri}
 \end{figure}
 
-Now discuss Cap'n Proto. A quick overview of how it works. Discuss the schema file and how it corresponds to the messages we want to send. Talk about how compiling this produces ML interfaces and signatures we can use. Probably skim over the boilerplate code, just describe at a high-level how serialization works. \\
-
-On the topic of serialization, talk about how things are serialized by their own respective methods. This can probably be quite a quick overview. \\
+Within Cap'n Proto sturdy refs are identified by Cap'n Proto URIs\footnote{https://tools.ietf.org/html/rfc3986}. Each process maintains a server that is addressed by .... The function that computes this is listed in Figure \ref{fig:service-from-uri} \\
 
 \begin{figure}
   \begin{lstlisting}
@@ -248,8 +275,6 @@ let send_request message uri =
   \caption{Types of non-blocking messages}
 \end{figure}
 
-Talk about addressing and the conversion we need. Then talk about a hash table that is used to cache the mapping from addresses to services. \\
-
 \begin{figure}
   \begin{lstlisting}
 let send_phase1_message (b : Ballot.t) uri = 
@@ -264,27 +289,29 @@ let send_phase1_message (b : Ballot.t) uri =
   \caption{Types of non-blocking messages}
 \end{figure}
 
+
+
+Next go on to talk about how we use Error types in the rpc responses to catch killed nodes and simply. Talk about how we need to refresh the cache in this case. Talk a bit more about the types used in phase1/phase2 messages as these may return Errors to the above subsystem. \\
+
+{\color{red}Put a snippet here...?}
+
+\subsection{Server}
+
+Talk about the interface exposed on behalf of the server.
+
 \begin{figure}
   \begin{lstlisting}
-let service_from_uri uri =
-  try Lwt.return_some (Hashtbl.find sturdy_refs uri)
-  with Not_found ->
-    let client_vat = Capnp_rpc_unix.client_only_vat () in
-    let sr = Capnp_rpc_unix.Vat.import_exn client_vat uri in
-      Sturdy_ref.connect sr >>= function
-        | Ok capability ->
-            Hashtbl.add sturdy_refs uri capability;
-            Lwt.return_some capability
-        | Error _ -> 
-            Lwt.return_none
+val start_new_server : ?request_callback:(Types.command -> unit) ->
+    ?proposal_callback:(Types.proposal -> unit) ->
+    ?response_callback:(Types.command_id * Types.result -> unit) ->
+    ?phase1_callback:(Ballot.t -> Types.unique_id * Ballot.t * Pval.t list) ->
+    ?phase2_callback:(Pval.t -> Types.unique_id * Ballot.t) ->
+    string -> int -> Uri.t Lwt.t  
   \end{lstlisting}
   \centering
   \caption{Types of non-blocking messages}
 \end{figure}
 
-Next go on to talk about how we use Error types in the rpc responses to catch killed nodes and simply. Talk about how we need to refresh the cache in this case. Talk a bit more about the types used in phase1/phase2 messages as these may return Errors to the above subsystem. \\
-
-{\color{red}Put a snippet here...?}
 
 \section{Clients and replicas - better title?}
 
@@ -298,31 +325,6 @@ Next go on to talk about how we use Error types in the rpc responses to catch ki
 }
 
 \subsection{Replicas}
-
-Having discussed the functionality of clients it is necessary now to talk about the implementation of replicas. More introduction. \\
-
-Replicas are required to implicitly take the role of learners in order to learn the decisions made on how to serialize the sequence of client requests. Rather than have the replicas explicity request the result of the synod protocol from the leaders or acceptors, acceptors forward the requests made by clients onto them and receive a response, implicitly learning the result.
-
-Replicas maintain three queues: 
-\begin{itemize}
-  \item A queue of commands received in request messages from clients.
-  \item A queue of proposals. These are commands that have been tagged with a provisional slot number. This queue forms the replica's own attempt at serializing the commands. However, these are not committed in this order until the configuration of leaders and acceptors has decided each command for that slot.
-  \item A queue of decisions. This represents the serialization of commands that has been decided on by the synod protocol. The sequence of decided commands should be the same for each replicas.
-\end{itemize}
-
-The formulation of these data structures introduces the requirement for some program invariants, such as ... \\
-
-\begin{figure}
-  \begin{lstlisting}
-let new_replica host port leader_uris =  
-  let replica = initialize leader_uris in
-    start_server replica host port >>=
-    fun uri -> print_uri uri >>=
-    fun () -> propose_lwt replica
-  \end{lstlisting}
-  \centering
-  \caption{Snippet of startup of replica}
-\end{figure}
 
 \begin{figure}
 \begin{lstlisting}
@@ -338,52 +340,261 @@ type t = {
 }
 \end{lstlisting}
 \centering
-\caption{Types of records representing replica state. Note use of mutable keywords allowing for the records to be implicity modified withouth having to store and deal with record types.}
+\caption{Types of records representing replica state}
+\label{fig:replica-types}
 \end{figure}
 
+Having discussed the functionality of clients it is necessary now to talk about the implementation of replicas. The state of a replica is stored as a record with mutable fields as presented in Figure \ref{fig:replica-types}. More introduction. \\
 
+Replicas are required to implicitly take the role of learners in order to learn the decisions made on how to serialize the sequence of client requests. Rather than have the replicas explicity request the result of the synod protocol from the leaders or acceptors, acceptors forward the requests made by clients onto them and receive a response, implicitly learning the result. \\
 
-
+Replicas maintain three queues: 
 \begin{itemize}
-  \item Leading on from clients, explain how messages can be re-ordered / lost / delayed from clients and how broadcasts from replicas allow progress in the event of replica failure.
-  \item Describe the two-fold operation of replicas. They receive and perform de-duplication of broadcast client messages. They then go on to propose to commit commands to given slots. They also handle when leaders reject their proposals so they can be re-proposed later. They also maintain the application state (in this case the replicated key-value store.)
-  \item Interesting points to discuss include looking at a snippet of the de-duplication function and discussing it. Also looking at how mutexes are used to hold locks on the sets of commands, proposals, decisions etc.
-  \item Include a diagram of the three different sets of commands, proposals and decisions and how each moves from one set to another in different sets of circumstances.
+  \item \texttt{requests:} A queue of commands received in request messages from clients.
+  \item \texttt{proposals:} A queue of proposals. These are commands that have been tagged with a provisional slot number. This queue forms the replica's own attempt at serializing the commands. However, these are not committed in this order until the configuration of leaders and acceptors has decided each command for that slot.
+  \item \texttt{decisions:} A queue of decisions. This represents the serialization of commands that has been decided on by the configuration of leaders and acceptors; it represents the consensus reached on the sequence of committed commands. It is in this order that the commands are applied to the replicated application state.
 \end{itemize}
+
+These queues are stored by the replica as types \texttt{command list} and \texttt{proposal list}. This is because list types in OCaml have a large library of helper functions in the Core library. Further, the type \texttt{proposal list} can be considered isomorphic to \texttt{(slot\_number * command) List.Assoc.t}, that is an association list (commonly known as a dictionary) of commands keyed by their slot number. This allows for proposals to be looked up by their key and inverted and looked up by their command, functionality necessary for managing the flow of proposals through the queues. \\
+
+In order to track the next slots in which to propose and commit, each replica maintains two counters:
+\begin{itemize}
+  \item \texttt{slot\_in}: Represents the lowest next available slot for which no proposal has yet been submitted; that is $\nexists  \ \left( s, c \right) \in \textrm{proposals}. \ s = \textrm{slot\_in}$.
+  \item \texttt{slot\_out}: Represents the lowest next available slot for which no decision has been committed; that is $\nexists \ \left( s, c \right) \in \textrm{decisions}. \ s = \textrm{slot\_out}$.
+\end{itemize}
+
+Commands and proposals move through this system of queues as shown in Figure \ref{fig:replica-queues}. \texttt{request($c$)} messages sent by clients arrive at the replica and are entered into the requests queue. Concurrently the replica will attempt to dequeue commands {\color{red} in a Producer consumer relationship}, proposing each to \texttt{slot\_in}, the lowest free slot, and incrementing \texttt{slot\_in}. Each of these commands is tagged with this slot number and entered into the proposals queue. Once in this queue, it can then be proposed to the configuration participating in the synod protocol by broadcasting a \texttt{propose($s$,$c$)} to the set of leaders. \\
+
+Leaders will at some point in the future return a \texttt{decision($s$,$c'$)} message for each slot $s$ for which a command was proposed by a replica. If $c = c'$ for a proposal $\left(s,c\right) \in \textrm{proposals}$ then it is removed from proposals and added to decisions. However if $c \neq c'$ then a different command has been decided for the slot than the one proposed by this replica. (i.e. the replicas disagreed on their serializations and the other has won out). In this case $\left(s,c'\right)$ is committed to decisions and $c$ is returned to requests so that it can be re-proposed for a different slot number. \\
+
+Every time that a proposal is committed in the decisions queue, the proposal $\left( \textrm{\texttt{slot\_out}}, \left( \kappa, \textrm{cid}, \textrm{op} \right) \right)$ has its command executed, followed by \texttt{slot\_out} being incremented. Even though the decisions will be committed in the same sequence by each replica, the order in which they are committed may differ. By sweeping through the decisions queue and executing each we ensure the application state is updated in the same order by each replica. The application state is updated by applying op to the replica's application state, resulting in an updated state and a result res. A \texttt{response(cid,res)} message is sent to the client with identifer $\kappa$\footnote{Recall client identifiers have a URI component so responses can be sent without replicas maintaining a mapping of identifiers to URIs.}. \\
+
+\begin{figure}
+  \scalebox{0.7}{
+    \input{include/replica-queues.latex}}
+  \caption{Flow of requests and proposals through a replica's queues}
+  \label{fig:replica-queues}
+\end{figure}
+  
+Reconfigurations represent a change in the set of leaders and acceptors participating in the synod protocol. Replicas are therefore expected to be able to reconfigure, that is to change the set of leaders with which they share their proposals. Reconfigurations are commands sent like any other, except that when executed by the replica (having been decided a slot in the same fashion any other command would), rather than being applied to the application state they update the set of leaders to the new configuration. {\color{red}Explain therefore the need for a window}. \\
+
+We therefore maintain a \texttt{WINDOW} value that represents the number of slots to which a value can be proposed before a given reconfiguration command takes effect. Equivalently this involves maintaining the invariant $ \textrm{\texttt{slot\_in}} < \textrm{\texttt{slot\_out}} + \textrm{\texttt{WINDOW}} $. Hence the queue of proposals has a maximum capacity of \texttt{WINDOW} and implies that a maximum \texttt{WINDOW} proposals are in flight (that is, being serialized by the synod protocol) at once. This therefore means that given a reconfiguration doesn't take effect for \texttt{WINDOW} slots that after any reconfiguration is triggered all pending proposals will have been decided by the time the configuration has taken place. \\
+
+{\color{blue}Include an example execution diagram of this sliding window}.
+
+%\begin{itemize}
+%  \item Leading on from clients, explain how messages can be re-ordered / lost / delayed from clients and how broadcasts from replicas allow progress in the event of replica failure.
+%  \item Describe the two-fold operation of replicas. They receive and perform de-duplication of broadcast client messages. They then go on to propose to commit commands to given slots. They also handle when leaders reject their proposals so they can be re-proposed later. They also maintain the application state (in this case the replicated key-value store.)
+%  \item Interesting points to discuss include looking at a snippet of the de-duplication function and discussing it. Also looking at how mutexes are used to hold locks on the sets of commands, proposals, decisions etc.
+%  \item Include a diagram of the three different sets of commands, proposals and decisions and how each moves from one set to another in different sets of circumstances.
+%\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \section{Synod protocol}
 
+Replicas each propose their own serialization of client commands; varying processing speeds and delays in the network along with crash failures of replicas can cause these serializations to differ. In this case, it is the function of the Synod protocol to produce a single serialization of those proposals that is returned to all the replicas. This serialization must be decided upon in a distributed manner by the configuration, that is the set of leaders and acceptors. Before we examine the role that leaders play in the next step of the algorithm it is necessary to observe the functionality of replicas.
+
 \subsection{Quorums}
+
+...We need to think about what I'm going to explain and show here... \\
+
 \begin{itemize}
   \item Describe how the quorum system was implemented. Show the .mli interface as a snippet and describe how this can be used to achieve majority quorums.
   \item Show briefly how the majority checking function was implemented.
 \end{itemize}
 
 \subsection{Acceptors}
+
+\begin{figure}
+  \begin{lstlisting}
+type t = {
+  id : unique_id;
+  mutable ballot_num : Ballot.t;
+  mutable accepted : Pval.t list
+}
+\end{lstlisting}
+  \centering
+  \caption{Types of records storing replica state}
+  \label{fig:acceptor-type}
+\end{figure}
+
+Acceptors form what is known as the disitributed fault tolerant memory of the consensus protocol. As with the other processes, the internal state is stored in a record with type given in Figure \ref{fig:acceptor-type}. Acceptors maintain the following mutable state
+
 \begin{itemize}
-  \item Discuss the operation of acceptors - how they form the fault tolerant memory of Paxos.
-  \item Discuss the functions (along with snippets) by which acceptors adopt and accept ballots.
+  \item \texttt{ballot\_num}: The ballot number that has been most recently \emph{adopted} by the acceptor. Initially, \texttt{ballot\_num} is equal to $\bot$ so that an acceptor adopts the first ballot it receives (following from $\bot$ being the least ballot).
+  \item \texttt{accepted}: The list of pvalues which the acceptor has \emph{accepted}, initially empty.
 \end{itemize}
+
+{\color{red}Explain what acceptance and adoption is, or reference that we mentioned it in section 2.} \\
+
+Acceptors represent passive processes in the algorithm. They change their state and send messages only in direct response to messages from leaders; other than when initialising, all processing occurs upon receiving a phase 1a or phase 2a message from a leader. Given this, all an acceptor is required to do is maintain its state and provide two callbacks, listed in Figure \ref{fig:acceptor-phase1} and \ref{fig:acceptor-phase2}, when starting a server; one to receive phase 1a messages and one to receive phase2a messages. Recall from {\color{red}the messaging section} that these are blocking messages and so the phase 1b and 2b replies are just the return type of these callbacks. \\
+
+\begin{figure}
+  \begin{lstlisting}
+let phase1_callback (a : t) (b : Ballot.t) =
+  Mutex.critical_section callback_mutex ~f:(fun () ->
+    if a.ballot_num < b then
+      a.ballot_num <- b);
+    (a.id, a.ballot_num, a.accepted))
+\end{lstlisting}
+  \centering
+  \caption{Function called when an acceptor receives a phase1a message with associated ballot.}
+  \label{fig:acceptor-phase1}
+\end{figure}
+
+\begin{figure}
+  \begin{lstlisting}
+let phase2_callback (a : t) (pval : Pval.t) =
+  Mutex.critical_section callback_mutex ~f:(fun () ->
+    let (b,_,_) = pval in
+    if b = a.ballot_num then
+       (if not (List.mem a.accepted pval ~equal:(Pval.equal)) then
+         a.accepted <- pval :: a.accepted);
+    (a.id, a.ballot_num))
+  \end{lstlisting}
+  \centering
+  \caption{Function called when an acceptor receives a phase2a message with associated pvalue.}
+  \label{fig:acceptor-phase2}
+\end{figure}
+
+Both the phase 1 and phase 2 callback functions can be executed concurrently as each callback is executed when the underlying server receives a message. Hence it is necessary to enclose both the callbacks within critical sections to ensure data mutated in one callback isn't used in another. The function \texttt{Mutex.critical\_section} takes a function that contains the contents of the callbacks and the mutex to lock when entering the critical section. Hence when one function holds the lock any other callbacks will block upon attempting to hold the lock and receive the lock when the function holding the lock exits the criticial section. \\
+
+Leaders broadcast \texttt{phase1\_callback($b$)} to the set of acceptors when they seek an adoption of ballot number $b$ form a majority quorum of acceptors. In this case, when an acceptor receives a \texttt{phase1\_callback($b$)} message, it will adopt the ballot if it is greater than the last ballot it adopted (and hence inductively it is greater than any previous ballots it has ever adopted). The acceptor will then return a triple consisting of its identifier, the ballot it has adopted (this will either be the ballot it has just received or the ballot it previously adopted) and the list of accepted pvalues. The identifier of the acceptor is returned so leaders can track which acceptors have replied. Rather than just not reply when it does not adopt $b$, it responds with the already adopted ballot so that leaders can be \emph{preempted} and abandon this adoption attempt and try a higher ballot number. The list of accepted pvalues is returned so that if the acceptor has accepted any pvalues from other leaders in the past the leader attempting to secure adoption of $b$ will learn about them from this reply. \\
+
+Leaders send \texttt{phase2\_callback(pval)} messages, where $\textrm{\texttt{pval}} = \left( b, s, c \right)$, when they believe $b$ has been adopted by a majority quorum of acceptors; this is the leaders request to commit the proposal $(s,c)$. When an acceptor receives such a message they may have adopted a higher ballot number or the message may even have been delayed. Hence if the acceptor's $\textrm{\texttt{ballot\_num}} = b$ then the acceptor does accept the pvalue $(b,s,c)$ and adds it to the list of accepted pvalues; otherwise it doesn't. In either case, it returns its identifier and \texttt{ballot\_num}, so that in case the leader will know whether $(b,s,c)$ was accepted or a higher ballot had been adopted by the acceptor. \\
+
+In this situation each acceptor may have a different list of accepted pvalues. When we note that leaders only decide that a proposal $(s,c)$ is committed after receiving a majority quorum of phase 2 messages then each such proposal must have a corresponding ballot number $(b,s,c)$ accepted a majority of acceptors. This is what gives us the fault tolerant memory, we can tolerate the crashes of a minority of acceptors ($f$ out of $2f+1$ total participating) and still have a consistent memory of the sequence of proposals.
 
 \subsection{Leaders}
-\begin{itemize}
-  \item Describe how the operation of leaders is split into two sub-processes - scouts and commanders.
-  \item Operational description of how scouts and commanders communicate concurrently. Diagram displaying how there is a message queue that these sub-processes use to send ``virtual'' messages.
-  \item Snippets of the signatures and structs used to construct these sub-processes. 
-\end{itemize}
+
+Introduction to leaders... Leaders receive over time from each replica their serialization of the set of proposals, which of course may differ. The leaders are required to, between them, return a serialization of the proposals such that each replica receives the same serialization. \\
+
+Leaders spawn and manage \emph{scouts} and \emph{commanders} in order to separate the concerns of attempting to secure adoption of ballots and attempting to secure acceptance of pvalues. Each scout and commander is a sub-process with an associated state and execution context that is spawned by a given leader. Rather than using the existing messaing subsystem which would produce excessive overhead for managing exchange of data between these threads we instead have them communicate locally in a producer consumer relationship. \\
+
+\begin{figure}
+  \begin{lstlisting}
+type process_response = Adopted of Ballot.t * Pval.t list
+                      | Preempted of Ballot.t    
+  \end{lstlisting}
+  \caption{Types of responses produced by scouts and commanders}
+  \label{fig:sub-process-responses}
+\end{figure}
+
+In essence each sub-process has a lifetime in which it is spawned, messages acceptors, receives responses, performs some processing and then terminates. The terminating sub-process may have to pass back to the leader the result of its computation. In the case of scouts, this is either a notification of a preemption having occurred or its ballot having been adopted ({\color{red}along with associated pvalues}). Commanders may notify the leader on termination of a preemption having occured. The types of these responses are listed in Figure \ref{fig:sub-process-responses}. \\
+
+We treat the sub-processes and the leader that spawned them as engaging in a producer consumer relationship. Terminating sub-processes produce these responses and enqueue them onto \texttt{message\_queue}, a queue of responses, via the \texttt{send : process\_response -> unit Lwt.t} function. The leader periodically will consume these responses from the queue, in turn possibly spawning more sub-processes that repeat the cycle. The queue is protected by a guard mutex\footnote{Note here that we use a Lwt mutex rather than a Core mutex in order to match the types {\color{red}say more}} \texttt{queue\_guard} that protects from races from occuring when the leader and one or more sub-processes attempt to mutate the state of the queue at once. {\color{red}The code for all of this is described in Figure \ref{fig:sub-process-messaging-queue}}. \\
+
+\begin{figure}
+  \begin{lstlisting}
+let queue_guard = Lwt_mutex.create ()
+let message_queue : process_response Queue.t = Queue.of_list []
+
+let send msg = 
+  Lwt_mutex.lock queue_guard >|= (fun () ->
+  Queue.enqueue message_queue msg) >|= fun () ->
+  Lwt_mutex.unlock queue_guard
+  \end{lstlisting}
+  \caption{Types of responses produced by scouts and commanders}
+  \label{fig:sub-process-messaging-queue}
+\end{figure}
+
+
+
+
+
+%\begin{itemize}
+%  \item Describe how the operation of leaders is split into two sub-processes - scouts and commanders.
+%  \item Operational description of how scouts and commanders communicate concurrently. Diagram displaying how there is a message queue that these sub-processes use to send %``virtual'' messages.
+%  \item Snippets of the signatures and structs used to construct these sub-processes. 
+%\end{itemize}
 
 \subsubsection{Scouts}
-\begin{itemize}
-  \item Describe how scouts secure ballots with acceptors. Relate this to operation of acceptors above.
-  \item State how scouts enqueue virtual adopted messages after securing adoption from quorum of acceptors.
-  \item Describe how pre-emption can occur when a commander is waiting for adoption.
-\end{itemize}
+
+As described above, the purpose of a scout sub-process is to take a given ballot number and attempt to secure adoption of that ballot number with a majority quorum of acceptors. The ballot is spawned by a commander, passed this ballot number and terminates by enqueuing a \texttt{Adopted($b$,pvals)} or \texttt{Preempted($b'$)} response for the leader to consume. \\
+
+Scouts are described by a signature listed in \ref{fig:scout-sig}. Each scout's state is represented by a mutable record of type \texttt{t'}. Calling \texttt{spawn} and passing as arguments a leader and a ballot number will start a initialize a new scout and start its asynchronous execution. Since its execution is asynchronous the function returns \texttt{()} immediately. Note that the ballot number $b$ over which it seeks adoptions is immutable; even though a leader works over ever increasing ballot numbers, $b$ is fixed for the duration of the a given scout's lifetime.  \\
+
+\begin{figure}
+  \begin{lstlisting}
+module type SCOUT = sig
+  type t' = {
+    b : Ballot.t;
+    acceptor_uris : Uri.t list;
+    receive_lock : Lwt_mutex.t;  
+    mutable pvalues : Pval.t list;
+    mutable quorum : (Uri.t, unique_id) Quorum.t
+  }
+
+  val spawn : t -> Ballot.t -> unit
+end
+  \end{lstlisting}
+  \centering
+  \caption{Signature of scouts}
+  \label{fig:scout-sig}
+\end{figure}
+
+Upon being spawned, a scout broadcasts (in parallel) to the set of acceptors a \texttt{phase1a($b$)} message. Each of these is bound monadically with a function that returns unit if an error occured in message delivery (in keeping with our messaging semantics) or the phase 1a return value $(\alpha, b', \textrm{\texttt{pvalues}}')$. Upon receiving each message, the scout checks if it has already obtained a majority quorum of responses (not including the response just received), in which case it discards the response. \\
+
+If $b = b'$ then the scout adds \texttt{pvalues'} to the \texttt{pvalues} it already has stored and adds $\alpha$ to the quorum of responses it has received. If the scout has now obtained a majority quorum then the scout terminates, adding a \texttt{Adopted($b$,pvals)} message to the queue for a leader to consume. If not, the scout continues to wait for further responses from the acceptors. \\
+
+If $b \neq b'$ then an acceptor has adopted a higher ballot number from another leader and so the scout terminates with a \texttt{Preempted($b'$)} message so that the leader is notified that this ballot has been abandoned. \\
 
 \subsubsection{Commanders}
+
+Commanders are spawned and passed a pvalue $\left(b, s, c \right)$. A commander spawned with this pvalue operates under the assumption phase 1 has concluded for the ballot $b$ and so the commander will attempt to secure acceptance of this pvalue. \\
+
+It begins by broadcasting a \texttt{phase2a($b$,$s$,$c$)} message to the set of acceptors and waits for a response from each. It behaves in a similar pattern to a scout: If the commander already has a majority quorum of responses it discards this response. If not, then the commander examines the $\left(\alpha, b' \right)$ return type. \\
+
+If $b = b'$ then the commander adds $\alpha$ to the quorum. If, having added $\alpha$ the commander has secured a majority quorum then the proposal $(s,c)$ has successfully been committed. Hence the commander broadcasts to all replicas a \texttt{decision($s$,$c$)}; otherwise the commander continues to wait for further responses. \\
+
+If $b \neq b'$ then, just as we had with scouts, the commander will terminate with a  \texttt{Preempted($b'$)} so the leader can abandon the ballot.
+
+\subsubsection{Leaders}
+
+Having described the operation of scouts and commanders, it is now necessary to discuss when leaders spawn sub-processes and how they process their responses. Leaders maintain the following important state:
+
 \begin{itemize}
-  \item Explain how commanders attempt to commit their set of proposals.
-  \item Give detail on the pmax and ``arrow'' function as used in the paper.
-  \item Describe how pre-emption can occur when a commander is waiting for acceptance.
+  \item \texttt{ballot\_num}: initially $\left(0,\lambda)$ for leader with identifier $\lambda$. This is the ...
+  \item \texttt{active}: a boolean value that represents the mode in which the leader operates at a given time.
+  \item \texttt{proposals}: the list of proposals the leader has received from replicas.
 \end{itemize}
 
+The flag \texttt{active} describes whether the leader is currently in \emph{active} or \emph{passive} mode.
+
+Conceptually we can treat leaders as having receiving three different kinds of messages: proposals from replicas, adoption messages from scouts and preemption messages from scouts or commanders (although of course the implementation of how these are processed differs).
+
 \section{Summary}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

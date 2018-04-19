@@ -1,45 +1,110 @@
 \chapter{Evaluation}
 
-\section{Experimental Setup}
+A brief introduction to the evaluation here. We discuss the two-fold evaluation strategy: tests of the system as a whole to check that it works against our assumptions and the evaluation of its performance both in the steady state and in the face of failures.
+
+\section{Experimental setup}
+
+Talk about how for our evaluation we require the simulation of a network that admits the failures described in the preparation chapter. Hence Mininet.
+
 \subsection{Mininet}
-\begin{itemize}
-  \item Describe the simulation framework used with Mininet - how the simulation scripts are structured.
-  \item Describe the system by which a simulation is performed - include a diagram of how simulation scripts and executable binaries are transferred to the simulation, simulations are performed and resulting log files are returned to the host-machine for analysis and plotting.
-  \item Describe the system by which tracing is performed.
-\end{itemize}
 
-\subsection{Libpaxos}
-\begin{itemize}
-  \item Short description of Libpaxos library.
-  \item Explain how application was written / any modifications necessary to run the same sample application.
-\end{itemize}
+Introduction to Mininet. What it is. Why we're using it. Explain it runs on VirtualBox. \\
 
-\section{Steady state behaviour}
-\begin{itemize}
-   \item Characterise the steady state behaviour of the system - capturing the latency and throughput in a given configuration. Plot against each other to show characteristics.
-   \item Comparison in the steady state behaviour between the project implementation and Libpaxos.
-\end{itemize}
+How Mininet works. Allows us to write Python scripts to simulate. Process-based virtualisation. How we need to install OCaml runtime etc on it. Explain how this was a problem and so we run OCaml as bytecode. \\
 
-\section{Configuration sizes}
-\begin{itemize}
-   \item Treatment of experiments that describe how latency and throughput vary as a function of the number of different nodes in the configuration varies.
-      \item Include description of the exact experiment performed and how confidence intervals were calculated.
-   \item Include graphs for: latency against different cluster sizes and throughput against different cluster sizes. Include Libpaxos version of this as well.
-\end{itemize}
+{\color{blue}Perhaps a diagram here showing the workflow of how we use Mininet.}
 
-\section{Failure traces}
-\begin{itemize}
-  \item Experiment pertaining to crashing a replica and observing system behaviour over time.
-  \item Describe how data was averaged - including the sample mean and EWMA.
-  \item Graph of latency and throughput as a function of time with a specific point a replica is crashed noted.
-  \item Similar graph with a replica restoration.
-  \item Graphs / on the same plot with behaviour of Libpaxos.
-\end{itemize}
+\subsection{Experimental measurements}
 
-\section{Quorum sizes}
-\begin{itemize}
-  \item ...
-  \item ...
-\end{itemize}
+Talk about the need in our evaluation to measure two quantities - latency and throughput. \\
+
+Define latency and throughput in the context of our simulation. \\
+
+Explain how these were implemented and integrated into the program via command line arguments etc. \\
+
+{\color{blue}Might be a point-scorer to includle a simple graph of latency and throughput just to show what sort of measurements we get in any case. \\}
+
+\section{Simulation tests}
+
+Define here what we mean by simulation tests: tests that ensure the expected behaviour of the system as a whole is undertaken. \\
+
+Explain this fits into our definitions of what a test harness is and how we're going to use that to perform evaluations. Explain this also requires modification of the program to ensure we can crash / delay acceptors suitably so as to simulate the sort of failure modes we require. \\
+
+Perhaps describe a system test and then also reference a table describing each test in the appendix. \\
+
+\section{Performance evaluation}
+
+Introduction to the performance evaluation.
+
+\subsection{Steady state behaviour}
+
+Describe what we mean by steady state behaviour. \\
+
+Describe the network architecture; describe the no of clients, the messages they send, how many they send; rate of sending. Explain we want to avoid measuring delays in links and delays in dropped packets in queues etc. \\
+
+{\color{blue}Graphs of latency and throughput then for this steady state case. Compare this with Libpaxos.}
+
+\subsection{System size}
+
+Describe how we want to measure commit latency and throughput as the number of different nodes in the system is varied. Achieve this by varying number of nodes and measuring latency and throughput. \\
+
+Explain the confidence interval calculations. \\
+
+{\color{blue}Should end up with two bar charts for latency and throughput as a function of cluster size. Plot LibPaxos values for each as well} \\
+
+Compare performance to LibPaxos.
+
+\subsection{Failure traces}
+
+Describe how we need to assess the system in the case of failures. \\
+
+Talk about computation of means, EWMA, etc. \\
+
+{\color{blue}Replica failure traces. Include plain failures, failures including restarts and cascading failure until we get no further latency and throughput. Include LibPaxos traces over the time. Should result in six graphs if we're lucky.} \\
+
+Compare performance to LibPaxos.
+
+
+%\section{Experimental Setup}
+%\subsection{Mininet}
+%\begin{itemize}
+%  \item Describe the simulation framework used with Mininet - how the simulation scripts are structured.
+%  \item Describe the system by which a simulation is performed - include a diagram of how simulation scripts and executable binaries are transferred to the simulation, simulations are performed %and resulting log files are returned to the host-machine for analysis and plotting.
+%  \item Describe the system by which tracing is performed.
+%\end{itemize}
+
+%\subsection{Libpaxos}
+%\begin{itemize}
+%  \item Short description of Libpaxos library.
+%  \item Explain how application was written / any modifications necessary to run the same sample application.
+%\end{itemize}
+
+%\section{Steady state behaviour}
+%\begin{itemize}
+%   \item Characterise the steady state behaviour of the system - capturing the latency and throughput in a given configuration. Plot against each other to show characteristics.
+%   \item Comparison in the steady state behaviour between the project implementation and Libpaxos.
+% \end{itemize}
+
+% \section{Configuration sizes}
+%\begin{itemize}
+   %\item Treatment of experiments that describe how latency and throughput vary as a function of the number of different nodes in the configuration varies.
+    %\item Include description of the exact experiment performed and how confidence intervals were calculated.
+   %\item Include graphs for: latency against different cluster sizes and throughput against different cluster sizes. Include Libpaxos version of this as well.
+%\end{itemize}
+
+%\section{Failure traces}
+%\begin{itemize}
+%  \item Experiment pertaining to crashing a replica and observing system behaviour over time.
+%  \item Describe how data was averaged - including the sample mean and EWMA.
+%  \item Graph of latency and throughput as a function of time with a specific point a replica is crashed noted.
+%  \item Similar graph with a replica restoration.
+%  \item Graphs / on the same plot with behaviour of Libpaxos.
+%\end{itemize}
+
+%\section{Quorum sizes}
+%\begin{itemize}
+%  \item ...
+%  \item ...
+%\end{itemize}
 
 \section{Summary}

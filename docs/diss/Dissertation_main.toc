@@ -29,16 +29,31 @@
 \contentsline {subsection}{\numberline {3.2.2}Key value store}{16}
 \contentsline {subsection}{\numberline {3.2.3}Ballots}{17}
 \contentsline {section}{\numberline {3.3}Messages}{18}
-\contentsline {section}{\numberline {3.4}Clients and replicas - better title?}{21}
-\contentsline {subsection}{\numberline {3.4.1}Clients}{21}
-\contentsline {subsection}{\numberline {3.4.2}Replicas}{21}
-\contentsline {section}{\numberline {3.5}Synod protocol}{23}
-\contentsline {subsection}{\numberline {3.5.1}Quorums}{23}
-\contentsline {subsection}{\numberline {3.5.2}Acceptors}{23}
-\contentsline {subsection}{\numberline {3.5.3}Leaders}{23}
-\contentsline {subsubsection}{Scouts}{24}
-\contentsline {subsubsection}{Commanders}{24}
-\contentsline {section}{\numberline {3.6}Summary}{24}
-\contentsline {chapter}{Bibliography}{25}
-\contentsline {chapter}{\numberline {A}Cap'n Proto schema file}{27}
-\contentsline {chapter}{\numberline {B}Projct Proposal}{29}
+\contentsline {subsection}{\numberline {3.3.1}Interface exposed}{18}
+\contentsline {subsection}{\numberline {3.3.2}Cap'n Proto}{19}
+\contentsline {subsection}{\numberline {3.3.3}Server}{22}
+\contentsline {section}{\numberline {3.4}Clients and replicas - better title?}{22}
+\contentsline {subsection}{\numberline {3.4.1}Clients}{22}
+\contentsline {subsection}{\numberline {3.4.2}Replicas}{22}
+\contentsline {section}{\numberline {3.5}Synod protocol}{26}
+\contentsline {subsection}{\numberline {3.5.1}Quorums}{26}
+\contentsline {subsection}{\numberline {3.5.2}Acceptors}{27}
+\contentsline {subsection}{\numberline {3.5.3}Leaders}{29}
+\contentsline {subsubsection}{Scouts}{30}
+\contentsline {subsubsection}{Commanders}{31}
+\contentsline {subsubsection}{Leaders}{32}
+\contentsline {section}{\numberline {3.6}Summary}{32}
+\contentsline {chapter}{\numberline {4}Evaluation}{33}
+\contentsline {section}{\numberline {4.1}Experimental setup}{33}
+\contentsline {subsection}{\numberline {4.1.1}Mininet}{33}
+\contentsline {subsection}{\numberline {4.1.2}Experimental measurements}{33}
+\contentsline {section}{\numberline {4.2}Simulation tests}{34}
+\contentsline {section}{\numberline {4.3}Performance evaluation}{34}
+\contentsline {subsection}{\numberline {4.3.1}Steady state behaviour}{34}
+\contentsline {subsection}{\numberline {4.3.2}System size}{34}
+\contentsline {subsection}{\numberline {4.3.3}Failure traces}{35}
+\contentsline {section}{\numberline {4.4}Summary}{35}
+\contentsline {chapter}{\numberline {5}Conclusion}{36}
+\contentsline {chapter}{Bibliography}{37}
+\contentsline {chapter}{\numberline {A}Cap'n Proto schema file}{39}
+\contentsline {chapter}{\numberline {B}Projct Proposal}{41}

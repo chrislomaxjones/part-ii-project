@@ -1,0 +1,104 @@
+\vfil
+
+\centerline{\Large Computer Science Tripos - Part II - Project Proposal}
+\vspace{0.2in}
+\centerline{\Large Achieving Distributed Consensus with Paxos}
+\vspace{0.2in}
+\centerline{\large Christopher Jones, Trinity Hall}
+\vspace{0.1in}
+\centerline{\large Originator: Christopher Jones}
+\vspace{0.1in}
+\centerline{\large 20th October 2017}
+
+\vspace{0.4in}
+
+\noindent
+{\bf Project Supervisor:} Dr Richard Mortier
+\vspace{0.1in}
+
+\noindent
+{\bf Director of Studies:} Prof Simon Moore
+\vspace{0.1in}
+\noindent
+ 
+\noindent
+{\bf Project Overseers:} Dr Markus Kuhn \& Prof Peter Sewell
+
+% Main document
+\section*{Introduction}
+Paxos is a widely used algorithm that allows consensus to be reached in the context of failure-prone distributed systems, by having a number of processes agree upon a proposed value. A variant of this algorithm, Multi-Paxos, allows for a sequence of values to be agreed upon by electing a leader at the start. \\
+
+This project wil consist of the implementation of Multi-Paxos in OCaml. To demonstrate an application of distributed consensus, a strongly consistent replicated key-value store will be implemented using this Multi-Paxos implementation. A message passing system, leveraging a RPC library, will be developed that allows nodes running the application to communicate. On top of this messaging functionality, the Multi-Paxos algorithm itself will be implemented. \\
+
+The performance of this implementation will be evaluated with respect to LibPaxos\footnote{http://libpaxos.sourceforge.net}, an existing Paxos library that will be used to compare performance to the implementation developed for this project. Testing and evaluation will take place on an emulated network providing a stable and adjustable test environment.
+
+\section*{Work to be done}
+The project breaks down into the following main sections:-
+\begin{enumerate}
+
+\item Development of a messaging system using an RPC library that allows networked processes to communicate. This will provide the underlying system for message-passing that will be used to implement Multi-Paxos.
+
+\item The development of a test harness that simulates failures, such as processes crashing, restarting and stalling. It will be necessary to ensure these actions can be triggered at specific points in the execution of Multi-Paxos. A network emulator will be used to test possible failure modes such as dropped packets or broken links.
+
+\item The main body of work for the project will consist of the implementation of the core aglorithm. Being distributed in nature, the algorithm consists of sending messages, using the system developed prior, between networked processes. The ability to select random quorums of processes will also need to be included.
+
+\item Evaluation of the algorithm will take place on an emulated network, with varying topologies and a number of failure modes. Tests will be performed to ensure consensus is reached under given assumptions about the network and processes. Performance will be measured in terms of latency and throughput as the number of participating nodes is varied and compared against LibPaxos running under similar test conditions.
+\end{enumerate}
+
+\section*{Starting point}
+A large amount of literature is available on Paxos that will be used as a specification of the algorithm that will be developed in this project. \\
+
+I'm starting the project with no prior knowledge of OCaml and its environment/tools, only some knowledge of Standard ML. OCaml libraries such as Core\footnote{https://github.com/janestreet/core}, Async\footnote{https://github.com/janestreet/async} and Cap'n Proto\footnote{https://capnproto.org} (for RPCs) may be used. \\
+
+LibPaxos, an existing open source  implementation, will be used as a benchmark against which to compare performance in terms of latency and throughput.
+
+\section*{Success criteria}
+A clear success criterion for this project is that the application that runs Multi-Paxos, the replicated key-value store, is in fact strongly consistent across all replicas. \\
+
+Paxos operates under a set of assumptions about the network, processes on the network and their respective failure modes. These are assumptions such as packet loss, packet re-ordering and processes that can crash, stall and restart. A success criterion of this project is that given the set of assumptions the implementation of Multi-Paxos achieves consensus and makes progress. \\
+
+Paxos should be able to make progress if $F$ processes in a network of $2F + 1$ processes fail. This is a key criterion laid out in descriptions of Paxos and as such will be used as a judgement for success - numerous tests to check progress will be conducted, given the simulated failure of up to $F$ processes at a number of points of execution. \\
+
+The performance of the implementation and the existing LibPaxos library will be compared in terms of latency and throughput as the number of processes on the network is varied. All tests will be performed on an emulated network and will provide a means by which to judge the performance of this implementation against one already used in applications. If the perfomance of the implementation in terms of these metrics is within 30\% (an achievable but still desirable performance when compared to a popular library) of that of LibPaxos it will be deemed successful in terms of performance. \\
+
+\section*{Possible extensions}
+A desirable extension to Mulit-Paxos is Flexible Paxos\cite{DBLP:journals/corr/HowardMS16}; a variant of the algorithm that weakens the requirement that quorums in each stage need intersect. This could be evaluated against LibFPaxos\footnote{https://github.com/fpaxos/fpaxos-lib}, a prototypal extension of LibPaxos. \\
+
+Another possible extension is to implement an interactive application on top of the replicated key-value store, such as a concurrent editor.
+
+\section*{Work Plan}
+\begin{enumerate}
+  \item {\bf{}Michaelmas weeks 3-4} Gain familiarity with OCaml. Prepare build automation, package management, continuous integration and version control. Research Core, Async and Cap'n Proto.{\em{} Deadline: 01/11/2017}
+   
+  \item {\bf{}Michaelmas weeks 5} Gain familiarity with Mininet, write scripts to produce different network topologies and collect example data. Run a test networked OCaml application on Mininet. Thoroughly research Multi-Paxos algorithm and research possible evaluation strategies.{\em{} Deadline: 8/11/2017}
+ 
+   \item {\bf{}Michaelmas weeks 6} Begin implementation of the project. Develop the key-value store. Integrate the RPC library to allow for processes to communicate. Pass unit tests that confirm this messaging system behaves as expected on Mininet.{\em{} Deadline: 15/11/2017}
+   
+\item {\bf{}Michaelmas week 7-8} Define each of the roles nodes play in the algorithm. Begin the implementation of the core algorithm, starting with the leadership election phase. Begin implementing ability to select random quorums, generate unique proposal numbers, prepare and promise requests.{\em{} Deadline: 29/11/2017}
+
+  \item {\bf{}Michaelmas vacation} Continue with implementation of aglorithm, finishing phase one. Next complete phase two - implement accept requests / responses. Pass tests to ensure expected functionality. Prepare network environments for evaluation and collect preliminary data.{\em{} Deadline: 10/01/2018}
+  
+  \item {\bf{}Lent weeks 0-2} Write progress report. Prepare presentation. Continue with evaluation of project by running LibPaxos on Mininet under the same conditions. Collect data on LibPaxos that will be compared to this implementation. {\em{} Deadline: 31/01/2018}
+
+  \item {\bf{}Lent weeks 3-4} Finish up any remaining experiments required for evaluation. Calculate confidence intervals of data. Prepare plots for presentation in dissertation.{\em{} Deadline: 14/02/2018}
+  
+    \item {\bf{}Lent weeks 5-6} If time permits, begin an extension of FPaxos and start testing that under the same conditions. Otherwise, continue any evaluation still outstanding.{\em{} Deadline: 28/02/2018}
+
+  \item {\bf{}Lent weeks 7-8} Finish up implementing and evaluating possible extension(s) to the project. Start writing dissertation.{\em{} Deadline: 14/03/2018}
+  
+  \item {\bf{}Easter vacation} Continue writing dissertation. Complete a draft before the end of the vacation.{\em{} Deadline: 18/04/2018}
+  
+  \item {\bf{}Easter weeks 0-2} Complete final changes to dissertation.{\em{} Deadline: 09/05/2018}
+\end{enumerate}
+
+\section*{Resource declaration}
+I will use my own machine (2014 Macbook Air, 1.4 GHz Intel Core i5, 4GB RAM, 128GB SSD) for software development, connected to the University network in order to access online resources. I accept full responsibility for this machine and I have made contingency plans to protect myself against hardware and/or software failure. Should my machine fail I will use the MCS facilities.  \\
+
+Git will be used with Github for version control and regular backups. The development directory will reside in a Google Drive for further backup. \\
+
+Mininet\footnote{http://mininet.org}, an open source network emulator, will be used for testing and evaluation. In order to run Mininet on my system, I will use VirtualBox\footnote{https://www.virtualbox.org/}. \\
+
+{\color{red} Need to work out how to put a second bibliography for the proposal}
+
+%\bibliographystyle{unsrt}
+%\bibliography{./Bib/bibliography} 

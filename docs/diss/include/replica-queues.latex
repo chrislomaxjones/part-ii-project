@@ -1,0 +1,142 @@
+\setlength{\unitlength}{3947sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(6023,8298)(2986,-9001)
+\put(7651,-7111){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Decision received from leaders}%
+}}}}
+\thinlines
+{\color[rgb]{1,1,1}\put(9001,-1561){\vector( 1, 0){0}}
+\put(9001,-3324){\oval(2462,3526)[tl]}
+\put(9001,-3324){\oval(2462,3524)[bl]}
+}%
+{\color[rgb]{0,0,0}\put(7501,-1711){\line( 0,-1){1500}}
+\put(7501,-3211){\line(-1, 0){900}}
+\put(6601,-3211){\line( 0, 1){1500}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-2611){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-2311){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-2011){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-4861){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-4561){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-4261){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-5161){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(7501,-3961){\line( 0,-1){1500}}
+\put(7501,-5461){\line(-1, 0){900}}
+\put(6601,-5461){\line( 0, 1){1500}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-2911){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(7051,-5761){\line( 0,-1){450}}
+\put(7051,-6211){\vector( 1, 0){1350}}
+}%
+{\color[rgb]{0,0,0}\put(8401,-6811){\line(-1, 0){1350}}
+\put(7051,-6811){\vector( 0,-1){450}}
+}%
+{\color[rgb]{0,0,0}\put(7501,-7261){\line( 0,-1){1500}}
+\put(7501,-8761){\line(-1, 0){900}}
+\put(6601,-8761){\line( 0, 1){1500}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-7561){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-7861){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-8161){\line( 1, 0){600}}
+}%
+{\color[rgb]{0,0,0}\put(6751,-8461){\line( 1, 0){600}}
+}%
+\thicklines
+{\color[rgb]{0,0,0}\put(7051,-3511){\line( 0,-1){  1}}
+\put(7051,-3512){\line( 0,-1){  2}}
+\put(7051,-3514){\line( 0,-1){  7}}
+\put(7051,-3521){\line( 0,-1){  9}}
+\put(7051,-3530){\line( 0,-1){ 11}}
+\put(7051,-3541){\line( 0,-1){ 12}}
+\put(7051,-3553){\line( 0,-1){ 15}}
+\put(7051,-3568){\line( 0,-1){ 18}}
+\put(7051,-3586){\line( 0,-1){ 17}}
+\put(7051,-3603){\line( 0,-1){ 12}}
+\put(7051,-3615){\line( 0,-1){  6}}
+\put(7051,-3621){\line( 0,-1){  3}}
+\put(7051,-3624){\line( 0,-1){  2}}
+\put(7051,-3626){\line( 0,-1){  6}}
+\put(7051,-3632){\line( 0,-1){ 12}}
+\put(7051,-3644){\line( 0,-1){ 17}}
+\put(7051,-3661){\line( 0,-1){ 17}}
+\put(7051,-3678){\line( 0,-1){ 12}}
+\put(7051,-3690){\line( 0,-1){  6}}
+\put(7051,-3696){\line( 0,-1){  3}}
+\put(7051,-3699){\line( 0,-1){  2}}
+\put(7051,-3701){\line( 0,-1){  6}}
+\put(7051,-3707){\line( 0,-1){ 12}}
+\put(7051,-3719){\line( 0,-1){ 17}}
+\put(7051,-3736){\line( 0,-1){ 17}}
+\put(7051,-3753){\line( 0,-1){ 12}}
+\put(7051,-3765){\line( 0,-1){  6}}
+\put(7051,-3771){\line( 0,-1){  3}}
+\put(7051,-3774){\line( 0,-1){  2}}
+\put(7051,-3776){\line( 0,-1){  6}}
+\put(7051,-3782){\line( 0,-1){ 12}}
+\put(7051,-3794){\line( 0,-1){ 17}}
+\put(7051,-3811){\line( 0,-1){ 17}}
+\put(7051,-3828){\line( 0,-1){ 12}}
+\put(7051,-3840){\line( 0,-1){  6}}
+\put(7051,-3846){\line( 0,-1){  3}}
+\put(7051,-3849){\line( 0,-1){  2}}
+\put(7051,-3851){\line( 0,-1){  6}}
+\put(7051,-3857){\line( 0,-1){ 12}}
+\put(7051,-3869){\line( 0,-1){ 17}}
+\put(7051,-3886){\line( 0,-1){ 18}}
+\put(7051,-3904){\line( 0,-1){ 15}}
+\put(7051,-3919){\line( 0,-1){ 12}}
+\put(7051,-3931){\line( 0,-1){ 11}}
+\put(7051,-3942){\vector( 0,-1){ 19}}
+}%
+\thinlines
+{\color[rgb]{0,0,0}\put(7051,-961){\vector( 0,-1){750}}
+}%
+\put(7051,-3436){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Requests}%
+}}}}
+\put(7051,-3061){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_1$}%
+}}}}
+\put(7051,-2761){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_2$}%
+}}}}
+\put(7051,-2461){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_3$}%
+}}}}
+\put(7051,-2161){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_4$}%
+}}}}
+\put(7051,-5386){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\left(s_1,c_1)$}%
+}}}}
+\put(7051,-5686){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Proposals}%
+}}}}
+\put(7051,-5086){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\left(s_2,c_2)$}%
+}}}}
+\put(7051,-8686){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\left(s_1',c_1')$}%
+}}}}
+%  Decisions 
+\put(7051,-8986){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Decisions}%
+}}}}
+\put(7051,-886){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Clients submit requests via request($c$) messages}%
+}}}}
+\put(3001,-3361){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Re-submit proposals that}%
+}}}}
+\put(3001,-3586){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}conflict with decisions}%
+}}}}
+\put(7651,-6061){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Proposals broadcast to leaders}%
+}}}}
+{\color[rgb]{0,0,0}\put(6451,-1561){\vector( 1, 0){0}}
+\put(6451,-3324){\oval(2462,3526)[tl]}
+\put(6451,-3324){\oval(2462,3524)[bl]}
+}%
+\end{picture}%

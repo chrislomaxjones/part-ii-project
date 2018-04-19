@@ -6,11 +6,19 @@
 \contentsline {figure}{\numberline {3.3}{\ignorespaces Types of ballot numbers.}}{17}
 \contentsline {figure}{\numberline {3.4}{\ignorespaces The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt {bottom}.}}{18}
 \contentsline {figure}{\numberline {3.5}{\ignorespaces Types of non-blocking messages}}{18}
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Types of non-blocking messages}}{19}
-\contentsline {figure}{\numberline {3.7}{\ignorespaces Types of non-blocking messages}}{19}
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Types of non-blocking messages}}{20}
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Types of non-blocking messages}}{20}
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Snippet of startup of replica}}{22}
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Types of records representing replica state. Note use of mutable keywords allowing for the records to be implicity modified withouth having to store and deal with record types.}}{22}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Function that returns a Cap'n Proto capability for the message service of a given URI}}{21}
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Types of non-blocking messages}}{21}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Types of non-blocking messages}}{21}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Types of non-blocking messages}}{22}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Types of records representing replica state}}{23}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Flow of requests and proposals through a replica's queues}}{25}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Types of records storing replica state}}{27}
+\contentsline {figure}{\numberline {3.13}{\ignorespaces Function called when an acceptor receives a phase1a message with associated ballot.}}{28}
+\contentsline {figure}{\numberline {3.14}{\ignorespaces Function called when an acceptor receives a phase2a message with associated pvalue.}}{28}
+\contentsline {figure}{\numberline {3.15}{\ignorespaces Types of responses produced by scouts and commanders}}{29}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces Types of responses produced by scouts and commanders}}{30}
+\contentsline {figure}{\numberline {3.17}{\ignorespaces Signature of scouts}}{31}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
