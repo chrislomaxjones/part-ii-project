@@ -1,7 +1,6 @@
 \chapter{Preparation}
 
-
-%Short introduction of what we're going to cover in preparation. All the stuff that was considered %before development began. \\
+This chapter describes the necessary background material required to understand Paxos; first in the simpler case of agreeing on one value and then going on to the Multi-decree case that will be implemented. From this a set of requirements for the project is established, taking into account functionality that is glossed over in theoretical descriptions of the algorithm. Finally the software engineering aspects of the project will be discussed including the choice of tools, build processes and third party libraries.
 
 \section{Theotrical background}
 
@@ -17,6 +16,8 @@ A \emph{process} (or networked process) is an instance of the program running on
 \end{itemize}
 
 Assumptions of the network in which these processes communicate:
+
+\input{include/single-paxos.latex}
 
 \begin{itemize}
   \item All processes can communicate with one another.
@@ -66,8 +67,8 @@ Each process participating in the consensus protocol runs the replicated state m
 
 Before considering how to implement SMR in the multi-decree case, it is useful to examine how Paxos operates in the simpler single-decree case. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Single-decree Paxos}
 
@@ -106,36 +107,34 @@ Once this process is completed, a majority of the acceptors will have chosen the
 
 
 \subsection{Multi-decree Paxos}
+\label{subsection:multi-decree-paxos}
 
-Single-decree Paxos can be naively extended by allowing proposers to propose values one at a time. However, this is wasteful as it requires that proposers send \texttt{prepare} messages for each proposal they wish to make. A number of optimisations and extensions can be put in place to increase the efficiency of the system. The system here primarily follows {\color{red}PAXOS MADE MODERATELY COMPLEX} and introduces different types of nodes. {\color{red}Also discussed here is how to extend the system to use state machine replication}. The new roles and their correspondence to the single-decree roles are summarised in Table \ref{table:multi-role-summary}. \\
+Single-decree Paxos can be naively extended by allowing proposers to propose values one at a time. However, this is wasteful as it requires that proposers send \texttt{prepare} messages for each proposal they wish to make. Van Renesse et al \cite{VanRenesse:2015:PMM:2737799.2673577} describes Multi-Paxos with an emphasis on use for state machine replication that forms the basis of the description that follows. In this paper the roles of the processes are changed to emphasise the purpose of the system SMR. \emph{Replica} processes are introduced to implicitly act as the learners and maintain the replicated state machine. \emph{Client} processes are introduced as a means to externally submit commands to the replicas. Proposers are referred to as \emph{leaders} as each takes the lead over some set of \emph{ballots}. The new roles and their correspondence to the single-decree roles are summarised in Table \ref{table:multi-role-summary}. \\
 
-{\color{blue}Diagram showing the communication pattern of nodes in Mutli-Paxos. Contrast with the single-decree case.} \\
-
-Clients and replicas are introduced to provide a means of implementing the replicated state machine.
+{\color{blue}Diagram showing the communication pattern of nodes in Mutli-Paxos. Contrast with the single-decree case.}
 
 \begin{table}
 \centering
-\begin{tabular}{ l | p{8cm} | c }
-   Role & Purpose & Number required \\ \hline \hline
-   Client & Send commands to replicas and receive responses & $ N/A $ \\ \hline
+\begin{tabular}{ | l  | l | p{6cm} | c | } \hline
+   \textbf{Role} & \textbf{Equivalent} & \textbf{Purpose} & \textbf{Number required} \\ \hline
+   Client & N/A & Send commands to replicas and receive responses & $ N/A $ \\ \hline
   
-   Replica & Receive requests from clients. &  \\
-                 & Serialize proposals and send to leaders. & $f + 1$ \\
-                 & Receive decisions and apply to the replicated application state. & \\
-                 & Handle reconfiguration of set of leaders & \\ \hline
+   Replica & Learner & Receive requests from clients. &  \\
+                 & & Serialize proposals and send to leaders. & $f + 1$ \\
+                 & & Receive decisions and apply to the replicated application state. & \\
+                 & & Handle reconfiguration of set of leaders & \\ \hline
   
-  Leader & Request acceptors adopt ballots. & $f + 1$ \\
-               & ... & \\
-               & ... &  \\ \hline
+  Leader & Proposer & Request acceptors adopt ballots. & $f + 1$ \\
+               & & Secure adoption of ballots in phase 1 of synod protocol & \\
+               & & Secure acceptance of ballots in phase 2 &  \\ \hline
                
-  Acceptor & Fault tolerant distributed memory. Voting protocol. & $2f + 1$ \\
-                   & ... & \\
-                   & ... &  \\ \hline
+  Acceptor & Acceptor & Adopt the highest ballot they have received & $2f + 1$ \\
+                   & & Accept pvalues of ballot they have adopted & \\
+                   & & Fault tolerant distributed memory of pvalues &  \\ \hline
 \end{tabular}
-\caption{Summary of the roles in Multi Paxos. In this description the system can tolerate the failure of up to $f$ of each given role. Note that clients do not explicitly participate in the protocol and so there is no requirement on any number being live at any given time.}
+\caption{Summary of the roles in Multi Paxos. In this description the system can tolerate the failure of up to $f$ of each given role. Clients do not explicitly participate in the protocol and so there is no requirement on any number being live at any given time.}
 \label{table:multi-role-summary}
 \end{table}
-
 
 \subsubsection{Clients}
 
@@ -148,72 +147,61 @@ A command $c$ takes the form $\left( \kappa, \mathrm{\emph{cid}}, \mathrm{\emph{
 
 Replicas receive commands and attempt to serialize them by converting each command $c$ into a proposal $\left(s,c\right)$, where $s \in \mathbb{N}$ is a slot number. The slot number describes ordering of the sequence in which the commands should be committed; this is not to be confused with the proposal number $n$ in the single-decree protocol. \\
 
-Different replicas may form different sequences of proposals and so broadcasts a \texttt{propose($s$,$c$)} message to the set of leaders and awaits a \texttt{decision($s'$,$c'$)} message. The resulting decision may differ in its slot number and so the replica may have to re-propose a command it has proposed for the decided slot. Upon receipt of decisions the replica will applying the associated operation to the application state, maintaining the replicated application. \\
-
-{\color{red}(Also reconfigurations)} \\
+Different replicas may form different sequences of proposals and so broadcasts a \texttt{propose($s$,$c$)} message to the set of leaders and awaits a \texttt{decision($s'$,$c'$)} message. The resulting decision may differ in its slot number and so the replica may have to re-propose a command it has proposed for the decided slot. Upon receipt of decisions the replica will apply the associated operation to the application state, maintaining the replicated application. \\
 
 {\color{blue}Diagram showing message flow between clients and replicas to clarify the last points.}
 
-
 \subsubsection{Ballots and pvalues}
 
-Explain ballots.
+Ballots are the structure over which leaders and acceptors operate when participating in the synod protocol. Ballots provide indirection in that they allow for leaders to secure agreement with acceptors for a number of proposals with different slot numbers or for a given slot to be targeted by a number of proposals associated with different ballots. This allows for a leader to perform the first phase of the synod protocol independently of having received any new proposals. It also increases the ability to execute the protocol concurrently for a number of slots at once. \\
 
-\begin{itemize}
-  \item A ballot may map a command to multiple slots.
-  \item A slot may be mapped to multiple ballots.
-  \item Leaders can attempt to secure adoption of multiple ballots concurrently.
-\end{itemize} 
+Each ballot is uniquely identified by a \emph{ballot number}. These are either pairs $\left(r, \lambda\right)$ (where $r \in \mathbb{N}$ is called a round number and $\lambda$ is a leader's unique identifier) or $\bot$, a specially designated least ballot number. \\
 
-Ballot numbers are either pairs $\left(r, \lambda\right)$ (where $r \in \mathbb{N}$ is called a round number and $\lambda$ is a leader's unique identifier) or $\bot$, a specially designated least ballot number. \\
+\emph{Pvalues} associate a ballot number with proposal. They are triples $\left(b, s, c \right)$ consisting of a ballot number, a slot number and a command. These are analogous to to the $\left( n, v \right)$ pairs used in the single-decree case. We previously required that each proposer used a disjoint subset of $\mathbb{N}$ for their proposal numbers. We can avoid this requirement as each ballot number encodes the identifier of the leader directly in its ballot number. Hence no two leaders can generate equal ballot numbers.\\
 
-A \emph{pvalue} is a triple $\left(b, s, c \right)$ consisting of a ballot number, a slot number and a command. These are analogous to to the $\left( n, v \right)$ pairs used in the single-decree case. In the single-decree case, we required that each proposer used a disjoint subset of $\mathbb{N}$ for their proposal numbers. We can avoid this requirement as each ballot number encodes the identifier of the leader directly in its ballot number (i.e. no two leaders can generate equal ballot numbers). \\
+We require ballot numbers to be totally ordered so that acceptors can compare which ballot number is less than another when choosing whether to adopt or accept. Letting $\mathcal{B}$ denote the set of all ballot numbers, we define the relation $\leq_{\mathcal{B}} \ \in \mathcal{B} \times \mathcal{B}$ which satisfies the following two conditions:
 
-We require ballot numbers to be totally ordered so that acceptors can compare which ballot number is less than another when choosing whether to adopt or accept. Letting $\mathcal{B}$ denote the set of all ballot numbers, we define the relation $\leq \ \in \mathcal{B} \times \mathcal{B}$ which satisfies the following two conditions:
-
-\begin{gather}
+\begin{gather*}
   \forall \left( n, \lambda \right), \left( n', \lambda' \right) \in \mathcal{B} .
- \ \left( n, \lambda \right) \leq \left( n', \lambda' \right) \iff
-   \left ( n \leq n' \right) \vee \left( n = n' \wedge \lambda \leq \lambda' \right) \\
-\forall \ b \in \mathcal{B} \ . \ \bot \leq b
-\end{gather}  
+ \ \left( n, \lambda \right) \leq_{\mathcal{B}} \left( n', \lambda' \right) \iff
+   \left ( n \leq n' \right) \vee \left( n = n' \wedge \lambda \leq_{\Lambda} \lambda' \right) \\
+\forall \ b \in \mathcal{B} \ . \ \bot \leq_{\mathcal{B}} b
+\end{gather*}  
 
-Note this implies that we require leader identifiers be equipped with a total order relation as well.
-
+Note this implies that we require leader identifiers be equipped with a total order relation  $\leq_{\Lambda}$ as well. \\
 
 \subsubsection{Quorums}
 
-Explanation of quorum systems. \\
+%Unlike replicas, acceptors do not each attempt to store the same sequence of proposals. We requirement that progress is still made given a minority of acceptors fail; that is $f + 1$ failures for a given set of $2f + 1$ acceptors. \\
 
-{\color{red}
-Let $\mathcal{Q}$ be the set of all quorums of acceptors, that is $\mathcal{Q} = \mathcal{P \left( \mathcal{A} \right)} $. Quorums are \emph{valid} if they share at least one common member, that is
+%We hence require that for each leader ...
 
-$$\forall Q_1, Q_2 \in \mathcal{Q} \ . \ Q_1 \cap Q_2 \neq \emptyset$$
+%Explanation of quorum systems. \\
 
-Hence we can use a majority quorum by requiring that $|Q_1| = |\mathcal{A}| \ / \ 2$.
+Unlike replicas, acceptors do not each attempt to store their own consistent copies of proposals. Instead, it is required that at least a majority of the acceptors have in their memory a decision for a committed proposal. This is so that if any minority of the acceptors crash then there is still going to be at least one acceptor with memory of the committed proposal. A subset of the acceptors  $Q \subseteq \mathcal{A}$, where $|\mathcal{A}| = 2f + 1$ for some $f \in \mathbb{N}$, is called a \emph{majority quorum} or just \emph{quorum} if $|Q| = f + 1$. \\
 
-Need to really think about these quorum systems.}
-
-
+Hence at each phase of the synod protocol leaders broadcast their message to all acceptors in a configuration and wait for such a quorum of responses. This is to guarantee that if any minority of the acceptors fail in the future that at least one will have retained the result of the current round of the protocol.
 
 \subsubsection{The Synod Protocol}
 
 The synod protocol is the protocol undertaken by the set of leaders and acceptors in order to decide which command is committed to which slot. The protocol proceeds in two phases similarly to the single-decree case except now leaders and acceptors operate over pvalues. \\
 
-In the absence of receiving any \texttt{propose($s$,$c$)} messages from replicas, leaders attempt to secure an initial ballot with ballot number $\left(0, \lambda_i)$, where $\lambda_i$ is the identifier of the {\color{red}ith} leader. They do this by broadcasting a \texttt{phase1a($b$)} message in the same format as that below. \\
+Acceptors maintain a ballot number in their state their represents the last ballot number they have \emph{adopted}. Adopting a ballot number represents a promise not to accept any pvalues that do not have that ballot number, so that acceptors do not accept conflicting pvalues. Acceptors \emph{accept} a pvalue by adding it to the set of pvalues, initially empty, that they have already accepted. The algorithm requires that if two acceptors $\alpha, \alpha' \in \mathcal{A}$ have accepted $(b,s,c)$ and $(b,s,c')$ then $c = c'$. \\
 
-\textbf{Phase 1a} Leaders attempt to secure an initial ballot by broadcasting \texttt{phase1a($\left( n, \lambda \right)$)} message.\\
+In the absence of receiving any \texttt{propose($s$,$c$)} messages from replicas, leaders attempt to secure an initial ballot with ballot number $\left(0, \lambda_i)$, where $\lambda_k$ is the identifier of the $k^{\text{\tiny th}}$ leader. They do this by broadcasting a \texttt{phase1a($b$)} message in the same format as that below. \\
 
-\textbf{Phase 1b} Acceptors receiving a \texttt{phase1a($\left( n, \lambda \right)$)} compare $\left( n, \lambda \right)$ to the highest ballot number they have adopted thus far. This is initially $\bot$ so acceptors will adopt the first ballot number they receive automatically. If $b \leq \left( n, \lambda \right)$, then the acceptor will adopt this new ballot number. In either case, the acceptor will reply with a \texttt{phase1b($b'$, pvals)} message. \\
+\textbf{Phase 1a} Leaders attempt to secure adoption of a ballot $b$ by broadcasting a \texttt{phase1a($b$)} message to the set of acceptors. \\
 
-\textbf{Phase 2a} ... \\
+\textbf{Phase 1b} Acceptors receiving a \texttt{phase1a($b$)} compare $b$ to the highest ballot number $b'$ they have adopted thus far. This is initially $\bot$ so acceptors will always adopt the first ballot number they receive. If $b' \leq_\mathcal{B} b$, then the acceptor will adopt this new ballot number, that is set $b' := b$. In either case, the acceptor will reply with a \texttt{phase1b($b'$, pvals)} message, where $\textrm{pvals}$ is the set of pvalues previously accepted. \\
 
-\textbf{Phase 2b} ... \\
+If a leader receives \texttt{phase1b($b'$, pvals)} from a majority quorum of acceptors and if $b = b'$ then the leader will proceed with phase 2 of the protocol. Otherwise the leader abandons the proposal, increments the round number of its ballot number and tries again. If a leader receives a response where $b' \neq b$ then it should restart the protocol with a higher round number. \\
 
-Go on to summarise and clear up any other points. Then reference a diagram showing message flow in the case of the synod protocol. \\
+\textbf{Phase 2a} Leaders proceed to commit a given pvalue $\left( b, s, c \right)$ by broadcasting a \texttt{phase2a($b,s,c$)} message to the set of acceptors. \\
 
-Touch on duelling proposals and the impossibility result. Include a duelling proposals timing diagram.
+\textbf{Phase 2b} Acceptors receiving a \texttt{phase2a($b,s,c$)} will compare $b$ to their adopted ballot number $b'$. If $b = b'$ then they will accept the pvalue $(b,s,c)$; otherwise they do not change their state. In either case they reply with a  \texttt{phase2b($b'$)} message. \\
 
+Leaders will again wait for receipt of a \texttt{phase2b($b'$)} from a majority quorum of acceptors. If $b = b'$ then they know the acceptor has accepted the pvalue and so broadcast a \texttt{decision($s,c$)} message to the set of replicas so they can commit command $c$ to slot $s$. Otherwise if $b \neq b'$ then the acceptor knows the acceptor has since adopted a different leader's ballot number and so should restart the protocol with a higher round number. \\
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -224,50 +212,51 @@ Touch on duelling proposals and the impossibility result. Include a duelling pro
 
 As noted previously, there are a number of papers that describe the Paxos protocol and its variants. Many of these sources present the algorithm in a different format and nearly all of them present it in a theoretical setting, with little concern for functionality that is generally required in software. Implementation details such as how each of the participating process knows how to address one another are often entirely overlooked. Hence, in developing an implementation of Multi-Paxos, it is necessary to formally recognise the theoretical requirements from the literature as well as identify the additional functionality required to realise the algorithm as a functioning piece of software. \\
 
-It is therefore necessary to perform a \emph{requirements analysis} of the final system. This was performed by collecting information from the literature on how the algorithm is presented and also considering all of the necessary functionality required to implement such an algorithm. For example, in the Paxos Made Moderately Complex paper \cite{VanRenesse:2015:PMM:2737799.2673577}, processes are described as being able to send messages between one another. This of course presents the requirement that {\color{red}we} implement some sort of messaging primitive that operates on top of the unreliable network running typical IP technology. The final system requirements are listed below. \\
+It is therefore necessary to perform a \emph{requirements analysis} of the final system. This was performed by collecting information from the literature on how the algorithm is presented and also considering all of the necessary functionality required to implement such an algorithm. For example, in the Paxos Made Moderately Complex paper processes are described as being able to send messages between one another. This of course presents the requirement for a messaging primitive that operates on top of a best--effort IP network. The final system requirements are listed below. \\
 
 \textbf{System-like requirements}
 \begin{itemize}
-  \item Command line interface
-  \item Select type of process and proceed
-  \item Configuration files and a means of nodes taking a specific config
-  \item Ability to log salient information to disk, adjust granularity of logs, etc.
-  \item {\color{red}Persist data to disk for crash recovery.}
+  \item The ability to pass the executable file some command line arguments for initializing the process.
+  \item Ability for each node to be nominated to a given role and to start-up in that role (via the command line).
+  \item Configuration files that contain the network addresses of each of the processes participating. Each process must be able to parse such a configuration file.
+  \item The ability to log important information to disk or direct to \texttt{stdout} / \texttt{stderr}. The ability to log different information (e.g. debugging info versus error info) to different files.
 \end{itemize}
 
 \textbf{Messaging subsystem}
 \begin{itemize}
   \item Provide an abstraction over the network so processes can send messages, rather than worrying about functionality of network.
-  \item Send messages as per the requirements of the consensus algorithm
-  \item Provide semantics around failures we would expect in this case.
+  \item Send messages as required by the Multi-Paxos algorithm, being able to serialise and deserialise arguments and results.
+  \item Mask failures in the network from processes
+\end{itemize}
+
+\textbf{Application requirements}
+\begin{itemize}
+  \item A key value store application that can be modelled as a state machine. This needs to have commands to create key value pairs, update key values pairs, read a value for a given key and delete a key value pair for a given key.
+  \item The store must be strongly consistent across all replicas.
 \end{itemize}
 
 \textbf{Consensus algorithm requirements}
 \begin{itemize}
-  \item Strongly replicated key-value store as application
-  \item Clients send messages with commands for this application and receive responses.
-  \item Replicas.
-  \item Leaders.
-  \item Acceptors.
-  \item Quorums.
-  \item {\color{red}Reconfigurations.}
+  \item Clients processes can messages with commands to the replicas and receive responses.
+  \item Replicas that each maintain a strongly consistent copy of the application state. They must receive requests from clients and each attempt to propose their own serialisation of the sequence of the requests to leaders.
+  \item Leaders and acceptors take part in the Synod protocol that produces a consistent serialisation of the commands proposed by replicas.
 \end{itemize}
 
-\subsection{Testing and evaluation requirements}
+%\subsection{Testing and evaluation requirements}
+%
+%It is crucial that there is a system to check that the algorithm behaves as expected in the environement described in the assumptions. \\
+%
+%Talk about using Mininet and the built in scripting ability to provide such a test harness. \\
+%
+%\textbf{Test harness}
+%\begin{itemize}
+%  \item ...
+%  \item ...
+%  \item ...
+%\end{itemize}
 
-It is crucial that there is a system to check that the algorithm behaves as expected in the environement described in the assumptions. \\
-
-Talk about using Mininet and the built in scripting ability to provide such a test harness. \\
-
-\textbf{Test harness}
-\begin{itemize}
-  \item ...
-  \item ...
-  \item ...
-\end{itemize}
-
-{\color{green} \subsection{Extension elements}
-Talk about FPaxos here (when I've actually built it.)}
+%{\color{green} \subsection{Extension elements}
+%Talk about FPaxos here (when I've actually built it.)}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -275,34 +264,65 @@ Talk about FPaxos here (when I've actually built it.)}
 
 \section{Software engineering}
 
+This section gives detail on the software development pratices and related work that was undertaken to let development commence. The development methods, third party libraries, tools and test strategies that were employed to manage the project and improve productivity are discussed here.
+
+\subsection{Starting point}
+
+The starting point of this project is the same as that described in the Project Proposal reproduced in Appendix \ref{appendix:proposal}.
+
 \subsection{Methodology}
-\begin{itemize}
-  \item Discuss the software development methodology (something along the lines of Agile I imagine)
-  \item Describe the testing strategy. Talk about OUnit for unit testing functions as simple units and then more thorough and complete tests for correct funtionality at the cluster-level - (these can either be Mininet scripts or something else entirely...)
-\end{itemize}
+
+The method by which the software was developed was to split the system into its logical constituents and develop each in turn and with as much independence from the rest as possible. To facilitate this and from the requirements I deemed it necessary to separate the messaging system from the actual operation of Multi--Paxos itself. \\
+
+This messaging system was the first module to be developed and was incrementally equipped with functionality that facilitated the rest of the program. The next logical division was to separate the operation of clients and replicas from that of leaders and acceptors. Clients, replicas and associated functionality was developed first followed by that of leaders and acceptors in two phases of development. \\
 
 \subsection{Libraries}
 
-\begin{itemize}
-  \item Mention OPAM package manager and how it is used for installing / managing libraries and dependencies
-  \item Discuss the licenses of these packages (professional practice)
-  \item Give particular explanation to Capn'Proto and Lwt as these are the most interesting and pervasive libraries used in the project. Save technical details for implementation.
-  \item Remark briefly about using Core as standard library replacement, Yojson for some serialization, OUnit for unit testing, some lib for command line parsing.
-\end{itemize}
+OCaml has a large eco-system of third party libraries available. They are used where it is necessary to avoid writing large bodies of code for common tasks. This project uses the OPAM\footnote{https://opam.ocaml.org} package manager to install, update and manage any third party libraries via a command line interface. \\ 
 
-\subsection{Compiler}
-JBuilder {\color{red}(Renamed Dune)}\footnote{https://github.com/ocaml/dune} was used as the compiler for the project. This was chosen as configuration files are presented in a simple S-Expression syntax. It also allowed for Cap'n Proto schema files to be re-compiled into OCaml boilerplate upon each re-build of the project. It also automates the generation of \texttt{.merlin} files for auto-completion in Vim (see the section on Tools).
+A library of particular interest to this project is that which provides RPC (remote procedure call) functionality. Cap'n Proto\footnote{https://capnproto.org/} was chosen as it has good support and documentation for its OCaml bindings; separated into Capnp-ocaml\footnote{https://github.com/capnproto/capnp-ocaml} for serialization and Capnp-rpc\footnote{https://github.com/mirage/capnp-rpc} for RPCs itself. The library provides a schema language to describe the required remote procedures and any required structures and a code generator for generating OCaml bindings. \\
+
+Since this project is in the space of distributed systems it is necessary to consider how concurrent programming would be achieved. Lwt\footnote{https://github.com/ocsigen/lwt} is a monadic concurrency library that leverages the type system to express the promise of a computation, of type \texttt{'a Lwt.t}, that returns a value of type \texttt{'a}. Monadic functions \texttt{return} and \texttt{bind} to chain computations together in a safe manner and support for parallel computation, mutexes and Unix bindings. This library was chosen because it has thorough documentation and interoperates with Cap'n Proto. \\
+
+Whilst OCaml already comes with a standard library, this project uses Core\footnote{https://github.com/janestreet/core} as a popular overlay. Core improves upon the standard library by providing a number of additional useful functions and modules and also in some places improves the type definitions of those present in the default standard library (by introducing named arguments in order to improve readability). Yojson\footnote{https://github.com/mjambon/yojson} was used for serialization, both in configuration files and in some areas sending data in messages. OUnit\footnote{http://ounit.forge.ocamlcore.org/} was used to manage unit testing for this project and is discussed in \ref{subsection-testing}. \\
+
+In the case of each library used their software lisence was made readily available either by OPAM (via the \texttt{opam show <pkg-name>} command) or by licensing information made available on a library's Github repository. Each of the libraries used had licenses that made use of the software for this project possible, with YoJson and Uri requiring reproduction of their licensing information distributed with the project. Table \ref{table:software-licenses} gives details of each library's individual license.
+
+\begin{table}
+\centering
+\begin{tabular}{ | l  | p{3.0cm}| p{7.0cm} | } \hline
+   \textbf{Library} & \textbf{License} & \textbf{Information availabble} \\ \hline
+    Lwt & LGPL with OpenSSL linking exception & \texttt{opam show lwt} \\ \hline
+    Core & Apache-2.0 & \texttt{opam show core} \\ \hline
+    YoJson & Specific license file & \url{https://github.com/mjambon/yojson/blob/master/LICENSE.md} \\ \hline
+    OUnit & Specific license file & \url{https://github.com/mjambon/yojson/blob/master/LICENSE.md} \\ \hline
+    Ocaml-capnp & Apache &  \texttt{opam show ocaml-capnp} \\
+    Capnp-rpc & & \texttt{opam show ocaml-capnp} \\ \hline
+\end{tabular}
+\caption{Software licenses for each of the libraries used in the project.}
+\label{table:software-licenses}
+\end{table}
+
+\subsection{Build system}
+JBuilder was used as the build system for this project. It was chosen for its minimal configuration files (called jbuild files), automatic linking of OPAM packages and automates the generation of \texttt{.merlin} files. Jbuild files are written in a simple S-expression syntax and are composable with one another. Jbuild files also present the ability to include \emph{rules} so that Cap'n Proto OCaml bindings are generated automatically when building the project.
 
 \subsection{Tools}
+  
+Choice of tools is important for being productive in a language. MacVim\footnote{https://github.com/macvim-dev/macvim} was used as a text editor. In order to improve productivity Merlin was used to provide code-completion and edit-time type inference features, making it much easier to understand the types of source code and save time reading documentation online. \texttt{.merlin} files are auto-generated by Jbuilder that allow for code completion and type inference over files in the project directory itself. \\
 
-Choice of tools is important in being productive in a language. Vim was chosen. Merlin was syntax highlighting. 
+Utop for read-eval-print loop for quick sanity checks and rapid prototyping. \\
 
-Git was used both for version control and for backups with Github. Additionally, backups were performed by having the project directory located in a Google Drive. 
+Git was used for source control and version. Branches were made for each new feature under development and merged back into the master. Backups were to a remote repository on Github. Backups were also made periodically to Google Drive. All of the development work was undertaken on my person machine with the option of fallback onto the MCS machines. \\
 
-\begin{itemize}
-  \item Vim with Merlin for type inference whilst editing.
-  \item Git for version control, Github (and Google Drive) for backups.
-  \item Mininet (with VirtualBox) for evaluation.
-\end{itemize}
+In order to simulate the operation and performance of instances of the implementation in a distributed system it was necessary to use a network simulator. Mininet\footnote{http://mininet.org/} is a network simulator that operates on a proess based virtualisation and allows for arbitrary processes to be simulated as running on hosts on a virtual network. Mininet provides a complete Python API for setting up such simulations and performing experiments. Mininet required use of a guest operating system on VirtualBox\footnote{https://www.virtualbox.org/}, virtualization software that allowed Mininet to be used on my own machine.
+
+\subsection{Testing}
+\label{subsection-testing}
+Unit testing was performed in order to check the operation of functions at a fine-grained level within the program. OCaml's static type system ensures the compiler will catch a number of errors resulting from improper calls to functions and so unit tests were designed as a compliment to this; tests focussed on correctly typed arguments to functions yielding appropriate results we expect. The test suites were executed after successful builds of the project. \\
+
+% {\color{red}Simulation testing.}
+
+
+
 
 

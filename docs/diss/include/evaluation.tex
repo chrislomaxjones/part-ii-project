@@ -36,15 +36,9 @@ Perhaps describe a system test and then also reference a table describing each t
 
 Introduction to the performance evaluation.
 
-\subsection{Steady state behaviour}
-
-Describe what we mean by steady state behaviour. \\
+\subsection{System size}
 
 Describe the network architecture; describe the no of clients, the messages they send, how many they send; rate of sending. Explain we want to avoid measuring delays in links and delays in dropped packets in queues etc. \\
-
-{\color{blue}Graphs of latency and throughput then for this steady state case. Compare this with Libpaxos.}
-
-\subsection{System size}
 
 Describe how we want to measure commit latency and throughput as the number of different nodes in the system is varied. Achieve this by varying number of nodes and measuring latency and throughput. \\
 
@@ -59,6 +53,8 @@ Compare performance to LibPaxos.
 Describe how we need to assess the system in the case of failures. \\
 
 Talk about computation of means, EWMA, etc. \\
+
+$$ \textrm{EWMA} \left( t \right) = \alpha \times \textrm{RTT} + (1 - \alpha ) \times \textrm{EWMA} \left( t - 1 \right)$$
 
 {\color{blue}Replica failure traces. Include plain failures, failures including restarts and cascading failure until we get no further latency and throughput. Include LibPaxos traces over the time. Should result in six graphs if we're lucky.} \\
 

@@ -1,23 +1,22 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces High level subsystems of a process}}{15}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Signature of the key value store module}}{16}
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Types of ballot numbers.}}{17}
-\contentsline {figure}{\numberline {3.4}{\ignorespaces The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt {bottom}.}}{18}
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Types of non-blocking messages}}{18}
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Function that returns a Cap'n Proto capability for the message service of a given URI}}{21}
-\contentsline {figure}{\numberline {3.7}{\ignorespaces Types of non-blocking messages}}{21}
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Types of non-blocking messages}}{21}
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Types of non-blocking messages}}{22}
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Types of records representing replica state}}{23}
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Flow of requests and proposals through a replica's queues}}{25}
-\contentsline {figure}{\numberline {3.12}{\ignorespaces Types of records storing replica state}}{27}
-\contentsline {figure}{\numberline {3.13}{\ignorespaces Function called when an acceptor receives a phase1a message with associated ballot.}}{28}
-\contentsline {figure}{\numberline {3.14}{\ignorespaces Function called when an acceptor receives a phase2a message with associated pvalue.}}{28}
-\contentsline {figure}{\numberline {3.15}{\ignorespaces Types of responses produced by scouts and commanders}}{29}
-\contentsline {figure}{\numberline {3.16}{\ignorespaces Types of responses produced by scouts and commanders}}{30}
-\contentsline {figure}{\numberline {3.17}{\ignorespaces Signature of scouts}}{31}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces High level subsystems of a process}}{19}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Signature of the key value store module}}{20}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Types of ballot numbers.}}{21}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt {bottom}.}}{22}{figure.3.4}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Types of non-blocking messages}}{23}{figure.3.5}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Function to start a new server that presents a number of possible callbacks}}{23}{figure.3.6}
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Function that returns a Cap'n Proto capability for the message service of a given URI}}{25}{figure.3.7}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Dealing with errors as a result of Cap'n Proto message delivery failure}}{26}{figure.3.8}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Types of records representing replica state}}{27}{figure.3.9}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Flow of requests and proposals through a replica's queues}}{29}{figure.3.10}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Types of records storing acceptor state}}{30}{figure.3.11}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Function called when an acceptor receives a phase1a message with associated ballot.}}{31}{figure.3.12}
+\contentsline {figure}{\numberline {3.13}{\ignorespaces Function called when an acceptor receives a phase2a message with associated pvalue.}}{31}{figure.3.13}
+\contentsline {figure}{\numberline {3.14}{\ignorespaces Types of responses produced by scouts and commanders}}{33}{figure.3.14}
+\contentsline {figure}{\numberline {3.15}{\ignorespaces Types of responses produced by scouts and commanders}}{34}{figure.3.15}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces Signature of scouts}}{34}{figure.3.16}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

@@ -6,6 +6,9 @@
 \usepackage{graphicx}
 \usepackage{listings}
 
+\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,menucolor=black,runcolor=black,urlcolor=black,bookmarks=true]{hyperref}
+\usepackage{breakurl}
+
 % Use Consolas as the mono font (for listings)
 \usepackage{inconsolata}
 
@@ -112,8 +115,8 @@ Trinity Hall \\
 Name:                       & \bf Christopher Jones                       \\
 College:                    & \bf Trinity Hall                     \\
 Project Title:             & \bf Achieving distributed consensus with Paxos \\
-Examination:            & \bf Computer Science Tripos - Part II, June 2018 \\
-Word Count:            & \bf {\color{red}???} \footnotemark[1] \\
+Examination:            & \bf Computer Science Tripos --- Part II, June 2018 \\
+Word Count:            & \bf ...\footnotemark[1] \\
 Project Originator:  & Christopher Jones                    \\
 Supervisor:              & Dr Richard Mortier                    \\ 
 \end{tabular}
@@ -202,7 +205,10 @@ extent for a comparable purpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\include{include/evaluation}
+% \include{include/evaluation}
+% \newpage
+
+\chapter{Evaluation}
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,7 +237,7 @@ extent for a comparable purpose.
 
 % Project proposal
 \chapter{Projct Proposal}
-
+\label{appendix:proposal}
 \include{include/proposal}
 
 \end{document}

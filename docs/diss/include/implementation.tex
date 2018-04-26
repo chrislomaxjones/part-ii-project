@@ -1,8 +1,8 @@
 \chapter{Implementation}
 
-\section{High level structure of program}
+This chapter describes the implementation. It begins with a high level overview of the structure of the program and initialisation. This follows with an examination of the data structures that are used and goes on to describe the messaging system. Finally, each of the roles in the system is described in turn.
 
-
+\section{High level architecture}
 
 \begin{figure}
 \centering
@@ -73,35 +73,32 @@
 
 }
        \caption{High level subsystems of a process}
+       \label{fig:high-level-structure}
   \centering
 \end{figure}
 
+This section describes the architecture of the program. Each process taking participating in Multi-Paxos is an instance of the same executable configured to take the \emph{role} of either client, replica, leader or acceptor. These roles each have a different function in the system within their \emph{role module}, which ecapsulates all the functionality associated specifically with a given role. Each of those modules will need to send and receive messages of some form; this is abstracted away by a \emph{messaging system} which exposes an interface via which each can send messages or maintain a server that receives messages. Figure \ref{fig:high-level-structure} shows communication paths between each of these subsystems. \\
 
+%Each of the roles shares a number of common middlewares in the program, the main being the messaging subsystem. The purpose of this subsystem is to provide indirection between the way that messages are treated by the role modules and the method by which they are actually sent over the network. The desire is to have messages behave as an atomic primitive with semantics as described in {\color{red}Assumptions section}, obscuring all of the protocol-level functionality in sending the messages over an IP network. \\
 
+% The role module is divided up into two separate \texttt{Lwt} threads. The response server handles the receipt of messages from other processes and performs any required processing accordingly (this is still role specific), which can result in sending further messages. Any concurrent processing required of the role is performed concurrently in the role specific systems. \\
 
-
-In this section the high level structure of the program is discussed. See figure {\color{red}blah blah} for an overview of the structure of a typical process. \\
-
-Each of the processes takes the \emph{role} of either a client, replica, leader or acceptor. These roles each have a different function in the system within their \emph{role module}, which contains all the functionality associated specifically with a given role. \\
-
-Each of the roles shares a number of common middlewares in the program, the main being the messaging subsystem. The purpose of this subsystem is to provide indirection between the way that messages are treated by the role modules and the method by which they are actually sent over the network. The desire is to have messages behave as an atomic primitive with semantics as described in {\color{red}Assumptions section}, obscuring all of the protocol-level functionality in sending the messages over an IP network. \\
-
-The role module is divided up into two separate \texttt{Lwt} threads. The response server handles the receipt of messages from other processes and performs any required processing accordingly (this is still role specific), which can result in sending further messages. Any concurrent processing required of the role is performed concurrently in the role specific systems. \\
-
-Each of the processes requires additional information at start-up, such as 
+Each of the processes requires additional information when they are initialised, such as 
 
 \begin{enumerate}
   \item The role it should take.
   \item The address at which it should start a server to receive messages.
-  \item The set of addresses of all the participating processes of all roles.
+  \item The set of addresses of all the participating processes with which it must communicate.
 \end{enumerate}
 
-Items (1) and (2) are consumed via comand line arguments when the program is run. (3) requires the use of a configuration file, the relative path to which is provided as a command line argument. The configuration file is formatted in JSON and provides, for each role, a list of all of the addresses of each process. An example configuration file is included in {\color{red}Reference the appendix}. {\color{red}Figure blah blah shows a flow diagram describing how initialisation proceeds} \\
+Items (1) and (2) are provided as comand line arguments when the program is executed. If the number of processes is large, then supplying a list of addresses to each process would prove tedious so (3) is addressed by using a configuration file, the relative path to which is provided as a command line argument. \\ 
 
-{\color{red}(Addresses are provided as an IP address (V4 or V6) and a port number)} \\
+Configuration files are formatted as JSON\footnote{https://tools.ietf.org/html/rfc7159}; JSON was chosen since it is semi-structured data that can be easily handwritten and also parsed using the Yojson library. The file contains, for each role, a list of all of the addresses of each process in that role. Not every process needs to know the address of every other node. For example, clients do not need to know the addresses of leaders and acceptors. It is only necessary that each file parsed by each process contains the addresses of the nodes they are required to communicate with. In practice, it is more consistent and maintainable to have a single file used by each of the process. \\
 
-{\color{blue}Flow diagram of init}.
+The addresses discussed above are IPV4 IP address and port number pairs which are used both to send and receive. Internally a different addressing format is used, described in \ref{section:messages}, where the addresses provided at initialisation are used to map directly onto the internal representation. \\
 
+% Initialisation follows a pattern whereby ...
+% color{blue}Flow diagram of init}.
 
 \section{Data structures}
 
@@ -109,7 +106,7 @@ Before proceeding the implementation of the systems described above, it is neces
 
 \subsection{Identifiers}
 
-Unique identifiers are required to identify each process in the system. To avoid having a central authority distribute these identifiers at start-up a method where any process can generate their own unique identifer is used. Universally Unique Identifers\footnote{https://tools.ietf.org/html/rfc4122} (UUIDs) are used in this case as they are a well established standard and have support in the OCaml Core library. UUIDs are also totally ordered and so satisy the condition that we have such an ordering on the identifers of leaders. \\
+Unique identifiers are required to identify each process in the system. To avoid having a central authority distribute these identifiers a method where any process can generate their own unique identifer is used. Universally Unique Identifers\footnote{https://tools.ietf.org/html/rfc4122} (UUIDs) are used in this case as they are a well established standard and have support in the OCaml Core library. UUIDs are also totally ordered and so satisy the condition that we have such an ordering on the identifers of leaders. \\
 
 Hence replicas, leaders and acceptor identifiers have the type \texttt{Core.Uuid.t}. As we wish to expose clients to a request / response protocol it is necessary to store a map of client identifiers to addresses by each replica. Rather, by modifying client identifiers to be of the form \texttt{Core.Uuid.t * Uri.t}, the address actually forms part of the identifier.
 
@@ -131,31 +128,37 @@ module type APPLICATION = sig
 end
   \end{lstlisting}
     \caption{Signature of the key value store module}
+    \label{fig:key-value-store}
   \centering
 \end{figure}
 
-
 \begin{table}
   \centering
-  \begin{tabular}{l | l | l}
-    Command & Arguments & Semantics \\ \hline \hline
-    Nop & & No operation, No change to state \\ [.5\normalbaselineskip] \hline
-  
-    Create & \texttt{(K,V)} & Add new \texttt{(K,V)} pair to the state \\
-                 &        & If key already present, then return Failure \\ [.5\normalbaselineskip] \hline
+  \begin{tabular}{l | c | p{9.0cm}}
+    \textbf{Command} & \textbf{Argument} & \textbf{Semantics} \\ \hline \hline
+    Nop & & No operation, no change to state \\ 
+    & & Returns Success \\ [.5\normalbaselineskip] \hline
+    
+    Create & \texttt{(K,V)} & If key not present, add new \texttt{(K,V)} pair to the state and return \texttt{Success}. Otherwise return \texttt{Failure}. \\ [.5\normalbaselineskip] \hline
+    
+    Update & \texttt{(K,V)} & If key present, update pair with key \texttt{K} to value \texttt{V}. Otherwise return \texttt{Failure} \\ [.5\normalbaselineskip] \hline
+     
+     Read & \texttt{K} & If key present read value \texttt{V} associated with key \texttt{K} and return \texttt{ReadSuccess(V)}, else return \texttt{Failure}. \\ [.5\normalbaselineskip] \hline
+     
+     Remove & \texttt{K} & If key present remove pair with key \texttt{K}, else return \texttt{Failure}. \\ [.5\normalbaselineskip] \hline
 
   \end{tabular}
   \caption{Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates.}
 \label{table:operation-summary}
 \end{table}
 
-The key value store is the application that is to be replicated. Hence each replica process will maintain its own independent copy of the application state. The application itself needs not maintain any synchronisation logic, it need only behave as a state machine. The state is represented by an association list (commonly called a dictionary) that maps integer keys to string values. Operations each have their own semantics described in Table \ref{table:operation-summary}. The application follows a state machine pattern given that if each replica starts in the initial state and each applies the same sequence of operations in the same order, the resulting state is the same. \\
+The key value store is the application that is to be replicated. Each replica process will maintain its own independent copy of its state. The application need not maintain any synchronisation logic, it need only behave as a state machine. The state is represented by an association list that maps integer keys to string values. Operations each have their own semantics described in Table \ref{table:operation-summary}. The application follows a state machine pattern given that if each replica starts in the initial state and each applies the same sequence of operations in the same order, the resulting state is the same. \\
 
-When a command has been committed to a slot by the consensus algorithm, the command's operation is applied to the state. This returns a new state and a result, which represents the updated state held by the replica and the resulting information returned to the replica (the client does not receive a whole copy of the new state in its reply). {\color{red}The signature of this key value store is shown in figure blah blah}.
+When a command has been committed to a slot by the consensus algorithm, the command's operation is applied to the state. This returns a new state and a result. The result is the value that is returned to the client; either \texttt{Success}, \texttt{Failure} or \texttt{ReadSuccess(V)}. The signature of the key value store is shown in Figure \ref{fig:key-value-store}.
 
 \subsection{Ballots}
 
-The definition of ballot numbers from {\color{red} the Preparation chapter} lends itself to the types of ballot numbers being represented by an algebraic datatype. Ballots are hence the tagged union of Bottom (representing the least ballot $\bot$) or a pair consiting of an integer and a leader identifer (representing pairs $\left(n,\lambda\right)$). The type definition is included in {\color{red} Figure blah blah}. \\
+The definition of ballot numbers from \ref{subsection:multi-decree-paxos} lends itself to representation by an algebraic datatype. Ballots are hence the tagged union of Bottom (representing the least ballot $\bot$) or a pair consiting of an integer and a leader identifer (representing pairs $\left(n,\lambda\right)$). The type definition is included in {\color{red} Figure blah blah}. \\
 
 \begin{figure}
   \begin{lstlisting}
@@ -166,7 +169,7 @@ type t = Bottom
   \centering
 \end{figure}
 
-Figure blah blah shows the interface exposed by the Ballot module. Note that the concrete type of ballot numbers isn't exposed, only the abstract type \texttt{t}. Therefore outside of this module the representation of ballot numbers is hidden. This prevents a large number of errors, such as decrementing a round number when they should strictly increase, from arising by rejecting them at compile-time. However, this requires a number of functions be supplied so that ballot numbers can be manipulated outside this module. \\
+Figure \ref{fig:ballot-interface} shows the interface exposed by the Ballot module. Note that the concrete type of a ballot number isn't exposed, only the abstract type \texttt{t}. Therefore outside of this module the internal representation of ballot numbers is hidden. This prevents a large number of errors, such as decrementing a round number when they should strictly increase, from arising by rejecting them at compile-time. It is necessary to supply function to work with ballot numbers outside the module. \\
 
 Hence a given leader can generate an initial ballot number with their identifer. Subsequent ballot numbers can be generated by calling a successor function, which increments the round number each time. By exposing such an interface we prevent errors such as using negative round numbers from being able to compile. \\
 
@@ -180,16 +183,17 @@ val init : leader_id -> t
 val succ_exn : t -> t
   \end{lstlisting}
     \caption{The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt{succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt{bottom}.}
+    \label{fig:ballot-interface}
   \centering
 \end{figure}
 
 \section{Messages}
-
+\label{section:messages}
 \subsection{Interface exposed}
 
-The messaging subsystem is concerned with the sending and receipt of messages between processes. It transforms messages from simple OCaml types into a form suitable for transport over an IP network, handling the packetisation, rentramssions and other semantics. It also handles the initialisation of servers and the addressing in the system. \\
+The messaging subsystem is concerned with the sending and receipt of messages between processes. It transforms messages from simple OCaml types into a form suitable for transport over an IP network, handling packetisation, rentramssion and masking failures. It also handles the initialisation of servers and the addressing in the system. \\
 
-\begin{figure}
+\begin{figure}[t]
   \begin{lstlisting}
 type non_blocking_message = ClientRequestMessage of command
                           | ProposalMessage of proposal
@@ -209,29 +213,39 @@ val send_phase2_message : Pval.t -> Uri.t ->
   \label{message-types}
 \end{figure}
 
-There are a number of different messages that are necessary to send in Multi-Paxos and have been touched on in the Preparation chapter. In this chapter we focus on the capability of sending these messages rather than their role in the algorithm itself, which is discussed in depth over the rest of this chapter. \\
+\begin{figure}[t]
+  \begin{lstlisting}
+val start_new_server : ?request_callback:(Types.command -> unit) ->
+    ?proposal_callback:(Types.proposal -> unit) ->
+    ?response_callback:(Types.command_id * Types.result -> unit) ->
+    ?phase1_callback:(Ballot.t -> Types.unique_id * Ballot.t * Pval.t list) ->
+    ?phase2_callback:(Pval.t -> Types.unique_id * Ballot.t) ->
+    string -> int -> Uri.t Lwt.t  
+  \end{lstlisting}
+  \centering
+  \caption{Function to start a new server that presents a number of possible callbacks}
+  \label{fig:message-server}
+\end{figure}
+
+There are a number of different messages that are necessary to send in Multi-Paxos. In this chapter we focus on the capability of sending these messages rather than their role in the algorithm itself, which is discussed in depth over the rest of this chapter. \\
 
 Messages are broadly divided into two cateogries: \emph{blocking} and \emph{non-blocking}. Blocking messages are those which expect a direct response to a given message, whereas when sending a non-blocking message the process does not expect an immediate reply. The interface for sending messages is presented in Figure \ref{message-types}. The types of non-blocking messages represent the arguments that are associated with such a message and do not include any information about source and destination addressing, as this is handled transparently by the messaging system. \\
 
-The function \texttt{send\_non\_blocking} takes a non-blocking message represented by the type described above and a URI that addresses the destination process. As these messages do not explicity require a reply they return a \texttt{unit Lwt.t}, {\color{red} explain lwt unit}. As we can regard a message that is never delivered to a recipient (perhaps due to a broken link in the network or a crashed process) as indefinitely delayed in the network, we return this type regardless of any errors encountered by the underlying subsystem. It is important to note here that any errors that arise from messages failing to deliver are handled by the Multi-Paxos algorithm itself, not the messaging system. \\
+The function \texttt{send\_non\_blocking} takes a non-blocking message represented by the type described above and a URI that addresses the destination process. As these messages do not explicity require a reply they return a \texttt{unit Lwt.t}, that is a promise to perform a computation that terminates with value \texttt{()}. As we can regard a message that is never delivered to a recipient as indefinitely delayed in the network, we return this type regardless of any errors encountered by the underlying subsystem. It is important to note here that any errors that arise from messages failing to deliver are handled by the Multi-Paxos algorithm itself, not the messaging system. \\
 
-Blocking messages on the other hand return a type immediately. Hence they are separated into their own specific functions, \texttt{send\_phase1\_message} and \texttt{send\_phase2\_message}, each with a return type that represents the arguments in the response. Note that here the arguments represent the phase1a / phase2a messages and the responses represents the phase2a and phase2b messages. We do this because acceptors only respond in response to a message from a leader, so it reduces the functionality required to represent these replies as return types. The error handling here returns a type wrapped in a \texttt{Result.result} type which allows for an error to be possibly returned. ... \\
+Blocking messages on the other hand return a type immediately. Hence they are separated into their own specific functions, \texttt{send\_phase1\_message} and \texttt{send\_phase2\_message}, each with a return type that represents the arguments in the response. Note that here the arguments represent the phase1a / phase2a messages and the responses represents the phase2a and phase2b messages. We do this because acceptors only respond in response to a message from a leader, so it reduces the functionality required to represent these replies as return types. The error handling here returns a type wrapped in a \texttt{Result.result} type which allows for an error to be returned and discarded by the leader when checking whether it has received responses from a quorum. \\
 
-%Now talk about the different messages we can send. In this case show the datatypes. Draw distinctions between the blocking and non-blocking nature of the phase1/2 and other messages. Perhaps at this point show the interface we wish to expose to the above subsystem. This would include send\_non\_blocking, send\_blocking messages. This essentially should provide the semantics we desire. \\
+The message module also exposes a function to start a new server, the type of which is given in \ref{fig:message-server}. The server requires a string and integer representing the IP address and port number on which to listen and a number of named functions that each represents a callback. These functions are called when a corresponding message is received by the server and return the response given by the return type. A process can therefore interoperate with the server by passing functions it wishes to have called whenever a message is received. \\
 
 \subsection{Cap'n Proto}
 
-Cap'n Proto is used as the underlying system for sending messages. Cap'n Proto support is provided in OCaml in two separate libraries; \texttt{capnp-ocaml} is used to compile OCaml bindings for Cap'n Proto schema files and \texttt{capnp-rpc} provides OCaml bindings to Cap'n Proto RPC mechanisms. \\
+Cap'n Proto is used as the underlying system for sending messages. Cap'n Protos requires that one writes a schema file that describes a service; this contains data structures and messages that need to be serialized. This schema file, listed in full in Appendix \ref{appendix:schema}, contains an interface that describes the service that we wish to make available to the messaging system. The schema crucially contains a method for every message that can be sent and its associated arguments and return type, with each mapping to the associated message type described in Figure \ref{message-types}. Note that some of the arguments in the Cap'n Proto schema file are stored as \texttt{Text} types rather than as the types in \ref{message-types} as these are first serialized into JSON using Yojson and then converted to strings. This was to provide a degree of separation in the source code. For example, this helps avoid situations where a new command for the replicated application would require rewriting of boilerplate code for messaging and recompilation of the schema. \\
 
-Cap'n Protos requires that one writes a schema file that describes a service; this contains data structures and messages that need to be serialized for transport. This schema file, listed in full in Appendix \ref{appendix:schema}, contains an interface that describes the service that we wish to make available to the messaging system. It contains a definitions for a structure that represents commands as their representation is fixed for the Multi Paxos protocol. {\color{red}Explain why we serialize some stuff with JSON}. The schema crucially contains a method for every message that can be sent and its associated arguments and return type, with each mapping naturally to the associated message type described in Figure \ref{message-types}. \\
-
-A compiler tool is then used to generate OCaml code that contains signatures and structures for the interface described in the schema. This is automated in the build process by including a \emph{rule} in the JBuild file that runs the Cap'n Proto code generator on the schema when compiling the project. {\color{red}Describe how serialisation and deserialisation are performed}. \\
+{\color{red}A compiler tool is used to generate OCaml code that contains signatures and structures for the interface described in the schema. Describe serialisation and deserialisation. \\
 
 So far we have only use the serialization functionality provided by Cap'n Proto, providing a means of marshalling our messages into a suitable data exchange format. This serialization will be used by the RPC protocol implemented by Cap'n Proto. This is achieved by \emph{functorising} the generated API with a suitable RPC library (in this case \texttt{canp\_rpc\_lwt}). {\color{red}Explain what then needs to be implemented and how to implement it.} \\
 
-{\color{red}Talk about Vats and Capabilities. Talk about how Cap'n Proto works under the hood.}\\
-
-Diversion into Cap'n Proto URIs. Talk about how we cache them so to the above system there is no caching involved. Talk about addressing and the conversion we need. Then talk about a hash table that is used to cache the mapping from addresses to services. \\
+Talk about Vats and Capabilities. Talk about how Cap'n Proto works under the hood.}\\
 
 \begin{figure}
   \begin{lstlisting}
@@ -252,77 +266,68 @@ let service_from_uri uri =
   \label{fig:service-from-uri}
 \end{figure}
 
-Within Cap'n Proto sturdy refs are identified by Cap'n Proto URIs\footnote{https://tools.ietf.org/html/rfc3986}. Each process maintains a server that is addressed by .... The function that computes this is listed in Figure \ref{fig:service-from-uri} \\
+Within Cap'n Proto sturdy refs are identified by Cap'n Proto URIs\footnote{https://tools.ietf.org/html/rfc3986}. For each server initialized with the \texttt{start\_new\_server} function the supplied IP address and port number are mapped to a URI that is used to address the internal capability. Given a URI one can derive a sturdy reference to the capability and connect via that sturdy reference. Each connection runs over TCP and so rather than have each message setup and teardown a TCP session a cache of connected capabilities is stored by the messaging module that maps URIs to capabilities, listed in Figure \ref{fig:service-from-uri}. The function searches the table hashed by URIs first to see if a connection has already been established and returns that if it does. Otherwise if there is a cache miss an attempt to connect to the capability is initiated. If this results in a success then the capability cached and then returned. Note here the return type is \texttt{Capability.t option Lwt.t} since the connection could result in an error. \\
 
-\begin{figure}
-  \begin{lstlisting}
-let send_request message uri =
-  (* Get the service for the given URI *)
-  service_from_uri uri >>= function
-  | None -> Lwt.return_unit
-  | Some service ->
-    match message with
-    | ClientRequestMessage cmd ->
-      client_request_rpc service cmd;
-    | DecisionMessage p ->
-      decision_rpc service p;
-    | ProposalMessage p ->
-      proposal_rpc service p;
-    | ClientResponseMessage (cid, result) ->
-      client_response_rpc service cid result
-  \end{lstlisting}
-  \centering
-  \caption{Types of non-blocking messages}
-\end{figure}
+%\begin{figure}
+%  \begin{lstlisting}
+%let send_request message uri =
+%  (* Get the service for the given URI *)
+%  service_from_uri uri >>= function
+%  | None -> Lwt.return_unit
+%  | Some service ->
+%    match message with
+%    | ClientRequestMessage cmd ->
+%      client_request_rpc service cmd;
+%    | DecisionMessage p ->
+%      decision_rpc service p;
+%    | ProposalMessage p ->
+%      proposal_rpc service p;
+%    | ClientResponseMessage (cid, result) ->
+%      client_response_rpc service cid result
+%  \end{lstlisting}
+%  \centering
+%  \caption{Types of non-blocking messages}
+%\end{figure}
+%
+%\begin{figure}
+%  \begin{lstlisting}
+%let send_phase1_message (b : Ballot.t) uri = 
+%  service_from_uri uri >>= function 
+%  | None ->
+%    Lwt.return_error "Error sending phase 1 message"  
+%  | Some service -> 
+%    phase1_rpc service b >>= fun response ->
+%    Lwt.return_ok response
+%  \end{lstlisting}
+%  \centering
+%  \caption{Types of non-blocking messages}
+%\end{figure}
 
-\begin{figure}
-  \begin{lstlisting}
-let send_phase1_message (b : Ballot.t) uri = 
-  service_from_uri uri >>= function 
-  | None ->
-    Lwt.return_error "Error sending phase 1 message"  
-  | Some service -> 
-    phase1_rpc service b >>= fun response ->
-    Lwt.return_ok response
-  \end{lstlisting}
-  \centering
-  \caption{Types of non-blocking messages}
-\end{figure}
+\subsection{Masking errors}
 
-
-
+{\color{red}
 Next go on to talk about how we use Error types in the rpc responses to catch killed nodes and simply. Talk about how we need to refresh the cache in this case. Talk a bit more about the types used in phase1/phase2 messages as these may return Errors to the above subsystem. \\
-
-{\color{red}Put a snippet here...?}
-
-\subsection{Server}
-
-Talk about the interface exposed on behalf of the server.
+}
 
 \begin{figure}
   \begin{lstlisting}
-val start_new_server : ?request_callback:(Types.command -> unit) ->
-    ?proposal_callback:(Types.proposal -> unit) ->
-    ?response_callback:(Types.command_id * Types.result -> unit) ->
-    ?phase1_callback:(Ballot.t -> Types.unique_id * Ballot.t * Pval.t list) ->
-    ?phase2_callback:(Pval.t -> Types.unique_id * Ballot.t) ->
-    string -> int -> Uri.t Lwt.t  
+Capability.call_for_unit t method_id request >|= function
+      | Ok () -> ()
+      | Error e -> Hashtbl.clear sturdy_refs    
   \end{lstlisting}
   \centering
-  \caption{Types of non-blocking messages}
+  \caption{Dealing with errors as a result of Cap'n Proto message delivery failure}
+  \label{fig:message-failure}
 \end{figure}
 
 
-\section{Clients and replicas - better title?}
+\section{Clients and replicas}
 
-{\color{green}
 \subsection{Clients}
-\begin{itemize}
-  \item Talk about how clients operate outside the system
-  \item How they send messages to replicas.
-  \item Include .mli interface for replicas, the record (with mutable fields) for storing replicas.
-\end{itemize}
-}
+
+Clients are the simplest processes in the system as they need only send commands $\left(\kappa, \textrm{cid}, \textrm{op} \right)$ to replicas in \texttt{request($\kappa, \textrm{cid}, \textrm{op}$)} messages, where $\kappa$ is an identifier of the client of type \texttt{Uuid.t * Uri.t}. The identifier value is used to uniquely identify the client and the URI is a Cap'n Proto address required for replicas to direct their responses to clients in question. \\
+
+Each client also maintains a server on a given host name and port number to which \texttt{response($\textrm{cid}, \textrm{result}$)} messages are sent. This represents the result of command with identifier $\textrm{cid}$ having been applied to the application state, its order with all other commands having been serialized consistently across the system by Multi-Paxos.
 
 \subsection{Replicas}
 
@@ -355,7 +360,7 @@ Replicas maintain three queues:
   \item \texttt{decisions:} A queue of decisions. This represents the serialization of commands that has been decided on by the configuration of leaders and acceptors; it represents the consensus reached on the sequence of committed commands. It is in this order that the commands are applied to the replicated application state.
 \end{itemize}
 
-These queues are stored by the replica as types \texttt{command list} and \texttt{proposal list}. This is because list types in OCaml have a large library of helper functions in the Core library. Further, the type \texttt{proposal list} can be considered isomorphic to \texttt{(slot\_number * command) List.Assoc.t}, that is an association list (commonly known as a dictionary) of commands keyed by their slot number. This allows for proposals to be looked up by their key and inverted and looked up by their command, functionality necessary for managing the flow of proposals through the queues. \\
+These queues are stored by the replica as types \texttt{command list} and \texttt{proposal list}. This is because list types in OCaml have a large library of helper functions in the Core library. Further, the type \texttt{proposal list} is structurally equivalent to \texttt{(slot\_number, command) List.Assoc.t}, that is an association list of commands keyed by their slot number. This allows for proposals to be looked up by their key or inverted and looked up by their command, functionality necessary for managing the flow of proposals through the queues. \\
 
 In order to track the next slots in which to propose and commit, each replica maintains two counters:
 \begin{itemize}
@@ -363,7 +368,7 @@ In order to track the next slots in which to propose and commit, each replica ma
   \item \texttt{slot\_out}: Represents the lowest next available slot for which no decision has been committed; that is $\nexists \ \left( s, c \right) \in \textrm{decisions}. \ s = \textrm{slot\_out}$.
 \end{itemize}
 
-Commands and proposals move through this system of queues as shown in Figure \ref{fig:replica-queues}. \texttt{request($c$)} messages sent by clients arrive at the replica and are entered into the requests queue. Concurrently the replica will attempt to dequeue commands {\color{red} in a Producer consumer relationship}, proposing each to \texttt{slot\_in}, the lowest free slot, and incrementing \texttt{slot\_in}. Each of these commands is tagged with this slot number and entered into the proposals queue. Once in this queue, it can then be proposed to the configuration participating in the synod protocol by broadcasting a \texttt{propose($s$,$c$)} to the set of leaders. \\
+Commands and proposals move through this system of queues as shown in Figure \ref{fig:replica-queues}. \texttt{request($c$)} messages sent by clients arrive at the replica and are entered into the requests queue. Concurrently the replica will attempt to dequeue commands in producer--consumer relationship, proposing each to \texttt{slot\_in}, the lowest free slot, and incrementing \texttt{slot\_in}. Each of these commands is tagged with this slot number and entered into the proposals queue. Once in this queue, it can then be proposed to the configuration participating in the synod protocol by broadcasting a \texttt{propose($s$,$c$)} to the set of leaders. \\
 
 Leaders will at some point in the future return a \texttt{decision($s$,$c'$)} message for each slot $s$ for which a command was proposed by a replica. If $c = c'$ for a proposal $\left(s,c\right) \in \textrm{proposals}$ then it is removed from proposals and added to decisions. However if $c \neq c'$ then a different command has been decided for the slot than the one proposed by this replica. (i.e. the replicas disagreed on their serializations and the other has won out). In this case $\left(s,c'\right)$ is committed to decisions and $c$ is returned to requests so that it can be re-proposed for a different slot number. \\
 
@@ -376,9 +381,9 @@ Every time that a proposal is committed in the decisions queue, the proposal $\l
   \label{fig:replica-queues}
 \end{figure}
   
-Reconfigurations represent a change in the set of leaders and acceptors participating in the synod protocol. Replicas are therefore expected to be able to reconfigure, that is to change the set of leaders with which they share their proposals. Reconfigurations are commands sent like any other, except that when executed by the replica (having been decided a slot in the same fashion any other command would), rather than being applied to the application state they update the set of leaders to the new configuration. {\color{red}Explain therefore the need for a window}. \\
+Reconfigurations represent a change in the set of leaders and acceptors participating in the synod protocol. Replicas are therefore expected to be able to reconfigure, that is to change the set of leaders with which they share their proposals. Reconfigurations are commands sent like any other, except that when executed by the replica (having been decided a slot in the same fashion any other command would), rather than being applied to the application state they update the set of leaders to the new configuration. \\
 
-We therefore maintain a \texttt{WINDOW} value that represents the number of slots to which a value can be proposed before a given reconfiguration command takes effect. Equivalently this involves maintaining the invariant $ \textrm{\texttt{slot\_in}} < \textrm{\texttt{slot\_out}} + \textrm{\texttt{WINDOW}} $. Hence the queue of proposals has a maximum capacity of \texttt{WINDOW} and implies that a maximum \texttt{WINDOW} proposals are in flight (that is, being serialized by the synod protocol) at once. This therefore means that given a reconfiguration doesn't take effect for \texttt{WINDOW} slots that after any reconfiguration is triggered all pending proposals will have been decided by the time the configuration has taken place. \\
+A window of commands is maintained so that only a maximum number of commands are ever being decided upon by the synod protocol at any given time; reconfiguration commands do not take effect until there are no more commands in flight for the previous configuration. We therefore maintain a \texttt{WINDOW} value that represents the number of slots to which a value can be proposed before a given reconfiguration command takes effect. Equivalently this involves maintaining the invariant $ \textrm{\texttt{slot\_in}} < \textrm{\texttt{slot\_out}} + \textrm{\texttt{WINDOW}} $. Hence the queue of proposals has a maximum capacity of \texttt{WINDOW} and implies that a maximum \texttt{WINDOW} proposals are in flight (that is, being serialized by the synod protocol) at once. This therefore means that given a reconfiguration doesn't take effect for \texttt{WINDOW} slots that after any reconfiguration is triggered all pending proposals will have been decided by the time the configuration has taken place. \\
 
 {\color{blue}Include an example execution diagram of this sliding window}.
 
@@ -389,31 +394,11 @@ We therefore maintain a \texttt{WINDOW} value that represents the number of slot
 %  \item Include a diagram of the three different sets of commands, proposals and decisions and how each moves from one set to another in different sets of circumstances.
 %\end{itemize}
 
-
-
-
-
-
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Synod protocol}
 
-Replicas each propose their own serialization of client commands; varying processing speeds and delays in the network along with crash failures of replicas can cause these serializations to differ. In this case, it is the function of the Synod protocol to produce a single serialization of those proposals that is returned to all the replicas. This serialization must be decided upon in a distributed manner by the configuration, that is the set of leaders and acceptors. Before we examine the role that leaders play in the next step of the algorithm it is necessary to observe the functionality of replicas.
-
-\subsection{Quorums}
-
-...We need to think about what I'm going to explain and show here... \\
-
-\begin{itemize}
-  \item Describe how the quorum system was implemented. Show the .mli interface as a snippet and describe how this can be used to achieve majority quorums.
-  \item Show briefly how the majority checking function was implemented.
-\end{itemize}
+Replicas each propose their own serialization of client commands; varying processing speeds and delays in the network along with crash failures of replicas can cause these serializations to differ. In this case, it is the function of the Synod protocol to produce a single serialization of those proposals that is returned to all the replicas. This serialization must be decided upon in a distributed manner by the configuration, that is the set of leaders and acceptors. Before we examine the role that leaders play in the next step of the algorithm it is necessary to observe the functionality of acceptors.
 
 \subsection{Acceptors}
 
@@ -426,7 +411,7 @@ type t = {
 }
 \end{lstlisting}
   \centering
-  \caption{Types of records storing replica state}
+  \caption{Types of records storing acceptor state}
   \label{fig:acceptor-type}
 \end{figure}
 
@@ -437,9 +422,7 @@ Acceptors form what is known as the disitributed fault tolerant memory of the co
   \item \texttt{accepted}: The list of pvalues which the acceptor has \emph{accepted}, initially empty.
 \end{itemize}
 
-{\color{red}Explain what acceptance and adoption is, or reference that we mentioned it in section 2.} \\
-
-Acceptors represent passive processes in the algorithm. They change their state and send messages only in direct response to messages from leaders; other than when initialising, all processing occurs upon receiving a phase 1a or phase 2a message from a leader. Given this, all an acceptor is required to do is maintain its state and provide two callbacks, listed in Figure \ref{fig:acceptor-phase1} and \ref{fig:acceptor-phase2}, when starting a server; one to receive phase 1a messages and one to receive phase2a messages. Recall from {\color{red}the messaging section} that these are blocking messages and so the phase 1b and 2b replies are just the return type of these callbacks. \\
+Acceptors represent passive processes in the algorithm. They change their state and send messages only in direct response to messages from leaders; other than when initialising, all processing occurs upon receiving a phase 1a or phase 2a message from a leader. Given this, all an acceptor is required to do is maintain its state and provide two callbacks, listed in Figure \ref{fig:acceptor-phase1} and \ref{fig:acceptor-phase2}, when starting a server; one to receive phase 1a messages and one to receive phase2a messages. Recall from \ref{section:messages} that these are blocking messages and so the phase 1b and 2b replies are just the return type of these callbacks. \\
 
 \begin{figure}
   \begin{lstlisting}
@@ -479,7 +462,7 @@ In this situation each acceptor may have a different list of accepted pvalues. W
 
 \subsection{Leaders}
 
-Introduction to leaders... Leaders receive over time from each replica their serialization of the set of proposals, which of course may differ. The leaders are required to, between them, return a serialization of the proposals such that each replica receives the same serialization. \\
+Leaders receive over time from each replica their serialization of the set of proposals which may differ. The leaders are required to, between them and in a manner that tolerates the failure of all but one leader, return a serialization of the proposals such that each replica receives the same serialization. \\
 
 Leaders spawn and manage \emph{scouts} and \emph{commanders} in order to separate the concerns of attempting to secure adoption of ballots and attempting to secure acceptance of pvalues. Each scout and commander is a sub-process with an associated state and execution context that is spawned by a given leader. Rather than using the existing messaing subsystem which would produce excessive overhead for managing exchange of data between these threads we instead have them communicate locally in a producer consumer relationship. \\
 
@@ -492,9 +475,9 @@ type process_response = Adopted of Ballot.t * Pval.t list
   \label{fig:sub-process-responses}
 \end{figure}
 
-In essence each sub-process has a lifetime in which it is spawned, messages acceptors, receives responses, performs some processing and then terminates. The terminating sub-process may have to pass back to the leader the result of its computation. In the case of scouts, this is either a notification of a preemption having occurred or its ballot having been adopted ({\color{red}along with associated pvalues}). Commanders may notify the leader on termination of a preemption having occured. The types of these responses are listed in Figure \ref{fig:sub-process-responses}. \\
+In essence each sub-process has a lifetime in which it is spawned, messages acceptors, receives responses, performs some processing and then terminates. The terminating sub-process may have to pass back to the leader the result of its computation. In the case of scouts, this is either a notification of a preemption having occurred or its ballot having been adopted (along with the pvalues of all the previously accepted ballots). Commanders may notify the leader on termination of a preemption having occured. The types of these responses are listed in Figure \ref{fig:sub-process-responses}. \\
 
-We treat the sub-processes and the leader that spawned them as engaging in a producer consumer relationship. Terminating sub-processes produce these responses and enqueue them onto \texttt{message\_queue}, a queue of responses, via the \texttt{send : process\_response -> unit Lwt.t} function. The leader periodically will consume these responses from the queue, in turn possibly spawning more sub-processes that repeat the cycle. The queue is protected by a guard mutex\footnote{Note here that we use a Lwt mutex rather than a Core mutex in order to match the types {\color{red}say more}} \texttt{queue\_guard} that protects from races from occuring when the leader and one or more sub-processes attempt to mutate the state of the queue at once. {\color{red}The code for all of this is described in Figure \ref{fig:sub-process-messaging-queue}}. \\
+We treat the sub-processes and the leader that spawned them as engaging in a producer consumer relationship. Figure \ref{fig:sub-process-messaging-queue} lists code pertaining to the response queue. Terminating sub-processes produce these responses and enqueue them onto \texttt{message\_queue}, a queue of responses, via the \texttt{send : process\_response -> unit Lwt.t} function. The leader periodically will consume these responses from the queue, in turn possibly spawning more sub-processes that repeat the cycle. The queue is protected by a guard mutex \texttt{queue\_guard} that protects from races from occuring when the leader and one or more sub-processes attempt to mutate the state of the queue at once. \\
 
 \begin{figure}
   \begin{lstlisting}
@@ -509,16 +492,6 @@ let send msg =
   \caption{Types of responses produced by scouts and commanders}
   \label{fig:sub-process-messaging-queue}
 \end{figure}
-
-
-
-
-
-%\begin{itemize}
-%  \item Describe how the operation of leaders is split into two sub-processes - scouts and commanders.
-%  \item Operational description of how scouts and commanders communicate concurrently. Diagram displaying how there is a message queue that these sub-processes use to send %``virtual'' messages.
-%  \item Snippets of the signatures and structs used to construct these sub-processes. 
-%\end{itemize}
 
 \subsubsection{Scouts}
 
@@ -566,17 +539,15 @@ If $b \neq b'$ then, just as we had with scouts, the commander will terminate wi
 Having described the operation of scouts and commanders, it is now necessary to discuss when leaders spawn sub-processes and how they process their responses. Leaders maintain the following important state:
 
 \begin{itemize}
-  \item \texttt{ballot\_num}: initially $\left(0,\lambda)$ for leader with identifier $\lambda$. This is the ...
-  \item \texttt{active}: a boolean value that represents the mode in which the leader operates at a given time.
+  \item \texttt{ballot\_num}: initially $\left(0,\lambda)$ for leader with identifier $\lambda$. This is the ballot over which the leader currently attempts to secure adoption and acceptance of a corresponding pvalue.
+  \item \texttt{active}: a boolean value that describes whether the leader is currently in \emph{active} or \emph{passive} mode.
   \item \texttt{proposals}: the list of proposals the leader has received from replicas.
 \end{itemize}
 
-The flag \texttt{active} describes whether the leader is currently in \emph{active} or \emph{passive} mode.
+Conceptually we can treat leaders as having receiving three different kinds of messages: proposals from replicas, adoption messages from scouts and preemption messages from scouts or 
+commanders (although of course the implementation of how these are processed differs). \\
 
-Conceptually we can treat leaders as having receiving three different kinds of messages: proposals from replicas, adoption messages from scouts and preemption messages from scouts or commanders (although of course the implementation of how these are processed differs).
-
-\section{Summary}
-
+{\color{red}A passive leader has spawned a scout and is waiting for phase 1 of the synod protocol to conclude. The leader initialises in passive mode when it attempts to perform phase 1 with the ballot $\left(0, \lambda \right)$. The leader becomes active upon phase 1 of the protocol concluding and consuming a \texttt{Adopted($b$,pvals)} response from the message queue. The leader in this case spawns a commander for every proposal ... that haven't been committed to a given slot. Leaders revert back to passive mode when they are preempted and have to repeat phase 1 of the ballot. Asynchronously leaders receive proposoals from replicas and will add them to their list of proposals, assuming it hasn't already been proposed to a given slot. If the leader is active then it will spawn a commander to attempt to commit this proposal, since a quorum of acceptors will have adopted the leader's current ballot.}
 
 
 

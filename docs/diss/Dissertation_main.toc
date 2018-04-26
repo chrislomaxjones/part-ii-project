@@ -1,59 +1,48 @@
-\contentsline {chapter}{\numberline {1}Introduction}{1}
-\contentsline {section}{\numberline {1.1}Background}{1}
-\contentsline {section}{\numberline {1.2}Aims}{2}
-\contentsline {chapter}{\numberline {2}Preparation}{3}
-\contentsline {section}{\numberline {2.1}Theotrical background}{3}
-\contentsline {subsection}{\numberline {2.1.1}Assumptions of the environment}{3}
-\contentsline {subsection}{\numberline {2.1.2}Aim of consensus}{4}
-\contentsline {subsection}{\numberline {2.1.3}State machine replication}{4}
-\contentsline {subsection}{\numberline {2.1.4}Single-decree Paxos}{5}
-\contentsline {subsection}{\numberline {2.1.5}Multi-decree Paxos}{6}
-\contentsline {subsubsection}{Clients}{7}
-\contentsline {subsubsection}{Replicas}{8}
-\contentsline {subsubsection}{Ballots and pvalues}{8}
-\contentsline {subsubsection}{Quorums}{9}
-\contentsline {subsubsection}{The Synod Protocol}{9}
-\contentsline {section}{\numberline {2.2}Requirements}{10}
-\contentsline {subsection}{\numberline {2.2.1}System requirements}{10}
-\contentsline {subsection}{\numberline {2.2.2}Testing and evaluation requirements}{12}
-\contentsline {subsection}{\numberline {2.2.3}Extension elements}{12}
-\contentsline {section}{\numberline {2.3}Software engineering}{12}
-\contentsline {subsection}{\numberline {2.3.1}Methodology}{12}
-\contentsline {subsection}{\numberline {2.3.2}Libraries}{12}
-\contentsline {subsection}{\numberline {2.3.3}Compiler}{13}
-\contentsline {subsection}{\numberline {2.3.4}Tools}{13}
-\contentsline {chapter}{\numberline {3}Implementation}{14}
-\contentsline {section}{\numberline {3.1}High level structure of program}{14}
-\contentsline {section}{\numberline {3.2}Data structures}{15}
-\contentsline {subsection}{\numberline {3.2.1}Identifiers}{15}
-\contentsline {subsection}{\numberline {3.2.2}Key value store}{16}
-\contentsline {subsection}{\numberline {3.2.3}Ballots}{17}
-\contentsline {section}{\numberline {3.3}Messages}{18}
-\contentsline {subsection}{\numberline {3.3.1}Interface exposed}{18}
-\contentsline {subsection}{\numberline {3.3.2}Cap'n Proto}{19}
-\contentsline {subsection}{\numberline {3.3.3}Server}{22}
-\contentsline {section}{\numberline {3.4}Clients and replicas - better title?}{22}
-\contentsline {subsection}{\numberline {3.4.1}Clients}{22}
-\contentsline {subsection}{\numberline {3.4.2}Replicas}{22}
-\contentsline {section}{\numberline {3.5}Synod protocol}{26}
-\contentsline {subsection}{\numberline {3.5.1}Quorums}{26}
-\contentsline {subsection}{\numberline {3.5.2}Acceptors}{27}
-\contentsline {subsection}{\numberline {3.5.3}Leaders}{29}
-\contentsline {subsubsection}{Scouts}{30}
-\contentsline {subsubsection}{Commanders}{31}
-\contentsline {subsubsection}{Leaders}{32}
-\contentsline {section}{\numberline {3.6}Summary}{32}
-\contentsline {chapter}{\numberline {4}Evaluation}{33}
-\contentsline {section}{\numberline {4.1}Experimental setup}{33}
-\contentsline {subsection}{\numberline {4.1.1}Mininet}{33}
-\contentsline {subsection}{\numberline {4.1.2}Experimental measurements}{33}
-\contentsline {section}{\numberline {4.2}Simulation tests}{34}
-\contentsline {section}{\numberline {4.3}Performance evaluation}{34}
-\contentsline {subsection}{\numberline {4.3.1}Steady state behaviour}{34}
-\contentsline {subsection}{\numberline {4.3.2}System size}{34}
-\contentsline {subsection}{\numberline {4.3.3}Failure traces}{35}
-\contentsline {section}{\numberline {4.4}Summary}{35}
-\contentsline {chapter}{\numberline {5}Conclusion}{36}
-\contentsline {chapter}{Bibliography}{37}
-\contentsline {chapter}{\numberline {A}Cap'n Proto schema file}{39}
-\contentsline {chapter}{\numberline {B}Projct Proposal}{41}
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Background}{1}{section.1.1}
+\contentsline {section}{\numberline {1.2}Aims}{2}{section.1.2}
+\contentsline {chapter}{\numberline {2}Preparation}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Theotrical background}{3}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Assumptions of the environment}{3}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2}Aim of consensus}{4}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3}State machine replication}{5}{subsection.2.1.3}
+\contentsline {subsection}{\numberline {2.1.4}Single-decree Paxos}{5}{subsection.2.1.4}
+\contentsline {subsection}{\numberline {2.1.5}Multi-decree Paxos}{7}{subsection.2.1.5}
+\contentsline {subsubsection}{Clients}{7}{table.2.2}
+\contentsline {subsubsection}{Replicas}{9}{table.2.2}
+\contentsline {subsubsection}{Ballots and pvalues}{9}{table.2.2}
+\contentsline {subsubsection}{Quorums}{10}{table.2.2}
+\contentsline {subsubsection}{The Synod Protocol}{10}{table.2.2}
+\contentsline {section}{\numberline {2.2}Requirements}{12}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}System requirements}{12}{subsection.2.2.1}
+\contentsline {section}{\numberline {2.3}Software engineering}{13}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Starting point}{14}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Methodology}{14}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}Libraries}{14}{subsection.2.3.3}
+\contentsline {subsection}{\numberline {2.3.4}Build system}{15}{subsection.2.3.4}
+\contentsline {subsection}{\numberline {2.3.5}Tools}{16}{subsection.2.3.5}
+\contentsline {subsection}{\numberline {2.3.6}Testing}{17}{subsection.2.3.6}
+\contentsline {chapter}{\numberline {3}Implementation}{18}{chapter.3}
+\contentsline {section}{\numberline {3.1}High level architecture}{18}{section.3.1}
+\contentsline {section}{\numberline {3.2}Data structures}{19}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Identifiers}{19}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Key value store}{20}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Ballots}{21}{subsection.3.2.3}
+\contentsline {section}{\numberline {3.3}Messages}{22}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Interface exposed}{22}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Cap'n Proto}{24}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Masking errors}{26}{subsection.3.3.3}
+\contentsline {section}{\numberline {3.4}Clients and replicas}{26}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Clients}{26}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}Replicas}{27}{subsection.3.4.2}
+\contentsline {section}{\numberline {3.5}Synod protocol}{30}{section.3.5}
+\contentsline {subsection}{\numberline {3.5.1}Acceptors}{30}{subsection.3.5.1}
+\contentsline {subsection}{\numberline {3.5.2}Leaders}{33}{subsection.3.5.2}
+\contentsline {subsubsection}{Scouts}{34}{figure.3.15}
+\contentsline {subsubsection}{Commanders}{35}{figure.3.16}
+\contentsline {subsubsection}{Leaders}{35}{figure.3.16}
+\contentsline {chapter}{\numberline {4}Evaluation}{37}{chapter.4}
+\contentsline {chapter}{\numberline {5}Conclusion}{38}{chapter.5}
+\contentsline {chapter}{Bibliography}{39}{chapter.5}
+\contentsline {chapter}{\numberline {A}Cap'n Proto schema file}{41}{appendix.A}
+\contentsline {chapter}{\numberline {B}Projct Proposal}{43}{appendix.B}
