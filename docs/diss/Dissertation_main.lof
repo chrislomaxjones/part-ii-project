@@ -1,5 +1,7 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Timing diagram showing a single proposer $p_1$ committing a value $v$ with three acceptors $a_1$, $a_2$ and $a_3$}}{7}{figure.2.1}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Timing diagram showing a proposer $p_1$ being preempted by acceptors $a_1$, $a_2$ and $a_3$ having already adopted a higher proposal number submitted previously by $p_2$}}{7}{figure.2.2}
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces High level subsystems of a process}}{19}{figure.3.1}
 \contentsline {figure}{\numberline {3.2}{\ignorespaces Signature of the key value store module}}{20}{figure.3.2}
@@ -8,16 +10,18 @@
 \contentsline {figure}{\numberline {3.5}{\ignorespaces Types of non-blocking messages}}{23}{figure.3.5}
 \contentsline {figure}{\numberline {3.6}{\ignorespaces Function to start a new server that presents a number of possible callbacks}}{23}{figure.3.6}
 \contentsline {figure}{\numberline {3.7}{\ignorespaces Function that returns a Cap'n Proto capability for the message service of a given URI}}{25}{figure.3.7}
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Dealing with errors as a result of Cap'n Proto message delivery failure}}{26}{figure.3.8}
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Types of records representing replica state}}{27}{figure.3.9}
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Flow of requests and proposals through a replica's queues}}{29}{figure.3.10}
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Types of records storing acceptor state}}{30}{figure.3.11}
-\contentsline {figure}{\numberline {3.12}{\ignorespaces Function called when an acceptor receives a phase1a message with associated ballot.}}{31}{figure.3.12}
-\contentsline {figure}{\numberline {3.13}{\ignorespaces Function called when an acceptor receives a phase2a message with associated pvalue.}}{31}{figure.3.13}
-\contentsline {figure}{\numberline {3.14}{\ignorespaces Types of responses produced by scouts and commanders}}{33}{figure.3.14}
-\contentsline {figure}{\numberline {3.15}{\ignorespaces Types of responses produced by scouts and commanders}}{34}{figure.3.15}
-\contentsline {figure}{\numberline {3.16}{\ignorespaces Signature of scouts}}{34}{figure.3.16}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Types of records representing replica state}}{26}{figure.3.8}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Flow of requests and proposals through a replica's queues}}{29}{figure.3.9}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces (a) shows a window with one available slot into which a command $c_{i+3}$ is proposed, leading to the window shown in (b). In (b) however no further slots are available for proposals since $ \textrm {\texttt {slot\_in}} < \textrm {\texttt {slot\_out}} + \textrm {\texttt {WINDOW}} $. IN (c), a decision is received for $c_{i+1}$ and so the \texttt {slot\_out} is incremented and now another slot is available for proposals.}}{30}{figure.3.10}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Types of records storing acceptor state}}{31}{figure.3.11}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Function called when an acceptor receives a phase1a message with associated ballot.}}{32}{figure.3.12}
+\contentsline {figure}{\numberline {3.13}{\ignorespaces Function called when an acceptor receives a phase2a message with associated pvalue.}}{32}{figure.3.13}
+\contentsline {figure}{\numberline {3.14}{\ignorespaces Types of responses produced by scouts and commanders}}{34}{figure.3.14}
+\contentsline {figure}{\numberline {3.15}{\ignorespaces Functions and values for manipulating the message queue of process responses}}{34}{figure.3.15}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces Signature of scouts}}{35}{figure.3.16}
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Graph of backoffs}}{40}{figure.4.1}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Graph of topologies}}{42}{figure.4.2}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

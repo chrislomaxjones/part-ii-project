@@ -17,8 +17,6 @@ A \emph{process} (or networked process) is an instance of the program running on
 
 Assumptions of the network in which these processes communicate:
 
-\input{include/single-paxos.latex}
-
 \begin{itemize}
   \item All processes can communicate with one another.
   \item The network environment is \emph{asynchronous}. That is, messages may take an arbitrarily long time to be delivered.
@@ -52,7 +50,7 @@ The last two assumptions assume a system that does not tolerate what are known g
 
 With distributed consensus, we wish for a network of processes to agree on some value. In consensus algorithms it is assumed that processes can somehow propose values to one participating processes. The goal of distributed consensus is, given a number of processes that can each propose some value $v$, that one of the proposed values is chosen. This is the \emph{single-decree} case, that is only one value is proposed by each process and only one is chosen. \\
 
-In the \emph{multi-decree} case, agreement is reached over a sequence of values. That is, each process will propose a sequence of valus $v_1, v_2, \ldots, v_n$ and the role of the consensus protocol is to have the system choose one such sequence from all those proposed. This multi-decree case allows for the state machine replication technique to be employed to replicate an application across a number of machines in a distributed system.
+In the \emph{multi-decree} case, agreement is reached over a sequence of values. That is, each process will propose a sequence of valus $v_1, v_2, \ldots, v_n$ and the role of the consensus protocol is to have the system choose one such sequence from all those proposed. This multi--decree case allows for the state machine replication technique to be employed to replicate an application across a number of machines in a distributed system.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,16 +59,16 @@ In the \emph{multi-decree} case, agreement is reached over a sequence of values.
 \subsection{State machine replication}
 
 
-A desirable goal of distributed computing is to replicate an application across a number of machines so that each \emph{replica} has the same strongly-consistent view of the application's state. This technique is referred to as State machine replication (SMR); it leads to both for increased fault tolerance and higher availability. Multi-decree consensus protocols provide a primitive by which an application (that behaves like a state machine) can be replicated. \\
+A desirable goal of distributed computing is to replicate an application across a number of machines so that each \emph{replica} has the same strongly--consistent view of the application's state. This technique is referred to as State machine replication (SMR); it leads to both for increased fault tolerance and higher availability. Multi--decree consensus protocols provide a primitive by which an application (that behaves like a state machine) can be replicated. \\
 
 Each process participating in the consensus protocol runs the replicated state machine application, with each process starting in the same state. Then by treating the values proposed in the consensus protocol as \emph{commands} to perform a state transition, then by running a consensus protocol each process will receive the same serialized sequence of commands $c_1, c_2, \ldots, c_n$. These commands are treated as commands to perform a state transition and as such each process perform the same sequence of transitions from the same starting state and thus be a replica of the the state machine application. \\
 
-Before considering how to implement SMR in the multi-decree case, it is useful to examine how Paxos operates in the simpler single-decree case. 
+Before considering how to implement SMR in the multi--decree case, it is useful to examine how Paxos operates in the simpler single--decree case. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Single-decree Paxos}
+\subsection{Single--decree Paxos}
 
 \begin{table}
   \centering
@@ -82,11 +80,11 @@ Before considering how to implement SMR in the multi-decree case, it is useful t
                      & Decide whether to \emph{accept} a proposal based on a higher numbered proposal having arriving. & \\ [.5\normalbaselineskip] \hline
     Learner & Learn value chosen by majority of acceptors & $f + 1$ \\ [.5\normalbaselineskip]
   \end{tabular}
-  \caption{Summary of the roles in single-decree Paxos. In this description the system can tolerate the failure of up to $f$ of each given role.}
+  \caption{Summary of the roles in single--decree Paxos. In this description the system can tolerate the failure of up to $f$ of each given role.}
 \label{table:role-summary}
 \end{table}
 
-Single-decree Paxos is the variant of the algorithm that allows for a single value to be chosen from a set of proposals and provides a foundation for the multi-decree case that will be considered next. The terminology used here follows Lamport's paper \cite{paxos-made-simple} describing the single-decree protocol in simple terms. Processes take the roles of \emph{proposers}, \emph{acceptors} and \emph{learners}, each of which has a designated task in the Paxos algorithm. In reality these roles are often co-located within a single process but it is simply to consider each separately.  The prupose of each role and the number of each role required to tolerate $f$ failures is summarised in Table \ref{table:role-summary}.  \\
+Single--decree Paxos is the variant of the algorithm that allows for a single value to be chosen from a set of proposals and provides a foundation for the multi--decree case that will be considered next. The terminology used here follows Lamport's paper \cite{paxos-made-simple} describing the single--decree protocol in simple terms. Processes take the roles of \emph{proposers}, \emph{acceptors} and \emph{learners}, each of which has a designated task in the algorithm. In reality these roles are often co-located within a single process but it is simpler to consider each separately.  The prupose of each role and the number of each role required to tolerate $f$ failures is summarised in Table \ref{table:role-summary}.  \\
 
 Proposers that wish to propose a value $v$ submit proposals of the form $\left(n,v\right)$, where $n \in \mathbb{N}$ is called a proposal number. Each proposer may propose one proposal at a time and may only use strictly increasing proposal numbers for each proposal. Furthermore, each proposer must use a disjoint set of proposal numbers. The Paxos algorithm is divided into a number of stages described below. \\
 
@@ -98,20 +96,38 @@ Proposers that wish to propose a value $v$ submit proposals of the form $\left(n
 
 \textbf{Phase 2b (Commit phase)} An acceptor receiving a \texttt{accept($n$,$v$)} message from a proposer will decide whether to commit the proposal for $v$. If the acceptor hasn't made a promise to adopt a proposal number higher than $n$, then it will commit $v$, otherwise it will ignore this message or send a \texttt{NACK} to the proposer. \\
 
-Once this process is completed, a majority of the acceptors will have chosen the same proposed value. Learners are required to learn what value was chosen by the majority. A number of different methods can be employed to deliver this information. Acceptors can, on choosing a value to accept, broadcast their decision to the set of learners. An alternative method is to have a distringuished learner (or small subset of) that are sent all decisions which then forward onto the set of learners when they have learned the majority. \\
+Figures \ref{fig:single-paxos-1} and \ref{fig:single-paxos-2} show two example message flows between proposers and acceptors in the single Paxos protocol. \\
 
-{\color{blue}Talk about some simple examples with corresponding timing diagrams.}
+Once this process is completed, a majority of the acceptors will have chosen the same proposed value. Learners are required to each learn the value chosen by the majority. A number of different methods can be employed achieve this. The simplest is to have acceptors, on choosing a value to accept, broadcast their decision to the set of learners. \\
 
+\begin{figure}
+  \centering
+  \input{include/single-paxos.latex}
+  \caption{Timing diagram showing a single proposer $p_1$ committing a value $v$ with three acceptors $a_1$, $a_2$ and $a_3$}
+  \label{fig:single-paxos-1}  
+\end{figure}
+
+\begin{figure}
+  \centering
+  \input{include/single-paxos-2.latex}
+  \caption{Timing diagram showing a proposer $p_1$ being preempted by acceptors $a_1$, $a_2$ and $a_3$ having already adopted a higher proposal number submitted previously by $p_2$}
+  \label{fig:single-paxos-2}  
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{Multi-decree Paxos}
+\subsection{Multi--decree Paxos}
 \label{subsection:multi-decree-paxos}
 
-Single-decree Paxos can be naively extended by allowing proposers to propose values one at a time. However, this is wasteful as it requires that proposers send \texttt{prepare} messages for each proposal they wish to make. Van Renesse et al \cite{VanRenesse:2015:PMM:2737799.2673577} describes Multi-Paxos with an emphasis on use for state machine replication that forms the basis of the description that follows. In this paper the roles of the processes are changed to emphasise the purpose of the system SMR. \emph{Replica} processes are introduced to implicitly act as the learners and maintain the replicated state machine. \emph{Client} processes are introduced as a means to externally submit commands to the replicas. Proposers are referred to as \emph{leaders} as each takes the lead over some set of \emph{ballots}. The new roles and their correspondence to the single-decree roles are summarised in Table \ref{table:multi-role-summary}. \\
+Single--decree Paxos can be naively extended by allowing proposers to propose values one at a time. However, this is wasteful as it requires that proposers send \texttt{prepare} messages for each proposal they wish to make. Van Renesse et al \cite{VanRenesse:2015:PMM:2737799.2673577} describes Multi-Paxos with an emphasis on use for state machine replication that forms the basis of the description that follows. In this paper the roles of the processes are changed to emphasise the purpose of the system SMR. \emph{Replica} processes are introduced to implicitly act as the learners and maintain the replicated state machine. \emph{Client} processes are introduced as a means to externally submit commands to the replicas. Proposers are referred to as \emph{leaders} as each takes the lead over some set of \emph{ballots}. The new roles and their correspondence to the single--decree roles are summarised in Table \ref{table:multi-role-summary}. \\
 
-{\color{blue}Diagram showing the communication pattern of nodes in Mutli-Paxos. Contrast with the single-decree case.}
+%\begin{figure}
+%  \centering
+%  \input{include/comm-patterns.latex}
+%  \caption{...}
+%  \label{fig:multi-paxos-comm-patterns}  
+%\end{figure}
 
 \begin{table}
 \centering
@@ -142,14 +158,11 @@ The purpose of clients is to allow for commands to be sent externally to the sys
 
 A command $c$ takes the form $\left( \kappa, \mathrm{\emph{cid}}, \mathrm{\emph{op}} \right)$, where $\kappa$ is a unique identifier for the client, \emph{cid} is a unique identifier for the client's sent commands and \emph{op} is the operation the command should perform. Clients broadcast a \texttt{request($c$)} message to the replicas and each is issued a \texttt{response(}\emph{cid}\texttt{,}\emph{result}\texttt{)} when consensus is reached and it has been applied to each replica's application state.
 
-
 \subsubsection{Replicas}
 
 Replicas receive commands and attempt to serialize them by converting each command $c$ into a proposal $\left(s,c\right)$, where $s \in \mathbb{N}$ is a slot number. The slot number describes ordering of the sequence in which the commands should be committed; this is not to be confused with the proposal number $n$ in the single-decree protocol. \\
 
-Different replicas may form different sequences of proposals and so broadcasts a \texttt{propose($s$,$c$)} message to the set of leaders and awaits a \texttt{decision($s'$,$c'$)} message. The resulting decision may differ in its slot number and so the replica may have to re-propose a command it has proposed for the decided slot. Upon receipt of decisions the replica will apply the associated operation to the application state, maintaining the replicated application. \\
-
-{\color{blue}Diagram showing message flow between clients and replicas to clarify the last points.}
+Different replicas may form different sequences of proposals and so broadcasts a \texttt{propose($s$,$c$)} message to the set of leaders and awaits a \texttt{decision($s'$,$c'$)} message. The resulting decision may differ in its slot number and so the replica may have to re-propose a command it has proposed for the decided slot. Upon receipt of decisions the replica will apply the associated operation to the application state, maintaining the replicated application.
 
 \subsubsection{Ballots and pvalues}
 
@@ -214,7 +227,7 @@ As noted previously, there are a number of papers that describe the Paxos protoc
 
 It is therefore necessary to perform a \emph{requirements analysis} of the final system. This was performed by collecting information from the literature on how the algorithm is presented and also considering all of the necessary functionality required to implement such an algorithm. For example, in the Paxos Made Moderately Complex paper processes are described as being able to send messages between one another. This of course presents the requirement for a messaging primitive that operates on top of a best--effort IP network. The final system requirements are listed below. \\
 
-\textbf{System-like requirements}
+\textbf{General requirements}
 \begin{itemize}
   \item The ability to pass the executable file some command line arguments for initializing the process.
   \item Ability for each node to be nominated to a given role and to start-up in that role (via the command line).
@@ -297,7 +310,7 @@ In the case of each library used their software lisence was made readily availab
     YoJson & Specific license file & \url{https://github.com/mjambon/yojson/blob/master/LICENSE.md} \\ \hline
     OUnit & Specific license file & \url{https://github.com/mjambon/yojson/blob/master/LICENSE.md} \\ \hline
     Ocaml-capnp & Apache &  \texttt{opam show ocaml-capnp} \\
-    Capnp-rpc & & \texttt{opam show ocaml-capnp} \\ \hline
+    Capnp-rpc & & \texttt{opam show capnp-rpc} \\ \hline
 \end{tabular}
 \caption{Software licenses for each of the libraries used in the project.}
 \label{table:software-licenses}
@@ -310,17 +323,18 @@ JBuilder was used as the build system for this project. It was chosen for its mi
   
 Choice of tools is important for being productive in a language. MacVim\footnote{https://github.com/macvim-dev/macvim} was used as a text editor. In order to improve productivity Merlin was used to provide code-completion and edit-time type inference features, making it much easier to understand the types of source code and save time reading documentation online. \texttt{.merlin} files are auto-generated by Jbuilder that allow for code completion and type inference over files in the project directory itself. \\
 
-Utop for read-eval-print loop for quick sanity checks and rapid prototyping. \\
-
 Git was used for source control and version. Branches were made for each new feature under development and merged back into the master. Backups were to a remote repository on Github. Backups were also made periodically to Google Drive. All of the development work was undertaken on my person machine with the option of fallback onto the MCS machines. \\
 
-In order to simulate the operation and performance of instances of the implementation in a distributed system it was necessary to use a network simulator. Mininet\footnote{http://mininet.org/} is a network simulator that operates on a proess based virtualisation and allows for arbitrary processes to be simulated as running on hosts on a virtual network. Mininet provides a complete Python API for setting up such simulations and performing experiments. Mininet required use of a guest operating system on VirtualBox\footnote{https://www.virtualbox.org/}, virtualization software that allowed Mininet to be used on my own machine.
+In order to simulate the operation and performance of instances of the implementation in a distributed system it was necessary to use a network simulator. Mininet\footnote{http://mininet.org/} is a network simulator that operates with proess based virtualisation and allows for arbitrary processes to be simulated as running on hosts on a virtual network. Mininet provides a complete Python API for setting up such simulations and performing experiments. Mininet required use of a guest operating system on VirtualBox\footnote{https://www.virtualbox.org/}, virtualization software that allowed Mininet to be used on my own machine.
 
 \subsection{Testing}
 \label{subsection-testing}
-Unit testing was performed in order to check the operation of functions at a fine-grained level within the program. OCaml's static type system ensures the compiler will catch a number of errors resulting from improper calls to functions and so unit tests were designed as a compliment to this; tests focussed on correctly typed arguments to functions yielding appropriate results we expect. The test suites were executed after successful builds of the project. \\
+Unit testing was performed in order to check the operation of functions at a fine-grained level within the program. OCaml's static type system ensures the compiler will catch a number of errors resulting from improper calls to functions and so unit tests were designed as a compliment to this; tests focussed on correctly typed arguments to functions yielding appropriate results we expect. The test suites were executed after successful builds of the project.
 
 % {\color{red}Simulation testing.}
+
+\section{Summary}
+This chapter discussed the theoretical basis for implementing Multi--Paxos and state machine replication before going on to describe a set of requirements for an implementation of the algorithm, finishing with a description of the software engineering tools and techniques employed. With this in place it is possible to go on to describe the implementation of the algorithm and its underlying systems in Chapter 3.
 
 
 

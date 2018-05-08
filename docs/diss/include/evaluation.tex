@@ -1,36 +1,70 @@
 \chapter{Evaluation}
 
-A brief introduction to the evaluation here. We discuss the two-fold evaluation strategy: tests of the system as a whole to check that it works against our assumptions and the evaluation of its performance both in the steady state and in the face of failures.
+With an implementation of Multi--Paxos having been developed it is now necessary discuss its evaluation; both in terms of its ability to perform under the assumptions of the environment in which it operates and also to characterise its performance in a number of typical cases.
 
 \section{Experimental setup}
 
-Talk about how for our evaluation we require the simulation of a network that admits the failures described in the preparation chapter. Hence Mininet.
-
-\subsection{Mininet}
-
-Introduction to Mininet. What it is. Why we're using it. Explain it runs on VirtualBox. \\
-
-How Mininet works. Allows us to write Python scripts to simulate. Process-based virtualisation. How we need to install OCaml runtime etc on it. Explain how this was a problem and so we run OCaml as bytecode. \\
-
-{\color{blue}Perhaps a diagram here showing the workflow of how we use Mininet.}
+This section describes the framework upon which simulations were setup to allow for evaluation to take place.
 
 \subsection{Experimental measurements}
 
-Talk about the need in our evaluation to measure two quantities - latency and throughput. \\
+Performance evaluation requires the measurement and subsequent analysis of experimental data. There are two key metrics required for evaluating the performance of networked systems -- \emph{latency} and \emph{throughput}. \\
 
-Define latency and throughput in the context of our simulation. \\
+\textbf{Latency} is the time taken elapsed  between a client sending a request to the system and receiving a response. It is measured by a client broadcasting a command with a \texttt{Nop} operation to the set of replicas and starting a timer. The timer is stopped when the response with the corresponding command identifier is received and the elapsed time is calculated and output to a trace log file. \\
 
-Explain how these were implemented and integrated into the program via command line arguments etc. \\
+\textbf{Throughput} is the rate at which the system services requests and hence measured in requests per unit of time. Clients submit requests at a fixed rate (e.g. 10 requests per second) and the number of responses returned per second is measured by clients. This gives a throughput for a given arrival rate and allows for a peak throughput measurement to be made. That is, a certain arrival rate of requests will maximise the output throughput which represents the maximal rate at which the system services requests. \\
 
-{\color{blue}Might be a point-scorer to includle a simple graph of latency and throughput just to show what sort of measurements we get in any case. \\}
+\subsection{Mininet}
 
-\section{Simulation tests}
+Mininet is the network simulator that was used for the evaluation of the implementation. Mininet comes with a Python API that allows for scripts to run network simulations. Mininet allows for arbitrary Linux processes to be run on any of the virtual hosts. This involved installing an OCaml runtime to execute bytecode compiled on the development machine. The simulation runs Python scripts that performs simulations that proceeds as follows
 
-Define here what we mean by simulation tests: tests that ensure the expected behaviour of the system as a whole is undertaken. \\
+\begin{enumerate}
+  \item Setup up network topology, populating it with hosts and switches and their interconnects (and the performance parameters)
+  \item For a given number of each role participating, a JSON configuration file is generated that lists each host IP address and port number
+  \item Multi--Paxos instances are started via the OCaml runtime on each virtual host with their parameters set (e.g. whether they are clients)
+  \item The simulation starts and proceeds to execute for a given amount of time
+  \item The simulation is terminated. Configuration files are deleted and the virtual network is torn down and each process is terminated.
+\end{enumerate}
+
+Log files are saved by each process on a shared filesystem with the host machine upon which they are analysed by another Python script which produces plots using matplotlib\footnote{https://matplotlib.org/}.
+
+{\color{blue}Perhaps a diagram here showing the workflow of how we use Mininet.}
+
+\subsection{Duelling leaders and the impossibility result}
+
+\begin{figure}
+  \includegraphics{include/backoffs.pdf}
+  \caption{Graph of backoffs}
+  \label{fig:backoff-graph}
+\end{figure}
+
+When performing initial experiments on the system it became apparent that systems that have more than one leader would regularly livelock when processing requests from clients. Inspection of log files led to me finding out this was a well--known case of \emph{duelling leaders}. This occurs when leaders will attempt to gain adoption of their ballot but are preempted by another leader. The leader will then attempt to gain adoption of another ballot before the other leader's ballot is accepted, causing the other leader to attempt adoption of a higher ballot. The leaders will continually increment their ballots and seek adoption without any given ballot being accept, livelocking the system and leaving it unable to make progress. \\
+
+There is a well known result called the FLP Impossibility result, outlined in Fischer et al's paper \cite{Fischer:1985:IDC:3149.214121} that proves that consensus is never guaranteed in an asynchronous environment that permits crash failures. The problem of duelling leaders is an instance of this problem and so there is no guarantee that consensus can be reached in an asychronous environment. \\
+
+However, there are methods to vastly reduce the chance that leaders will duel. One simple method is to have a \emph{random backoff} so that each leader will pause their operation for a random amount of time in some range. This increases the chance that a leader will have its ballot accepted before being preempted by another leader. A slightly more sophisticated method is to employ \emph{exponential backoff}. In this case each leader will employ a random backoff within some range and upon being preempted this range is doubled. The backoff time is reduced to an initial value when an adopted message is received by a leader. This reduces the amount of idle waiting that may occur when using a random backoff and no duelling is occurring. \\
+
+Figure \ref{fig:backoff-graph} shows a number of traces with different backoff strategies. With no backoff, the system halts at after 18 requests are processed and makes no further progress processing requests as the leaders duel. Three traces of random backoffs with different maximum wait times were collected. With greater maximum wait times there are a number of greater sporadic delays in the system as these leaders often have to wait idly even when duelling is not occuring. Making the random timeout too small, as in the 0.25s case, reduces the number of delays but increases the chance leaders will duel for some time before one waits long enough for the other to make progress, resulting in very large delays. The exponential backoff (starting with a value of 0.25s) performs best, with very little delay in the general case and ocassional delays as backoff windows increase in size when a duelling situation occurs.
+
+{\color{green}\section{Simulation tests}
+
+Define here what we  meanby simulation tests: tests that ensure the expected behaviour of the system as a whole is undertaken. \\
 
 Explain this fits into our definitions of what a test harness is and how we're going to use that to perform evaluations. Explain this also requires modification of the program to ensure we can crash / delay acceptors suitably so as to simulate the sort of failure modes we require. \\
 
-Perhaps describe a system test and then also reference a table describing each test in the appendix. \\
+Perhaps describe a system test and then also reference a table describing each test in the appendix. \\}
+
+\subsection{Topologies}
+
+\begin{figure}
+  \includegraphics{include/topos.pdf}
+  \caption{Graph of topologies}
+  \label{fig:topo-graph}
+\end{figure}
+
+An important consideration when evaluating the system on a simulated network is to ensure that the results collected do not reflect the characteristics of the network itself rather than reflecting the characteristics of the system itself. For example we do not wish for delays in queues at switches to dominate the measurements of latency for the system itself. An initial experiment was performed to observe the steady state behaviour of the system with three different network topologies, shown in {\color{red}show diagram}. Topology (a) represents a star topology wherein each host is connected to a single switch. Topology (b) represents a linear network wherein each process with the same role is connected to a single switch and these are each connected together. Topology (c) represents a tree topology with switches arranged in a binary tree structure. \\
+
+Figure \ref{fig:topo-graph} shows the traces produced when measuring the steady state latency of each topology. No unexpected behaviour occurs in any of the three schemes. The main difference to note is that the average latency of each trace varies between each topology. This is because the number of hops from each sender and receiver participating in the system varies. For example, every host is two hops away in the star topology, 3 hops away in the linear topology and a variable number of hops away in the tree topology. There is no unexpected queuing behaviour resulting in very large delays for any of the given topologies. \\
 
 \section{Performance evaluation}
 

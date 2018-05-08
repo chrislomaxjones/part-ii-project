@@ -1,0 +1,69 @@
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(4363,2888)(339,-2074)
+\put(2521,-1996){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_1$}%
+}}}}
+\put(2797,-45){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_1$}%
+}}}}
+{\color[rgb]{0,0,0}\thinlines
+\put(3039,-849){\circle{610}}
+}%
+\put(2797,-945){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_1$}%
+}}}}
+{\color[rgb]{0,0,0}\put(4389,501){\circle{610}}
+}%
+\put(4147,405){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_1$}%
+}}}}
+{\color[rgb]{0,0,0}\put(4389,-399){\circle{610}}
+}%
+\put(4147,-495){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_1$}%
+}}}}
+{\color[rgb]{0,0,0}\put(4389,-1299){\circle{610}}
+}%
+\put(4147,-1395){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_1$}%
+}}}}
+{\color[rgb]{0,0,0}\put(1688,-839){\circle{664}}
+}%
+{\color[rgb]{0,0,0}\put(1711, 29){\circle{664}}
+}%
+\thicklines
+{\color[rgb]{0,0,0}\put(466,-946){\oval(210,210)[bl]}
+\put(466,-796){\oval(210,210)[tl]}
+\put(616,-946){\oval(210,210)[br]}
+\put(616,-796){\oval(210,210)[tr]}
+\put(466,-1051){\line( 1, 0){150}}
+\put(466,-691){\line( 1, 0){150}}
+\put(361,-946){\line( 0, 1){150}}
+\put(721,-946){\line( 0, 1){150}}
+}%
+{\color[rgb]{0,0,0}\put(466,-46){\oval(210,210)[bl]}
+\put(466,104){\oval(210,210)[tl]}
+\put(616,-46){\oval(210,210)[br]}
+\put(616,104){\oval(210,210)[tr]}
+\put(466,-151){\line( 1, 0){150}}
+\put(466,209){\line( 1, 0){150}}
+\put(361,-46){\line( 0, 1){150}}
+\put(721,-46){\line( 0, 1){150}}
+}%
+{\color[rgb]{0,0,0}\multiput(721,-871)(247.59111,371.38667){3}{\line( 2, 3){114.049}}
+\put(1330, 43){\vector( 2, 3){0}}
+}%
+{\color[rgb]{0,0,0}\multiput(721,-871)(180.00000,0.00000){4}{\line( 1, 0){ 90.000}}
+\put(1351,-871){\vector( 1, 0){0}}
+}%
+{\color[rgb]{0,0,0}\multiput(721, 29)(247.59111,-371.38667){3}{\line( 2,-3){114.049}}
+\put(1330,-885){\vector( 2,-3){0}}
+}%
+{\color[rgb]{0,0,0}\multiput(721, 29)(180.00000,0.00000){4}{\line( 1, 0){ 90.000}}
+\put(1351, 29){\vector( 1, 0){0}}
+}%
+{\color[rgb]{0,0,0}\thinlines
+\put(3039, 51){\circle{610}}
+}%
+\end{picture}%

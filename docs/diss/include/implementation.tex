@@ -158,7 +158,7 @@ When a command has been committed to a slot by the consensus algorithm, the comm
 
 \subsection{Ballots}
 
-The definition of ballot numbers from \ref{subsection:multi-decree-paxos} lends itself to representation by an algebraic datatype. Ballots are hence the tagged union of Bottom (representing the least ballot $\bot$) or a pair consiting of an integer and a leader identifer (representing pairs $\left(n,\lambda\right)$). The type definition is included in {\color{red} Figure blah blah}. \\
+The definition of ballot numbers from \ref{subsection:multi-decree-paxos} lends itself to representation by an algebraic datatype. Ballots are hence the tagged union of Bottom (representing the least ballot $\bot$) or a pair consiting of an integer and a leader identifer (representing pairs $\left(n,\lambda\right)$). The type definition is listed in \ref{fig:ballot-types} \\
 
 \begin{figure}
   \begin{lstlisting}
@@ -166,6 +166,7 @@ type t = Bottom
        | Number of int * leader_id
   \end{lstlisting}
     \caption{Types of ballot numbers.}
+    \label{fig:ballot-types}
   \centering
 \end{figure}
 
@@ -241,11 +242,7 @@ The message module also exposes a function to start a new server, the type of wh
 
 Cap'n Proto is used as the underlying system for sending messages. Cap'n Protos requires that one writes a schema file that describes a service; this contains data structures and messages that need to be serialized. This schema file, listed in full in Appendix \ref{appendix:schema}, contains an interface that describes the service that we wish to make available to the messaging system. The schema crucially contains a method for every message that can be sent and its associated arguments and return type, with each mapping to the associated message type described in Figure \ref{message-types}. Note that some of the arguments in the Cap'n Proto schema file are stored as \texttt{Text} types rather than as the types in \ref{message-types} as these are first serialized into JSON using Yojson and then converted to strings. This was to provide a degree of separation in the source code. For example, this helps avoid situations where a new command for the replicated application would require rewriting of boilerplate code for messaging and recompilation of the schema. \\
 
-{\color{red}A compiler tool is used to generate OCaml code that contains signatures and structures for the interface described in the schema. Describe serialisation and deserialisation. \\
-
-So far we have only use the serialization functionality provided by Cap'n Proto, providing a means of marshalling our messages into a suitable data exchange format. This serialization will be used by the RPC protocol implemented by Cap'n Proto. This is achieved by \emph{functorising} the generated API with a suitable RPC library (in this case \texttt{canp\_rpc\_lwt}). {\color{red}Explain what then needs to be implemented and how to implement it.} \\
-
-Talk about Vats and Capabilities. Talk about how Cap'n Proto works under the hood.}\\
+A compiler tool is used to generate OCaml code that contains signatures and structures for the message API defined in the schema. The function \texttt{start\_new\_server} returns a service object that has a method for handling each of the possible functions that represent a message receipt for that server. In each of these functions the arguments are deserialised from the Cap'n Proto representation into the message type used by the system and the callback function called. The result of calling this function is then serialised and sent as a message to the sending process. \\
 
 \begin{figure}
   \begin{lstlisting}
@@ -266,7 +263,7 @@ let service_from_uri uri =
   \label{fig:service-from-uri}
 \end{figure}
 
-Within Cap'n Proto sturdy refs are identified by Cap'n Proto URIs\footnote{https://tools.ietf.org/html/rfc3986}. For each server initialized with the \texttt{start\_new\_server} function the supplied IP address and port number are mapped to a URI that is used to address the internal capability. Given a URI one can derive a sturdy reference to the capability and connect via that sturdy reference. Each connection runs over TCP and so rather than have each message setup and teardown a TCP session a cache of connected capabilities is stored by the messaging module that maps URIs to capabilities, listed in Figure \ref{fig:service-from-uri}. The function searches the table hashed by URIs first to see if a connection has already been established and returns that if it does. Otherwise if there is a cache miss an attempt to connect to the capability is initiated. If this results in a success then the capability cached and then returned. Note here the return type is \texttt{Capability.t option Lwt.t} since the connection could result in an error. \\
+Sending a message requires translating a Cap'n Proto URI\footnote{https://tools.ietf.org/html/rfc3986} that represents the server into a \emph{capability} which represents a stateful connection to the server. For each server initialized with the \texttt{start\_new\_server} function the supplied IP address and port number are mapped to a URI that is used to address the internal capability. Given a URI one can derive a sturdy reference to the capability and connect via that sturdy reference. Each connection runs over TCP and so rather than have each message setup and teardown a TCP session a cache of connected capabilities is stored by the messaging module that maps URIs to capabilities, listed in Figure \ref{fig:service-from-uri}. The function searches the table hashed by URIs first to see if a connection has already been established and returns that if it does. Otherwise if there is a cache miss an attempt to connect to the capability is initiated. If this results in a success then the capability cached and then returned. Note here the return type is \texttt{Capability.t option Lwt.t} since the connection could result in an error. \\
 
 %\begin{figure}
 %  \begin{lstlisting}
@@ -303,22 +300,22 @@ Within Cap'n Proto sturdy refs are identified by Cap'n Proto URIs\footnote{https
 %  \caption{Types of non-blocking messages}
 %\end{figure}
 
-\subsection{Masking errors}
-
-{\color{red}
-Next go on to talk about how we use Error types in the rpc responses to catch killed nodes and simply. Talk about how we need to refresh the cache in this case. Talk a bit more about the types used in phase1/phase2 messages as these may return Errors to the above subsystem. \\
-}
-
-\begin{figure}
-  \begin{lstlisting}
-Capability.call_for_unit t method_id request >|= function
-      | Ok () -> ()
-      | Error e -> Hashtbl.clear sturdy_refs    
-  \end{lstlisting}
-  \centering
-  \caption{Dealing with errors as a result of Cap'n Proto message delivery failure}
-  \label{fig:message-failure}
-\end{figure}
+%\subsection{Masking errors}
+%
+%{\color{red}
+%Next go on to talk about how we use Error types in the rpc responses to catch killed nodes and simply. Talk about how we need to refresh the cache in this case. Talk a bit more about the types used in phase1/phase2 messages as these may return Errors to the above subsystem. \\
+%}
+%
+%\begin{figure}
+%  \begin{lstlisting}
+%Capability.call_for_unit t method_id request >|= function
+%      | Ok () -> ()
+%      | Error e -> Hashtbl.clear sturdy_refs    
+%  \end{lstlisting}
+%  \centering
+%  \caption{Dealing with errors as a result of Cap'n Proto message delivery failure}
+%  \label{fig:message-failure}
+%\end{figure}
 
 
 \section{Clients and replicas}
@@ -383,9 +380,17 @@ Every time that a proposal is committed in the decisions queue, the proposal $\l
   
 Reconfigurations represent a change in the set of leaders and acceptors participating in the synod protocol. Replicas are therefore expected to be able to reconfigure, that is to change the set of leaders with which they share their proposals. Reconfigurations are commands sent like any other, except that when executed by the replica (having been decided a slot in the same fashion any other command would), rather than being applied to the application state they update the set of leaders to the new configuration. \\
 
-A window of commands is maintained so that only a maximum number of commands are ever being decided upon by the synod protocol at any given time; reconfiguration commands do not take effect until there are no more commands in flight for the previous configuration. We therefore maintain a \texttt{WINDOW} value that represents the number of slots to which a value can be proposed before a given reconfiguration command takes effect. Equivalently this involves maintaining the invariant $ \textrm{\texttt{slot\_in}} < \textrm{\texttt{slot\_out}} + \textrm{\texttt{WINDOW}} $. Hence the queue of proposals has a maximum capacity of \texttt{WINDOW} and implies that a maximum \texttt{WINDOW} proposals are in flight (that is, being serialized by the synod protocol) at once. This therefore means that given a reconfiguration doesn't take effect for \texttt{WINDOW} slots that after any reconfiguration is triggered all pending proposals will have been decided by the time the configuration has taken place. \\
+A window of commands is maintained so that only a maximum number of commands are ever being decided upon by the synod protocol at any given time; reconfiguration commands do not take effect until there are no more commands in flight for the previous configuration. We therefore maintain a \texttt{WINDOW} value that represents the number of slots to which a value can be proposed before a given reconfiguration command takes effect. Equivalently this involves maintaining the invariant $ \textrm{\texttt{slot\_in}} < \textrm{\texttt{slot\_out}} + \textrm{\texttt{WINDOW}} $. Hence the queue of proposals has a maximum capacity of \texttt{WINDOW} and implies that a maximum \texttt{WINDOW} proposals are in flight (that is, being serialized by the synod protocol) at once. This therefore means that given a reconfiguration doesn't take effect for \texttt{WINDOW} slots that after any reconfiguration is triggered all pending proposals will have been decided by the time the configuration has taken place. A diagram showing a sequence of states an example window undergoes is shown in \ref{fig:replica-window}\\
 
-{\color{blue}Include an example execution diagram of this sliding window}.
+\begin{figure}
+  \centering
+    \scalebox{0.8}{
+      \input{include/window.latex}
+    }
+  \caption{(a) shows a window with one available slot into which a command $c_{i+3}$ is proposed, leading to the window shown in (b). In (b) however no further slots are available for proposals since $ \textrm{\texttt{slot\_in}} < \textrm{\texttt{slot\_out}} + \textrm{\texttt{WINDOW}} $. IN (c), a decision is received for $c_{i+1}$ and so the \texttt{slot\_out} is incremented and now another slot is available for proposals.}
+  \label{fig:replica-window}  
+\end{figure}
+
 
 %\begin{itemize}
 %  \item Leading on from clients, explain how messages can be re-ordered / lost / delayed from clients and how broadcasts from replicas allow progress in the event of replica failure.
@@ -489,7 +494,7 @@ let send msg =
   Queue.enqueue message_queue msg) >|= fun () ->
   Lwt_mutex.unlock queue_guard
   \end{lstlisting}
-  \caption{Types of responses produced by scouts and commanders}
+  \caption{Functions and values for manipulating the message queue of process responses}
   \label{fig:sub-process-messaging-queue}
 \end{figure}
 
@@ -544,12 +549,17 @@ Having described the operation of scouts and commanders, it is now necessary to 
   \item \texttt{proposals}: the list of proposals the leader has received from replicas.
 \end{itemize}
 
-Conceptually we can treat leaders as having receiving three different kinds of messages: proposals from replicas, adoption messages from scouts and preemption messages from scouts or 
-commanders (although of course the implementation of how these are processed differs). \\
+A passive leader has spawned a scout and is waiting for phase 1 of the synod protocol to conclude. The leader initialises in passive mode when it attempts to perform phase 1 with the ballot $\left(0, \lambda \right)$. Conceptually we can treat leaders as having receiving three different kinds of messages: proposals from replicas, adoption messages from scouts and preemption messages from scouts or commanders (although of course the implementation of how these are processed differs). \\
 
-{\color{red}A passive leader has spawned a scout and is waiting for phase 1 of the synod protocol to conclude. The leader initialises in passive mode when it attempts to perform phase 1 with the ballot $\left(0, \lambda \right)$. The leader becomes active upon phase 1 of the protocol concluding and consuming a \texttt{Adopted($b$,pvals)} response from the message queue. The leader in this case spawns a commander for every proposal ... that haven't been committed to a given slot. Leaders revert back to passive mode when they are preempted and have to repeat phase 1 of the ballot. Asynchronously leaders receive proposoals from replicas and will add them to their list of proposals, assuming it hasn't already been proposed to a given slot. If the leader is active then it will spawn a commander to attempt to commit this proposal, since a quorum of acceptors will have adopted the leader's current ballot.}
+Leaders receive \texttt{Propose($s,c$)} messages from replicas and will add them to their list of proposals, assuming it hasn't already been proposed to a given slot. If the leader is active then it will spawn a commander to attempt to commit this proposal, since a quorum of acceptors will have adopted the leader's current ballot. If the leader is not active then it simply waits until an adoption message is received, in which case it will then spawn commanders for all stored proposals .
 
+Preemption messages \texttt{Preempted($b$)} occur when a scout receives from an acceptor a ballot number $b$ higher than that they are seeking adoption or acceptance. In this case the commander moves into passive mode and increments the round number of its ballot and spawns a new scout to attempt to secure adoption of this new ballot number. \\
 
+An \texttt{Adopted($b$,pvals)} message indicates that phase 1 of the protocol has concluded. The leader will in this situation be in passive mode and so enter active mode now that it can begin phase 2 of the protocol. From \texttt{pvals} the leader for each slot number the command with the highest corresponding ballot and adds it to their list of \texttt{proposals}, removing from \texttt{proposals} any that have the same slot number. For each of these proposals the leader spawns a commander sub-process to execute phase 2 of the protocol and seek acceptance for each pvalue.
+
+\section{Summary}
+
+This chapter described the implementation details of the project; beginning with a high level overview of the architecture and then delving into the message system and each role the processes can take and their ability to communicate. Chapter 4 goes on to describe the evaluation of the software that took place.
 
 
 

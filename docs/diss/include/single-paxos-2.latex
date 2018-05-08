@@ -1,0 +1,91 @@
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(5808,3541)(-284,-1889)
+\put(4276,-1816){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}accept(1, v)}%
+}}}}
+\thicklines
+{\color[rgb]{0,0,0}\put(226,-1186){\vector( 1, 0){5130}}
+}%
+{\color[rgb]{0,0,0}\put(181,1514){\vector( 1, 0){5310}}
+}%
+{\color[rgb]{0,0,0}\put(226,164){\vector( 1, 0){5175}}
+}%
+{\color[rgb]{0,0,0}\put(226,839){\vector( 1, 0){5220}}
+}%
+{\color[rgb]{0,0,1}\put(226,839){\vector( 1,-3){450}}
+}%
+{\color[rgb]{0,0,1}\put(226,839){\vector( 2,-3){450}}
+}%
+{\color[rgb]{0,.82,.82}\put(901,-511){\vector( 2, 3){900}}
+}%
+{\color[rgb]{0,.82,.82}\put(901,-1186){\vector( 2, 3){1350}}
+}%
+{\color[rgb]{0,0,1}\put(226,-1546){\vector( 1, 0){810}}
+}%
+{\color[rgb]{0,.82,.82}\put(901,164){\vector( 2, 3){450}}
+}%
+{\color[rgb]{0,0,1}\put(226,839){\vector( 1,-4){502.941}}
+}%
+{\color[rgb]{1,0,0}\put(451,1514){\vector( 1,-2){693}}
+}%
+{\color[rgb]{1,0,0}\put(451,1514){\vector( 1,-3){675}}
+}%
+{\color[rgb]{1,0,0}\put(451,1514){\vector( 1,-4){675}}
+}%
+\put(1195,178){\vector( 2, 3){865.385}}
+\put(1223,-486){\vector( 2, 3){1336.308}}
+{\color[rgb]{0,.82,0}\put(2822,860){\vector( 3,-4){533.520}}
+}%
+{\color[rgb]{0,.82,0}\put(2849,844){\vector( 1,-3){459.200}}
+}%
+{\color[rgb]{0,.82,0}\put(2850,842){\vector( 1,-4){508.118}}
+}%
+\put(3611,-1193){\vector( 2, 3){1350}}
+\put(3618,-508){\vector( 2, 3){900}}
+\put(3591,171){\vector( 2, 3){450}}
+\put(1226,218){\vector( 2, 3){865.385}}
+\put(1282,-1214){\vector( 2, 3){1820.923}}
+{\color[rgb]{1,0,0}\put(1576,-1546){\vector( 1, 0){720}}
+}%
+{\color[rgb]{0,.82,.82}\put(2701,-1546){\vector( 1, 0){810}}
+}%
+{\color[rgb]{0,.82,0}\put(4276,-1546){\vector( 1, 0){810}}
+}%
+\put(-269,119){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_1$}%
+}}}}
+\put(-269,-556){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_2$}%
+}}}}
+\put(-269,-1231){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_3$}%
+}}}}
+\put(-269,1469){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$p_1$}%
+}}}}
+\put(-269,794){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$p_2$}%
+}}}}
+\put(226,-1816){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}prepare(2)}%
+}}}}
+\put(3646,344){\rotatebox{55.0}{\makebox(0,0)[lb]{\smash{{\SetFigFont{8}{9.6}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}ACK}%
+}}}}}
+\put(3736,-241){\rotatebox{55.0}{\makebox(0,0)[lb]{\smash{{\SetFigFont{8}{9.6}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}ACK}%
+}}}}}
+\put(3646,-961){\rotatebox{55.0}{\makebox(0,0)[lb]{\smash{{\SetFigFont{8}{9.6}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}ACK}%
+}}}}}
+\put(2161,1019){\rotatebox{55.0}{\makebox(0,0)[lb]{\smash{{\SetFigFont{8}{9.6}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}NACK}%
+}}}}}
+\put(1621,1019){\rotatebox{55.0}{\makebox(0,0)[lb]{\smash{{\SetFigFont{8}{9.6}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}NACK}%
+}}}}}
+\put(2656,974){\rotatebox{55.0}{\makebox(0,0)[lb]{\smash{{\SetFigFont{8}{9.6}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}NACK}%
+}}}}}
+%  prepare(1) 
+\put(1576,-1816){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}prepare(1)}%
+}}}}
+\put(2701,-1816){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}promise(1, \{\})}%
+}}}}
+{\color[rgb]{0,0,0}\put(181,-511){\vector( 1, 0){5220}}
+}%
+\end{picture}%

@@ -5,6 +5,7 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{verbatim}
 
 \usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,menucolor=black,runcolor=black,urlcolor=black,bookmarks=true]{hyperref}
 \usepackage{breakurl}
@@ -89,7 +90,7 @@
 \begin{center}
 \Huge
 {\bf \color{red} DRAFT} \\
-{\bf Achieving distributed consensus with Paxos} \\
+{\bf Achieving distributed \\ consensus with Paxos} \\
 \vspace*{5mm}
 Part II Project \\
 \vspace*{5mm}
@@ -179,8 +180,6 @@ extent for a comparable purpose.
 
 \listoffigures
 
-\listoftables
-
 \cleardoublepage        % just to make sure before the page numbering is changed
 
 \setcounter{page}{1}
@@ -205,10 +204,7 @@ extent for a comparable purpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \include{include/evaluation}
-% \newpage
-
-\chapter{Evaluation}
+\include{include/evaluation}
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,7 +227,8 @@ extent for a comparable purpose.
 
 \chapter{Cap'n Proto schema file}
 \label{appendix:schema}
-\lstinputlisting{./../../src/rpc/message_api.capnp}
+%\lstinputlisting{./../../src/rpc/message_api.capnp}
+\verbatiminput{./../../src/rpc/message_api.capnp}
 
 %\cleardoublepage
 

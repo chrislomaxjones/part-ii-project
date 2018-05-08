@@ -1,0 +1,442 @@
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(7455,6567)(166,-7048)
+\put(7471,-6856){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}...}%
+}}}}
+\put(4906,-3346){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}slot\_in}%
+}}}}
+\thinlines
+{\color[rgb]{0,0,0}\put(2881,-5911){\vector( 0,-1){405}}
+}%
+\put(2881,-5821){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}slot\_out}%
+}}}}
+{\color[rgb]{0,0,0}\put(2881,-5281){\line( 0,-1){360}}
+}%
+{\color[rgb]{0,0,0}\put(5626,-5281){\line( 0,-1){360}}
+}%
+{\color[rgb]{0,0,0}\put(2881,-5461){\line( 1, 0){2745}}
+}%
+\put(4276,-5371){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}WINDOW}%
+}}}}
+{\color[rgb]{0,0,0}\put(4951,-5866){\vector( 0,-1){405}}
+}%
+\put(4951,-5776){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}slot\_in}%
+}}}}
+{\color[rgb]{0,0,0}\put(4276,-1186){\vector( 0,-1){405}}
+}%
+\put(4276,-1096){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}slot\_in}%
+}}}}
+{\color[rgb]{0,0,0}\put(2056,-4531){\oval(150,150)[bl]}
+\put(2056,-4231){\oval(150,150)[tl]}
+\put(2356,-4531){\oval(150,150)[br]}
+\put(2356,-4231){\oval(150,150)[tr]}
+\put(2056,-4606){\line( 1, 0){300}}
+\put(2056,-4156){\line( 1, 0){300}}
+\put(1981,-4531){\line( 0, 1){300}}
+\put(2431,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(2731,-4531){\oval(150,150)[bl]}
+\put(2731,-4231){\oval(150,150)[tl]}
+\put(3031,-4531){\oval(150,150)[br]}
+\put(3031,-4231){\oval(150,150)[tr]}
+\put(2731,-4606){\line( 1, 0){300}}
+\put(2731,-4156){\line( 1, 0){300}}
+\put(2656,-4531){\line( 0, 1){300}}
+\put(3106,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(3406,-4531){\oval(150,150)[bl]}
+\put(3406,-4231){\oval(150,150)[tl]}
+\put(3706,-4531){\oval(150,150)[br]}
+\put(3706,-4231){\oval(150,150)[tr]}
+\put(3406,-4606){\line( 1, 0){300}}
+\put(3406,-4156){\line( 1, 0){300}}
+\put(3331,-4531){\line( 0, 1){300}}
+\put(3781,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(6106,-4531){\oval(150,150)[bl]}
+\put(6106,-4231){\oval(150,150)[tl]}
+\put(6406,-4531){\oval(150,150)[br]}
+\put(6406,-4231){\oval(150,150)[tr]}
+\put(6106,-4606){\line( 1, 0){300}}
+\put(6106,-4156){\line( 1, 0){300}}
+\put(6031,-4531){\line( 0, 1){300}}
+\put(6481,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(6781,-4531){\oval(150,150)[bl]}
+\put(6781,-4231){\oval(150,150)[tl]}
+\put(7081,-4531){\oval(150,150)[br]}
+\put(7081,-4231){\oval(150,150)[tr]}
+\put(6781,-4606){\line( 1, 0){300}}
+\put(6781,-4156){\line( 1, 0){300}}
+\put(6706,-4531){\line( 0, 1){300}}
+\put(7156,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(4756,-4531){\oval(150,150)[bl]}
+\put(4756,-4231){\oval(150,150)[tl]}
+\put(5056,-4531){\oval(150,150)[br]}
+\put(5056,-4231){\oval(150,150)[tr]}
+\put(4756,-4606){\line( 1, 0){300}}
+\put(4756,-4156){\line( 1, 0){300}}
+\put(4681,-4531){\line( 0, 1){300}}
+\put(5131,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(4081,-4531){\oval(150,150)[bl]}
+\put(4081,-4231){\oval(150,150)[tl]}
+\put(4381,-4531){\oval(150,150)[br]}
+\put(4381,-4231){\oval(150,150)[tr]}
+\put(4081,-4606){\line( 1, 0){300}}
+\put(4081,-4156){\line( 1, 0){300}}
+\put(4006,-4531){\line( 0, 1){300}}
+\put(4456,-4531){\line( 0, 1){300}}
+}%
+\put(1381,-4531){\oval(150,150)[bl]}
+\put(1381,-4231){\oval(150,150)[tl]}
+\put(1681,-4531){\oval(150,150)[br]}
+\put(1681,-4231){\oval(150,150)[tr]}
+\put(1381,-4606){\line( 1, 0){300}}
+\put(1381,-4156){\line( 1, 0){300}}
+\put(1306,-4531){\line( 0, 1){300}}
+\put(1756,-4531){\line( 0, 1){300}}
+{\color[rgb]{0,0,0}\put(2206,-3481){\vector( 0,-1){405}}
+}%
+{\color[rgb]{0,0,0}\put(2206,-2806){\line( 0,-1){360}}
+}%
+{\color[rgb]{0,0,0}\put(4951,-2806){\line( 0,-1){360}}
+}%
+{\color[rgb]{0,0,0}\put(2056,-6961){\oval(150,150)[bl]}
+\put(2056,-6661){\oval(150,150)[tl]}
+\put(2356,-6961){\oval(150,150)[br]}
+\put(2356,-6661){\oval(150,150)[tr]}
+\put(2056,-7036){\line( 1, 0){300}}
+\put(2056,-6586){\line( 1, 0){300}}
+\put(1981,-6961){\line( 0, 1){300}}
+\put(2431,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(2731,-6961){\oval(150,150)[bl]}
+\put(2731,-6661){\oval(150,150)[tl]}
+\put(3031,-6961){\oval(150,150)[br]}
+\put(3031,-6661){\oval(150,150)[tr]}
+\put(2731,-7036){\line( 1, 0){300}}
+\put(2731,-6586){\line( 1, 0){300}}
+\put(2656,-6961){\line( 0, 1){300}}
+\put(3106,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(3406,-6961){\oval(150,150)[bl]}
+\put(3406,-6661){\oval(150,150)[tl]}
+\put(3706,-6961){\oval(150,150)[br]}
+\put(3706,-6661){\oval(150,150)[tr]}
+\put(3406,-7036){\line( 1, 0){300}}
+\put(3406,-6586){\line( 1, 0){300}}
+\put(3331,-6961){\line( 0, 1){300}}
+\put(3781,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(6106,-6961){\oval(150,150)[bl]}
+\put(6106,-6661){\oval(150,150)[tl]}
+\put(6406,-6961){\oval(150,150)[br]}
+\put(6406,-6661){\oval(150,150)[tr]}
+\put(6106,-7036){\line( 1, 0){300}}
+\put(6106,-6586){\line( 1, 0){300}}
+\put(6031,-6961){\line( 0, 1){300}}
+\put(6481,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(6781,-6961){\oval(150,150)[bl]}
+\put(6781,-6661){\oval(150,150)[tl]}
+\put(7081,-6961){\oval(150,150)[br]}
+\put(7081,-6661){\oval(150,150)[tr]}
+\put(6781,-7036){\line( 1, 0){300}}
+\put(6781,-6586){\line( 1, 0){300}}
+\put(6706,-6961){\line( 0, 1){300}}
+\put(7156,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(4756,-6961){\oval(150,150)[bl]}
+\put(4756,-6661){\oval(150,150)[tl]}
+\put(5056,-6961){\oval(150,150)[br]}
+\put(5056,-6661){\oval(150,150)[tr]}
+\put(4756,-7036){\line( 1, 0){300}}
+\put(4756,-6586){\line( 1, 0){300}}
+\put(4681,-6961){\line( 0, 1){300}}
+\put(5131,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(5431,-6961){\oval(150,150)[bl]}
+\put(5431,-6661){\oval(150,150)[tl]}
+\put(5731,-6961){\oval(150,150)[br]}
+\put(5731,-6661){\oval(150,150)[tr]}
+\put(5431,-7036){\line( 1, 0){300}}
+\put(5431,-6586){\line( 1, 0){300}}
+\put(5356,-6961){\line( 0, 1){300}}
+\put(5806,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(4081,-6961){\oval(150,150)[bl]}
+\put(4081,-6661){\oval(150,150)[tl]}
+\put(4381,-6961){\oval(150,150)[br]}
+\put(4381,-6661){\oval(150,150)[tr]}
+\put(4081,-7036){\line( 1, 0){300}}
+\put(4081,-6586){\line( 1, 0){300}}
+\put(4006,-6961){\line( 0, 1){300}}
+\put(4456,-6961){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(706,-6961){\oval(150,150)[bl]}
+\put(706,-6661){\oval(150,150)[tl]}
+\put(1006,-6961){\oval(150,150)[br]}
+\put(1006,-6661){\oval(150,150)[tr]}
+\put(706,-7036){\line( 1, 0){300}}
+\put(706,-6586){\line( 1, 0){300}}
+\put(631,-6961){\line( 0, 1){300}}
+\put(1081,-6961){\line( 0, 1){300}}
+}%
+\put(1381,-6961){\oval(150,150)[bl]}
+\put(1381,-6661){\oval(150,150)[tl]}
+\put(1681,-6961){\oval(150,150)[br]}
+\put(1681,-6661){\oval(150,150)[tr]}
+\put(1381,-7036){\line( 1, 0){300}}
+\put(1381,-6586){\line( 1, 0){300}}
+\put(1306,-6961){\line( 0, 1){300}}
+\put(1756,-6961){\line( 0, 1){300}}
+{\color[rgb]{0,0,0}\put(2101,-2236){\oval(150,150)[bl]}
+\put(2101,-1936){\oval(150,150)[tl]}
+\put(2401,-2236){\oval(150,150)[br]}
+\put(2401,-1936){\oval(150,150)[tr]}
+\put(2101,-2311){\line( 1, 0){300}}
+\put(2101,-1861){\line( 1, 0){300}}
+\put(2026,-2236){\line( 0, 1){300}}
+\put(2476,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(2776,-2236){\oval(150,150)[bl]}
+\put(2776,-1936){\oval(150,150)[tl]}
+\put(3076,-2236){\oval(150,150)[br]}
+\put(3076,-1936){\oval(150,150)[tr]}
+\put(2776,-2311){\line( 1, 0){300}}
+\put(2776,-1861){\line( 1, 0){300}}
+\put(2701,-2236){\line( 0, 1){300}}
+\put(3151,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(3451,-2236){\oval(150,150)[bl]}
+\put(3451,-1936){\oval(150,150)[tl]}
+\put(3751,-2236){\oval(150,150)[br]}
+\put(3751,-1936){\oval(150,150)[tr]}
+\put(3451,-2311){\line( 1, 0){300}}
+\put(3451,-1861){\line( 1, 0){300}}
+\put(3376,-2236){\line( 0, 1){300}}
+\put(3826,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(6151,-2236){\oval(150,150)[bl]}
+\put(6151,-1936){\oval(150,150)[tl]}
+\put(6451,-2236){\oval(150,150)[br]}
+\put(6451,-1936){\oval(150,150)[tr]}
+\put(6151,-2311){\line( 1, 0){300}}
+\put(6151,-1861){\line( 1, 0){300}}
+\put(6076,-2236){\line( 0, 1){300}}
+\put(6526,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(6826,-2236){\oval(150,150)[bl]}
+\put(6826,-1936){\oval(150,150)[tl]}
+\put(7126,-2236){\oval(150,150)[br]}
+\put(7126,-1936){\oval(150,150)[tr]}
+\put(6826,-2311){\line( 1, 0){300}}
+\put(6826,-1861){\line( 1, 0){300}}
+\put(6751,-2236){\line( 0, 1){300}}
+\put(7201,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(4801,-2236){\oval(150,150)[bl]}
+\put(4801,-1936){\oval(150,150)[tl]}
+\put(5101,-2236){\oval(150,150)[br]}
+\put(5101,-1936){\oval(150,150)[tr]}
+\put(4801,-2311){\line( 1, 0){300}}
+\put(4801,-1861){\line( 1, 0){300}}
+\put(4726,-2236){\line( 0, 1){300}}
+\put(5176,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(5476,-2236){\oval(150,150)[bl]}
+\put(5476,-1936){\oval(150,150)[tl]}
+\put(5776,-2236){\oval(150,150)[br]}
+\put(5776,-1936){\oval(150,150)[tr]}
+\put(5476,-2311){\line( 1, 0){300}}
+\put(5476,-1861){\line( 1, 0){300}}
+\put(5401,-2236){\line( 0, 1){300}}
+\put(5851,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(4126,-2236){\oval(150,150)[bl]}
+\put(4126,-1936){\oval(150,150)[tl]}
+\put(4426,-2236){\oval(150,150)[br]}
+\put(4426,-1936){\oval(150,150)[tr]}
+\put(4126,-2311){\line( 1, 0){300}}
+\put(4126,-1861){\line( 1, 0){300}}
+\put(4051,-2236){\line( 0, 1){300}}
+\put(4501,-2236){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(751,-2236){\oval(150,150)[bl]}
+\put(751,-1936){\oval(150,150)[tl]}
+\put(1051,-2236){\oval(150,150)[br]}
+\put(1051,-1936){\oval(150,150)[tr]}
+\put(751,-2311){\line( 1, 0){300}}
+\put(751,-1861){\line( 1, 0){300}}
+\put(676,-2236){\line( 0, 1){300}}
+\put(1126,-2236){\line( 0, 1){300}}
+}%
+\put(1426,-2236){\oval(150,150)[bl]}
+\put(1426,-1936){\oval(150,150)[tl]}
+\put(1726,-2236){\oval(150,150)[br]}
+\put(1726,-1936){\oval(150,150)[tr]}
+\put(1426,-2311){\line( 1, 0){300}}
+\put(1426,-1861){\line( 1, 0){300}}
+\put(1351,-2236){\line( 0, 1){300}}
+\put(1801,-2236){\line( 0, 1){300}}
+{\color[rgb]{0,0,0}\put(2251,-1186){\vector( 0,-1){405}}
+}%
+{\color[rgb]{0,0,0}\put(2251,-511){\line( 0,-1){360}}
+}%
+{\color[rgb]{0,0,0}\put(4996,-511){\line( 0,-1){360}}
+}%
+{\color[rgb]{0,0,0}\put(5431,-4531){\oval(150,150)[bl]}
+\put(5431,-4231){\oval(150,150)[tl]}
+\put(5731,-4531){\oval(150,150)[br]}
+\put(5731,-4231){\oval(150,150)[tr]}
+\put(5431,-4606){\line( 1, 0){300}}
+\put(5431,-4156){\line( 1, 0){300}}
+\put(5356,-4531){\line( 0, 1){300}}
+\put(5806,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(706,-4531){\oval(150,150)[bl]}
+\put(706,-4231){\oval(150,150)[tl]}
+\put(1006,-4531){\oval(150,150)[br]}
+\put(1006,-4231){\oval(150,150)[tr]}
+\put(706,-4606){\line( 1, 0){300}}
+\put(706,-4156){\line( 1, 0){300}}
+\put(631,-4531){\line( 0, 1){300}}
+\put(1081,-4531){\line( 0, 1){300}}
+}%
+{\color[rgb]{0,0,0}\put(2206,-2986){\line( 1, 0){2745}}
+}%
+{\color[rgb]{0,0,0}\multiput(5626,-5686)(0.00000,-114.54545){6}{\line( 0,-1){ 57.273}}
+}%
+{\color[rgb]{0,0,0}\put(2251,-691){\line( 1, 0){2745}}
+}%
+{\color[rgb]{0,0,0}\multiput(4996,-961)(0.00000,-114.54545){6}{\line( 0,-1){ 57.273}}
+}%
+\put(856,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i-2}$}%
+}}}}
+\put(1576,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i-1}$}%
+}}}}
+\put(2206,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i}$}%
+}}}}
+\put(2836,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+1}$}%
+}}}}
+\put(3556,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+2}$}%
+}}}}
+\put(4186,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+3}$}%
+}}}}
+\put(4906,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+4}$}%
+}}}}
+\put(5626,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+5}$}%
+}}}}
+\put(6256,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+6}$}%
+}}}}
+\put(6976,-4066){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+7}$}%
+}}}}
+\put(1576,-4426){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i-1}$}%
+}}}}
+\put(2206,-4426){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i}$}%
+}}}}
+\put(2926,-4426){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+1}$}%
+}}}}
+\put(3556,-4426){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+2}$}%
+}}}}
+\put(4276,-4426){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+3}$}%
+}}}}
+\put(2206,-3391){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}slot\_out}%
+}}}}
+\put(3601,-2896){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}WINDOW}%
+}}}}
+\put(856,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i-2}$}%
+}}}}
+\put(1576,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i-1}$}%
+}}}}
+\put(2206,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i}$}%
+}}}}
+\put(2836,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+1}$}%
+}}}}
+\put(3556,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+2}$}%
+}}}}
+\put(4186,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+3}$}%
+}}}}
+\put(4906,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+4}$}%
+}}}}
+\put(5626,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+5}$}%
+}}}}
+\put(6256,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+6}$}%
+}}}}
+\put(6976,-6496){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+7}$}%
+}}}}
+\put(856,-6856){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i-2}$}%
+}}}}
+\put(1576,-6856){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i-1}$}%
+}}}}
+\put(2206,-6856){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i}$}%
+}}}}
+\put(2926,-6856){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+1}$}%
+}}}}
+\put(3556,-6856){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+2}$}%
+}}}}
+\put(4276,-6856){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+3}$}%
+}}}}
+\put(901,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i-2}$}%
+}}}}
+\put(1621,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i-1}$}%
+}}}}
+\put(2251,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i}$}%
+}}}}
+\put(2881,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+1}$}%
+}}}}
+\put(3601,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+2}$}%
+}}}}
+\put(4231,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+3}$}%
+}}}}
+\put(4951,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+4}$}%
+}}}}
+\put(5671,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+5}$}%
+}}}}
+\put(6301,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+6}$}%
+}}}}
+\put(7021,-1771){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$s_{i+7}$}%
+}}}}
+\put(901,-2131){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i-2}$}%
+}}}}
+\put(1621,-2131){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i-1}$}%
+}}}}
+\put(2251,-2131){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i}$}%
+}}}}
+\put(2971,-2131){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+1}$}%
+}}}}
+\put(3601,-2131){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i+2}$}%
+}}}}
+\put(2251,-1096){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}slot\_out}%
+}}}}
+\put(3646,-601){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}WINDOW}%
+}}}}
+\put(856,-4426){\makebox(0,0)[b]{\smash{{\SetFigFont{10}{12.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$c_{i-2}$}%
+}}}}
+\put(901,-1096){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}(a)}%
+}}}}
+\put(946,-3391){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}(b)}%
+}}}}
+\put(946,-5821){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}(c)}%
+}}}}
+\put(181,-2131){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}...}%
+}}}}
+\put(181,-4471){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}...}%
+}}}}
+\put(271,-6901){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}...}%
+}}}}
+\put(7606,-2131){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}...}%
+}}}}
+\put(7516,-4381){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}...}%
+}}}}
+{\color[rgb]{0,0,0}\put(4906,-3436){\vector( 0,-1){405}}
+}%
+\end{picture}%
