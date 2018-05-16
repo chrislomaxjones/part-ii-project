@@ -178,8 +178,6 @@ extent for a comparable purpose.
 
 \tableofcontents
 
-\listoffigures
-
 \cleardoublepage        % just to make sure before the page numbering is changed
 
 \setcounter{page}{1}
@@ -224,6 +222,22 @@ extent for a comparable purpose.
 
 % the appendices
 \appendix
+
+\chapter{Third party software licenses}
+\label{appendix:licenses}
+\begin{table}[h]
+\centering
+\begin{tabular}{ l  | p{3.0cm}| p{7.0cm} } 
+   \textbf{Library} & \textbf{License} & \textbf{Information availabble} \\ \hline
+    Lwt & LGPL with OpenSSL linking exception & \texttt{opam show lwt} \\ \hline
+    Core & Apache-2.0 & \texttt{opam show core} \\ \hline
+    YoJson & Specific license file & \url{https://github.com/mjambon/yojson/blob/master/LICENSE.md} \\ \hline
+    OUnit & Specific license file & \url{https://github.com/mjambon/yojson/blob/master/LICENSE.md} \\ \hline
+    Ocaml-capnp & Apache &  \texttt{opam show ocaml-capnp} \\
+    Capnp-rpc & & \texttt{opam show capnp-rpc} \\ \hline
+    Uri & ISC & \texttt{opam show uri}
+\end{tabular}
+\end{table}
 
 \chapter{Cap'n Proto schema file}
 \label{appendix:schema}

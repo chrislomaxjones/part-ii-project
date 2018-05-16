@@ -2,58 +2,63 @@
 \contentsline {section}{\numberline {1.1}Background}{1}{section.1.1}
 \contentsline {section}{\numberline {1.2}Aims}{2}{section.1.2}
 \contentsline {chapter}{\numberline {2}Preparation}{3}{chapter.2}
-\contentsline {section}{\numberline {2.1}Theotrical background}{3}{section.2.1}
+\contentsline {section}{\numberline {2.1}Theoretical background}{3}{section.2.1}
 \contentsline {subsection}{\numberline {2.1.1}Assumptions of the environment}{3}{subsection.2.1.1}
 \contentsline {subsection}{\numberline {2.1.2}Aim of consensus}{4}{subsection.2.1.2}
 \contentsline {subsection}{\numberline {2.1.3}State machine replication}{4}{subsection.2.1.3}
 \contentsline {subsection}{\numberline {2.1.4}Single--decree Paxos}{5}{subsection.2.1.4}
-\contentsline {subsection}{\numberline {2.1.5}Multi--decree Paxos}{8}{subsection.2.1.5}
+\contentsline {subsection}{\numberline {2.1.5}Multi--decree Paxos}{6}{subsection.2.1.5}
 \contentsline {subsubsection}{Clients}{8}{table.2.2}
-\contentsline {subsubsection}{Replicas}{8}{table.2.2}
-\contentsline {subsubsection}{Ballots and pvalues}{10}{table.2.2}
-\contentsline {subsubsection}{Quorums}{11}{table.2.2}
-\contentsline {subsubsection}{The Synod Protocol}{11}{table.2.2}
+\contentsline {subsubsection}{Replicas}{9}{table.2.2}
+\contentsline {subsubsection}{Ballots and pvalues}{9}{table.2.2}
+\contentsline {subsubsection}{Quorums}{10}{table.2.2}
+\contentsline {subsubsection}{The Synod Protocol}{10}{table.2.2}
 \contentsline {section}{\numberline {2.2}Requirements}{12}{section.2.2}
 \contentsline {subsection}{\numberline {2.2.1}System requirements}{12}{subsection.2.2.1}
-\contentsline {section}{\numberline {2.3}Software engineering}{14}{section.2.3}
-\contentsline {subsection}{\numberline {2.3.1}Starting point}{14}{subsection.2.3.1}
-\contentsline {subsection}{\numberline {2.3.2}Methodology}{14}{subsection.2.3.2}
-\contentsline {subsection}{\numberline {2.3.3}Libraries}{15}{subsection.2.3.3}
-\contentsline {subsection}{\numberline {2.3.4}Build system}{16}{subsection.2.3.4}
-\contentsline {subsection}{\numberline {2.3.5}Tools}{16}{subsection.2.3.5}
-\contentsline {subsection}{\numberline {2.3.6}Testing}{17}{subsection.2.3.6}
-\contentsline {section}{\numberline {2.4}Summary}{17}{section.2.4}
-\contentsline {chapter}{\numberline {3}Implementation}{18}{chapter.3}
-\contentsline {section}{\numberline {3.1}High level architecture}{18}{section.3.1}
-\contentsline {section}{\numberline {3.2}Data structures}{19}{section.3.2}
-\contentsline {subsection}{\numberline {3.2.1}Identifiers}{19}{subsection.3.2.1}
-\contentsline {subsection}{\numberline {3.2.2}Key value store}{20}{subsection.3.2.2}
+\contentsline {section}{\numberline {2.3}Software engineering}{13}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Starting point}{13}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Methodology}{13}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}Libraries}{14}{subsection.2.3.3}
+\contentsline {subsection}{\numberline {2.3.4}Tools}{15}{subsection.2.3.4}
+\contentsline {subsection}{\numberline {2.3.5}Build system}{15}{subsection.2.3.5}
+\contentsline {subsection}{\numberline {2.3.6}Testing}{15}{subsection.2.3.6}
+\contentsline {section}{\numberline {2.4}Summary}{16}{section.2.4}
+\contentsline {chapter}{\numberline {3}Implementation}{17}{chapter.3}
+\contentsline {section}{\numberline {3.1}High level architecture}{17}{section.3.1}
+\contentsline {section}{\numberline {3.2}Data structures}{18}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Identifiers}{18}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Key value store}{19}{subsection.3.2.2}
 \contentsline {subsection}{\numberline {3.2.3}Ballots}{21}{subsection.3.2.3}
 \contentsline {section}{\numberline {3.3}Messages}{22}{section.3.3}
 \contentsline {subsection}{\numberline {3.3.1}Interface exposed}{22}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}Cap'n Proto}{24}{subsection.3.3.2}
-\contentsline {section}{\numberline {3.4}Clients and replicas}{26}{section.3.4}
-\contentsline {subsection}{\numberline {3.4.1}Clients}{26}{subsection.3.4.1}
-\contentsline {subsection}{\numberline {3.4.2}Replicas}{26}{subsection.3.4.2}
-\contentsline {section}{\numberline {3.5}Synod protocol}{31}{section.3.5}
-\contentsline {subsection}{\numberline {3.5.1}Acceptors}{31}{subsection.3.5.1}
-\contentsline {subsection}{\numberline {3.5.2}Leaders}{33}{subsection.3.5.2}
-\contentsline {subsubsection}{Scouts}{35}{figure.3.15}
-\contentsline {subsubsection}{Commanders}{36}{figure.3.16}
-\contentsline {subsubsection}{Leaders}{36}{figure.3.16}
-\contentsline {section}{\numberline {3.6}Summary}{37}{section.3.6}
-\contentsline {chapter}{\numberline {4}Evaluation}{38}{chapter.4}
-\contentsline {section}{\numberline {4.1}Experimental setup}{38}{section.4.1}
-\contentsline {subsection}{\numberline {4.1.1}Experimental measurements}{38}{subsection.4.1.1}
-\contentsline {subsection}{\numberline {4.1.2}Mininet}{39}{subsection.4.1.2}
-\contentsline {subsection}{\numberline {4.1.3}Duelling leaders and the impossibility result}{39}{subsection.4.1.3}
-\contentsline {section}{\numberline {4.2}Simulation tests}{41}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Topologies}{42}{subsection.4.2.1}
-\contentsline {section}{\numberline {4.3}Performance evaluation}{43}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}System size}{43}{subsection.4.3.1}
-\contentsline {subsection}{\numberline {4.3.2}Failure traces}{43}{subsection.4.3.2}
-\contentsline {section}{\numberline {4.4}Summary}{44}{section.4.4}
-\contentsline {chapter}{\numberline {5}Conclusion}{45}{chapter.5}
-\contentsline {chapter}{Bibliography}{47}{chapter.5}
-\contentsline {chapter}{\numberline {A}Cap'n Proto schema file}{49}{appendix.A}
-\contentsline {chapter}{\numberline {B}Projct Proposal}{51}{appendix.B}
+\contentsline {subsection}{\numberline {3.3.2}Cap'n Proto}{23}{subsection.3.3.2}
+\contentsline {section}{\numberline {3.4}Clients and replicas}{25}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Clients}{25}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}Replicas}{25}{subsection.3.4.2}
+\contentsline {section}{\numberline {3.5}Synod protocol}{27}{section.3.5}
+\contentsline {subsection}{\numberline {3.5.1}Acceptors}{30}{subsection.3.5.1}
+\contentsline {subsection}{\numberline {3.5.2}Leaders}{32}{subsection.3.5.2}
+\contentsline {subsubsection}{Scouts}{33}{figure.3.15}
+\contentsline {subsubsection}{Commanders}{34}{figure.3.16}
+\contentsline {subsubsection}{Leaders}{35}{figure.3.16}
+\contentsline {section}{\numberline {3.6}Summary}{36}{section.3.6}
+\contentsline {chapter}{\numberline {4}Evaluation}{37}{chapter.4}
+\contentsline {section}{\numberline {4.1}Experimental setup}{37}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Experimental measurements}{37}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Mininet}{38}{subsection.4.1.2}
+\contentsline {subsection}{\numberline {4.1.3}Duelling leaders and the impossibility result}{38}{subsection.4.1.3}
+\contentsline {subsection}{\numberline {4.1.4}Topologies}{41}{subsection.4.1.4}
+\contentsline {section}{\numberline {4.2}Performance evaluation}{42}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}System size}{43}{subsection.4.2.1}
+\contentsline {subsubsection}{Method}{43}{subsection.4.2.1}
+\contentsline {subsubsection}{Results}{45}{figure.4.4}
+\contentsline {subsection}{\numberline {4.2.2}Failure traces}{46}{subsection.4.2.2}
+\contentsline {chapter}{\numberline {5}Conclusion}{49}{chapter.5}
+\contentsline {section}{\numberline {5.1}Successes}{49}{section.5.1}
+\contentsline {section}{\numberline {5.2}Limitations}{49}{section.5.2}
+\contentsline {section}{\numberline {5.3}Future work}{50}{section.5.3}
+\contentsline {section}{\numberline {5.4}Final remarks}{50}{section.5.4}
+\contentsline {chapter}{Bibliography}{51}{section.5.4}
+\contentsline {chapter}{\numberline {A}Third party software licenses}{53}{appendix.A}
+\contentsline {chapter}{\numberline {B}Cap'n Proto schema file}{54}{appendix.B}
+\contentsline {chapter}{\numberline {C}Projct Proposal}{56}{appendix.C}

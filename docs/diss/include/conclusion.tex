@@ -1,2 +1,23 @@
 \chapter{Conclusion}
-...
+
+The aim of this project was to produce an implementation, in OCaml, of the Multi--Paxos consensus algorithm. This chapter concludes with a consideration of the successes of the project, any limitations that have been discovered, a discussion of possible future work that could be undertaken and closes with any final remarks.
+
+\section{Successes}
+
+The implementation of this project was a success in that an implementation of Multi--Paxos was developed as described in the Requirements section in Chapter 2. A strongly consistent key value store was replicated across a number of replica processes with the consistenty maintained by having their commands serialised by leaders and acceptors. The system tolerated failures as described by the assumptions laid out in \ref{section-assumptions}.
+
+\section{Limitations}
+
+A limitation encountered over the course of the project was the use of Mininet as a network simulator. Problems arose with linking to external libraries meant the program developed could only be interpreted as OCaml bytecode rather than compiled native code. This led to delays in evaluation and ... . Furthermore, the size of simulations that could be performed was constrained by the resources available to the virtual machine running Mininet. In the future it would be beneficial to run larger simulations with a less constrained network simulator. \\
+
+Another limitation encountered in the evaluation was in making a performance comparison with LibPaxos. Inexperience with the C language and lack of documentation made it difficult to construct a comparable implementation of the application on top of LibPaxos. Because of this it was not possible to make the desired performance comparsion.
+
+\section{Future work}
+
+The large amount of literature and ongoing research into consensus algorithms presents lots of opportunities for future work on the project. One such opportunity for future work is to modify the project to that of Flexible Paxos and measure the associated performance gains against the original. \\
+
+Other opportunities could arise from \emph{open sourcing} the project and providing extensions to make it attractive to the wider OCaml community, for example providing compatibility with Mirage OS \cite{Madhavapeddy:2013:ULO:2499368.2451167} or creating a GUI interface for visualising log files. A number of optimisations suggested in the literature could be implemented, including introducing \emph{read--only} commands that do not need to be decided on by the synod protocol and reducing the amount of state retained by replicas over time.
+
+\section{Final remarks}
+
+This project has been both insightful and rewarding, providing me with experience designing and implementating a distributed system and exploring the challenges faced when doing so. \\

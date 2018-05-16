@@ -1,0 +1,65 @@
+\setlength{\unitlength}{3947sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(5277,3927)(3289,-9301)
+\thinlines
+{\color[rgb]{0,0,0}\put(4051,-8836){\framebox(3750,3450){}}
+}%
+{\color[rgb]{0,0,0}\put(5101,-7486){\vector(-1, 0){0}}
+\put(5101,-7267){\oval(312,438)[br]}
+\put(5026,-7267){\oval(462,462)[tr]}
+\put(5026,-7267){\oval(462,462)[tl]}
+\put(4951,-7267){\oval(312,438)[bl]}
+}%
+{\color[rgb]{0,0,0}\put(3301,-9211){\line( 1, 0){5100}}
+}%
+{\color[rgb]{0,0,0}\put(4201,-7861){\framebox(3300,1950){}}
+}%
+{\color[rgb]{0,0,0}\put(4501,-7561){\framebox(1200,1200){}}
+}%
+{\color[rgb]{0,0,0}\put(6001,-7561){\framebox(1200,1200){}}
+}%
+{\color[rgb]{0,0,0}\put(4201,-8611){\framebox(3300,450){}}
+}%
+{\color[rgb]{0,0,0}\put(6601,-7561){\vector( 0,-1){600}}
+}%
+{\color[rgb]{0,0,0}\put(4951,-7561){\vector( 0,-1){600}}
+}%
+{\color[rgb]{0,0,0}\put(5251,-8161){\vector( 0, 1){600}}
+}%
+{\color[rgb]{0,0,0}\put(6001,-9211){\vector( 0, 1){600}}
+}%
+{\color[rgb]{0,0,0}\put(5401,-8611){\vector( 0,-1){600}}
+}%
+\put(4651,-8461){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Messaging subsystem}%
+}}}}
+\put(4501,-6211){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Role module}%
+}}}}
+\put(4651,-6916){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}server}%
+}}}}
+\put(4651,-6661){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Response}%
+}}}}
+\put(6151,-6661){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Role}%
+}}}}
+\put(6151,-6886){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}specific}%
+}}}}
+\put(6151,-7111){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}systems}%
+}}}}
+\put(8551,-9286){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Network}%
+}}}}
+{\color[rgb]{0,0,0}\put(6676,-7486){\vector(-1, 0){0}}
+\put(6676,-7336){\oval(186,300)[br]}
+\put(6601,-7336){\oval(336,336)[tr]}
+\put(6601,-7336){\oval(336,336)[tl]}
+\put(6526,-7336){\oval(186,300)[bl]}
+}%
+\put(4201,-5686){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Process}%
+}}}}
+\end{picture}%
+
+

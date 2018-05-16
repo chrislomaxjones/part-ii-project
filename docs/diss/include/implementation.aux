@@ -1,63 +1,64 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
-\@writefile{toc}{\contentsline {chapter}{\numberline {3}Implementation}{18}{chapter.3}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}Implementation}{17}{chapter.3}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}High level architecture}{18}{section.3.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces High level subsystems of a process}}{19}{figure.3.1}}
-\newlabel{fig:high-level-structure}{{3.1}{19}{High level subsystems of a process}{figure.3.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}Data structures}{19}{section.3.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Identifiers}{19}{subsection.3.2.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Signature of the key value store module}}{20}{figure.3.2}}
-\newlabel{fig:key-value-store}{{3.2}{20}{Signature of the key value store module}{figure.3.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Key value store}{20}{subsection.3.2.2}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates.}}{21}{table.3.1}}
-\newlabel{table:operation-summary}{{3.1}{21}{Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates}{table.3.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}High level architecture}{17}{section.3.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces High level subsystems of a process}}{18}{figure.3.1}}
+\newlabel{fig:high-level-structure}{{3.1}{18}{High level subsystems of a process}{figure.3.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Data structures}{18}{section.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Identifiers}{18}{subsection.3.2.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Signature of the key value store module}}{19}{figure.3.2}}
+\newlabel{fig:key-value-store}{{3.2}{19}{Signature of the key value store module}{figure.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Key value store}{19}{subsection.3.2.2}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates.}}{20}{table.3.1}}
+\newlabel{table:operation-summary}{{3.1}{20}{Set of operations that can be applied to the application state, along with their corresponding arguments and their semantics. Note that Create and Update commands are separate, each with their own success and failure semantics in order to reduce ambiguity of how the application operates}{table.3.1}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Types of ballot numbers.}}{21}{figure.3.3}}
 \newlabel{fig:ballot-types}{{3.3}{21}{Types of ballot numbers}{figure.3.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt  {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt  {bottom}.}}{21}{figure.3.4}}
+\newlabel{fig:ballot-interface}{{3.4}{21}{The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt {bottom}}{figure.3.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}Ballots}{21}{subsection.3.2.3}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt  {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt  {bottom}.}}{22}{figure.3.4}}
-\newlabel{fig:ballot-interface}{{3.4}{22}{The interface exposed by the Ballot module. These are the types of functions that can be used to generate ballot numbers. Note the naming of the function \texttt {succ\_exn} implies it can throw an exception, which occurs when calling the function on \texttt {bottom}}{figure.3.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Types of non-blocking messages}}{22}{figure.3.5}}
+\newlabel{message-types}{{3.5}{22}{Types of non-blocking messages}{figure.3.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Function to start a new server that presents a number of possible callbacks}}{22}{figure.3.6}}
+\newlabel{fig:message-server}{{3.6}{22}{Function to start a new server that presents a number of possible callbacks}{figure.3.6}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.3}Messages}{22}{section.3.3}}
 \newlabel{section:messages}{{3.3}{22}{Messages}{section.3.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Interface exposed}{22}{subsection.3.3.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Types of non-blocking messages}}{23}{figure.3.5}}
-\newlabel{message-types}{{3.5}{23}{Types of non-blocking messages}{figure.3.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Function to start a new server that presents a number of possible callbacks}}{23}{figure.3.6}}
-\newlabel{fig:message-server}{{3.6}{23}{Function to start a new server that presents a number of possible callbacks}{figure.3.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Cap'n Proto}{24}{subsection.3.3.2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces Function that returns a Cap'n Proto capability for the message service of a given URI}}{25}{figure.3.7}}
-\newlabel{fig:service-from-uri}{{3.7}{25}{Function that returns a Cap'n Proto capability for the message service of a given URI}{figure.3.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Types of records representing replica state}}{26}{figure.3.8}}
-\newlabel{fig:replica-types}{{3.8}{26}{Types of records representing replica state}{figure.3.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.4}Clients and replicas}{26}{section.3.4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Clients}{26}{subsection.3.4.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Replicas}{26}{subsection.3.4.2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces Flow of requests and proposals through a replica's queues}}{29}{figure.3.9}}
-\newlabel{fig:replica-queues}{{3.9}{29}{Flow of requests and proposals through a replica's queues}{figure.3.9}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.10}{\ignorespaces (a) shows a window with one available slot into which a command $c_{i+3}$ is proposed, leading to the window shown in (b). In (b) however no further slots are available for proposals since $ \textrm  {\texttt  {slot\_in}} < \textrm  {\texttt  {slot\_out}} + \textrm  {\texttt  {WINDOW}} $. IN (c), a decision is received for $c_{i+1}$ and so the \texttt  {slot\_out} is incremented and now another slot is available for proposals.}}{30}{figure.3.10}}
-\newlabel{fig:replica-window}{{3.10}{30}{(a) shows a window with one available slot into which a command $c_{i+3}$ is proposed, leading to the window shown in (b). In (b) however no further slots are available for proposals since $ \textrm {\texttt {slot\_in}} < \textrm {\texttt {slot\_out}} + \textrm {\texttt {WINDOW}} $. IN (c), a decision is received for $c_{i+1}$ and so the \texttt {slot\_out} is incremented and now another slot is available for proposals}{figure.3.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.11}{\ignorespaces Types of records storing acceptor state}}{31}{figure.3.11}}
-\newlabel{fig:acceptor-type}{{3.11}{31}{Types of records storing acceptor state}{figure.3.11}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.5}Synod protocol}{31}{section.3.5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Acceptors}{31}{subsection.3.5.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.12}{\ignorespaces Function called when an acceptor receives a phase1a message with associated ballot.}}{32}{figure.3.12}}
-\newlabel{fig:acceptor-phase1}{{3.12}{32}{Function called when an acceptor receives a phase1a message with associated ballot}{figure.3.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.13}{\ignorespaces Function called when an acceptor receives a phase2a message with associated pvalue.}}{32}{figure.3.13}}
-\newlabel{fig:acceptor-phase2}{{3.13}{32}{Function called when an acceptor receives a phase2a message with associated pvalue}{figure.3.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Leaders}{33}{subsection.3.5.2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.14}{\ignorespaces Types of responses produced by scouts and commanders}}{34}{figure.3.14}}
-\newlabel{fig:sub-process-responses}{{3.14}{34}{Types of responses produced by scouts and commanders}{figure.3.14}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.15}{\ignorespaces Functions and values for manipulating the message queue of process responses}}{34}{figure.3.15}}
-\newlabel{fig:sub-process-messaging-queue}{{3.15}{34}{Functions and values for manipulating the message queue of process responses}{figure.3.15}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.16}{\ignorespaces Signature of scouts}}{35}{figure.3.16}}
-\newlabel{fig:scout-sig}{{3.16}{35}{Signature of scouts}{figure.3.16}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Scouts}{35}{figure.3.15}}
-\@writefile{toc}{\contentsline {subsubsection}{Commanders}{36}{figure.3.16}}
-\@writefile{toc}{\contentsline {subsubsection}{Leaders}{36}{figure.3.16}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Summary}{37}{section.3.6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Cap'n Proto}{23}{subsection.3.3.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces Function that returns a Cap'n Proto capability for the message service of a given URI}}{24}{figure.3.7}}
+\newlabel{fig:service-from-uri}{{3.7}{24}{Function that returns a Cap'n Proto capability for the message service of a given URI}{figure.3.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Types of records representing replica state}}{25}{figure.3.8}}
+\newlabel{fig:replica-types}{{3.8}{25}{Types of records representing replica state}{figure.3.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Clients and replicas}{25}{section.3.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Clients}{25}{subsection.3.4.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Replicas}{25}{subsection.3.4.2}}
+\newlabel{section:replicas}{{3.4.2}{25}{Replicas}{subsection.3.4.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}Synod protocol}{27}{section.3.5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces Flow of requests and proposals through a replica's queues}}{28}{figure.3.9}}
+\newlabel{fig:replica-queues}{{3.9}{28}{Flow of requests and proposals through a replica's queues}{figure.3.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.10}{\ignorespaces (a) shows a window with one available slot into which a command $c_{i+3}$ is proposed, leading to the window shown in (b). In (b) however no further slots are available for proposals since $ \textrm  {\texttt  {slot\_in}} < \textrm  {\texttt  {slot\_out}} + \textrm  {\texttt  {WINDOW}} $. In (c), a decision is received for $c_{i+1}$ and so the \texttt  {slot\_out} is incremented and now another slot is available for proposals.}}{29}{figure.3.10}}
+\newlabel{fig:replica-window}{{3.10}{29}{(a) shows a window with one available slot into which a command $c_{i+3}$ is proposed, leading to the window shown in (b). In (b) however no further slots are available for proposals since $ \textrm {\texttt {slot\_in}} < \textrm {\texttt {slot\_out}} + \textrm {\texttt {WINDOW}} $. In (c), a decision is received for $c_{i+1}$ and so the \texttt {slot\_out} is incremented and now another slot is available for proposals}{figure.3.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.11}{\ignorespaces Types of records storing acceptor state}}{30}{figure.3.11}}
+\newlabel{fig:acceptor-type}{{3.11}{30}{Types of records storing acceptor state}{figure.3.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Acceptors}{30}{subsection.3.5.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.12}{\ignorespaces Function called when an acceptor receives a phase1a message with associated ballot.}}{31}{figure.3.12}}
+\newlabel{fig:acceptor-phase1}{{3.12}{31}{Function called when an acceptor receives a phase1a message with associated ballot}{figure.3.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.13}{\ignorespaces Function called when an acceptor receives a phase2a message with associated pvalue.}}{31}{figure.3.13}}
+\newlabel{fig:acceptor-phase2}{{3.13}{31}{Function called when an acceptor receives a phase2a message with associated pvalue}{figure.3.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.14}{\ignorespaces Types of responses produced by scouts and commanders}}{32}{figure.3.14}}
+\newlabel{fig:sub-process-responses}{{3.14}{32}{Types of responses produced by scouts and commanders}{figure.3.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Leaders}{32}{subsection.3.5.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.15}{\ignorespaces Functions and values for manipulating the message queue of process responses}}{33}{figure.3.15}}
+\newlabel{fig:sub-process-messaging-queue}{{3.15}{33}{Functions and values for manipulating the message queue of process responses}{figure.3.15}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Scouts}{33}{figure.3.15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.16}{\ignorespaces Signature of scouts}}{34}{figure.3.16}}
+\newlabel{fig:scout-sig}{{3.16}{34}{Signature of scouts}{figure.3.16}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Commanders}{34}{figure.3.16}}
+\@writefile{toc}{\contentsline {subsubsection}{Leaders}{35}{figure.3.16}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Summary}{36}{section.3.6}}
 \@setckpt{include/implementation}{
-\setcounter{page}{38}
+\setcounter{page}{37}
 \setcounter{equation}{0}
 \setcounter{enumi}{3}
 \setcounter{enumii}{0}

@@ -21,7 +21,11 @@
 \contentsline {figure}{\numberline {3.16}{\ignorespaces Signature of scouts}}{35}{figure.3.16}
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {4.1}{\ignorespaces Graph of backoffs}}{40}{figure.4.1}
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Graph of topologies}}{42}{figure.4.2}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Diagrams of different network topologies investigated. Topology (a) represents a star topology, (b) represents a linear topology and (c) a tree topology.}}{42}{figure.4.2}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Graph of latencies over time with different network topologies.}}{43}{figure.4.3}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Graphs displaying how throughput varies with arrival rate of requests for a number systems with different replica sizes.}}{45}{figure.4.4}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Results of latency and throughput as system size was varied for each role separately. For each graph the roles that did not vary were fixed in a system with $f=1$. Error bars show $95\%$ confidence intervals.}}{47}{figure.4.5}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces System size}}{48}{figure.4.6}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
